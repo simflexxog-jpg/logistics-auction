@@ -9,7 +9,8 @@
     "test": "ng test",
     "start:server": "node server/index.js",
     "dev:server": "nodemon server/index.js",
-    "dev": "concurrently \"npm run dev:server\" \"ng serve\""
+    "dev": "concurrently \"npm run dev:server\" \"ng serve\"",
+    "test:jwt": "node scripts/test-jwt.js"
   },
   "private": true,
   "packageManager": "npm@10.9.7",

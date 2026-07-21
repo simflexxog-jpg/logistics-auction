@@ -4,6 +4,7 @@ const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
+const fs = require('fs');
 
 const { syncDB } = require('./models');
 const setupSocket = require('./socket');
@@ -40,13 +41,18 @@ app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Dat
 
 // Serve Angular in production
 if (process.env.NODE_ENV === 'production') {
-  const distPath = path.join(__dirname, '../dist/logistics-auction/browser');
-  app.use(express.static(distPath));
-  app.get('*', (req, res) => {
-    if (!req.path.startsWith('/api')) {
-      res.sendFile(path.join(distPath, 'index.html'));
-    }
-  });
+  const distPath = path.join(__dirname, '../dist/logistics-auction');
+  if (fs.existsSync(distPath)) {
+    console.log('Serving static from', distPath);
+    app.use(express.static(distPath));
+    app.get('*', (req, res) => {
+      if (!req.path.startsWith('/api')) {
+        res.sendFile(path.join(distPath, 'index.html'));
+      }
+    });
+  } else {
+    console.warn('Dist folder not found at', distPath, '- make sure to run `npm run build` before starting in production.');
+  }
 }
 
 // Setup WebSocket
@@ -54,12 +60,22 @@ setupSocket(io);
 
 const PORT = process.env.PORT || 3000;
 
-syncDB().then(() => {
+(async () => {
+  try {
+    await syncDB();
+    console.log('Database synced');
+  } catch (err) {
+    console.error('DB sync failed:', err);
+    if (process.env.NODE_ENV === 'production') {
+      console.error('Exiting because DB sync failed in production');
+      process.exit(1);
+    } else {
+      console.warn('Continuing without DB (development). API endpoints will fail until DB is available.');
+    }
+  }
+
   server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
-    startAuctionCron(io);
+    try { startAuctionCron(io); } catch (e) { console.warn('Auction cron failed to start:', e && e.message); }
   });
-}).catch(err => {
-  console.error('DB sync failed:', err);
-  process.exit(1);
-});
+})();

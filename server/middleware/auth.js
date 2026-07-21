@@ -11,7 +11,12 @@ const auth = async (req, res, next) => {
     req.user = user;
     next();
   } catch (err) {
-    res.status(401).json({ error: 'Invalid token' });
+    console.error('Auth middleware error:', err && err.message ? err.message : err);
+    if (process.env.NODE_ENV === 'production') {
+      res.status(401).json({ error: 'Invalid token' });
+    } else {
+      res.status(401).json({ error: err.message || 'Invalid token' });
+    }
   }
 };
 
