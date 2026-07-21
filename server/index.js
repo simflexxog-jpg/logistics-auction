@@ -41,7 +41,11 @@ app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Dat
 
 // Serve Angular in production
 if (process.env.NODE_ENV === 'production') {
-  const distPath = path.join(__dirname, '../dist/logistics-auction');
+  let distPath = path.join(__dirname, '../dist/logistics-auction');
+  const browserPath = path.join(distPath, 'browser');
+  if (fs.existsSync(browserPath)) {
+    distPath = browserPath;
+  }
   if (fs.existsSync(distPath)) {
     console.log('Serving static from', distPath);
     app.use(express.static(distPath));
