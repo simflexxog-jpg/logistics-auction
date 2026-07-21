@@ -1,0 +1,44 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: logistics_auction
+      POSTGRES_USER: logi_user
+      POSTGRES_PASSWORD: logi_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://logi_user:logi_pass@db:5432/logistics_auction
+      JWT_SECRET: change_this_in_production
+      FRONTEND_URL: http://localhost:4200
+    depends_on:
+      - db
+
+  frontend:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - "4200:4200"
+    command: sh -c "npm install --legacy-peer-deps && npx ng serve --host 0.0.0.0"
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
