@@ -1,11 +1,11 @@
 <div class="auth-page">
   <div class="container d-flex align-items-center justify-content-center min-vh-100 py-5">
-    <div class="card auth-card shadow-lg" style="max-width:520px;width:100%">
+    <div class="card auth-card shadow-lg register-card">
       <div class="card-body p-5">
         <div class="text-center mb-4">
-          <div class="brand-icon mb-2">{{ role === 'customer' ? '📦' : '🚛' }}</div>
-          <h2 class="fw-bold">Register as {{ role === 'customer' ? 'Customer' : 'Logistics Partner' }}</h2>
-          <p class="text-muted">Create your account</p>
+          <div class="brand-icon mb-2"><span class="material-icons-outlined">{{ role === 'customer' ? 'inventory_2' : 'local_shipping' }}</span></div>
+          <h2 class="fw-bold">Create your Renta account</h2>
+          <p class="text-muted">Register as {{ role === 'customer' ? 'Customer' : 'Logistics Partner' }}</p>
         </div>
 
         @if (error()) {
@@ -32,10 +32,10 @@
             </div>
 
             @if (role === 'partner') {
-              <div class="col-12"><hr><h6 class="text-success fw-bold">🚛 Truck Information</h6></div>
+              <div class="col-12"><hr><h6 class="text-success fw-bold"><span class="material-icons-outlined align-middle me-1">local_shipping</span>Truck information</h6></div>
               <div class="col-md-6">
-                <label class="form-label fw-semibold">Truck Type</label>
-                <select class="form-select" [(ngModel)]="form.truckType" name="truckType" required>
+                <label class="form-label fw-semibold" for="truckType">Truck Type</label>
+                <select id="truckType" title="Truck type" aria-label="Truck type" class="form-select" [(ngModel)]="form.truckType" name="truckType" required>
                   <option value="">Select type</option>
                   <option>Mini Truck</option>
                   <option>Medium Truck</option>

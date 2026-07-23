@@ -1,11 +1,11 @@
 <div class="app-layout">
   <nav class="sidebar bg-dark text-white">
-    <div class="sidebar-brand px-3 py-4"><span class="fs-5 fw-bold">🚛 LogiAuction</span></div>
+    <div class="sidebar-brand px-3 py-4"><span class="fs-5 fw-bold"><span class="material-icons-outlined align-middle me-1">local_shipping</span>Renta</span></div>
     <ul class="nav flex-column px-2">
-      <li class="nav-item"><a class="nav-link text-white-50" routerLink="/partner/dashboard"><span class="me-2">📊</span>Dashboard</a></li>
-      <li class="nav-item"><a class="nav-link text-white-50" routerLink="/partner/auction"><span class="me-2">🏷</span>Auction Listings</a></li>
-      <li class="nav-item"><a class="nav-link text-white active"><span class="me-2">➕</span>Add-on Shipments</a></li>
-      <li class="nav-item"><a class="nav-link text-white-50" routerLink="/partner/jobs"><span class="me-2">🚚</span>My Jobs</a></li>
+      <li class="nav-item"><a class="nav-link text-white-50" routerLink="/partner/dashboard"><span class="material-icons-outlined me-2">analytics</span>Dashboard</a></li>
+      <li class="nav-item"><a class="nav-link text-white-50" routerLink="/partner/auction"><span class="material-icons-outlined me-2">sell</span>Auction Listings</a></li>
+      <li class="nav-item"><a class="nav-link text-white active"><span class="material-icons-outlined me-2">add</span>Add-on Shipments</a></li>
+      <li class="nav-item"><a class="nav-link text-white-50" routerLink="/partner/jobs"><span class="material-icons-outlined me-2">local_shipping</span>My Jobs</a></li>
     </ul>
     <div class="mt-auto px-3 pb-4">
       <div class="text-white-50 small mb-2">{{ auth.currentUser()?.name }}</div>
@@ -15,7 +15,7 @@
 
   <main class="main-content">
     <div class="mb-4">
-      <h4 class="fw-bold mb-0">➕ Add-on Shipments</h4>
+      <h4 class="fw-bold mb-0"><span class="material-icons-outlined align-middle me-1">add</span>Add-on Shipments</h4>
       <p class="text-muted">Small cargo within 2km of your active route — extra earnings with minimal detour</p>
     </div>
 
@@ -27,7 +27,7 @@
       <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
     } @else if (addons().length === 0) {
       <div class="text-center py-5">
-        <div style="font-size:3rem">➕</div>
+        <div class="hero-icon large"><span class="material-icons-outlined icon-large">add</span></div>
         <h5 class="text-muted">No add-on shipments available</h5>
         <p class="text-muted">Check back when you have an active shipment</p>
       </div>
@@ -41,16 +41,16 @@
                   <h6 class="fw-bold mb-0">{{ addon.title }}</h6>
                   <span class="badge bg-success">₹{{ addon.price }}</span>
                 </div>
-                <p class="small text-muted mb-2">⚖️ {{ addon.weight }}kg</p>
-                <p class="small mb-1">📍 {{ addon.pickupAddress }}</p>
-                <p class="small mb-3">🏁 {{ addon.dropoffAddress }}</p>
+                <p class="small text-muted mb-2"><span class="material-icons-outlined align-middle me-1">scale</span>{{ addon.weight }}kg</p>
+                <p class="small mb-1"><span class="material-icons-outlined align-middle me-1">place</span>{{ addon.pickupAddress }}</p>
+                <p class="small mb-3"><span class="material-icons-outlined align-middle me-1">flag</span>{{ addon.dropoffAddress }}</p>
 
                 @if (myJobs().length === 0) {
                   <div class="alert alert-warning small py-2">You need an active in-transit shipment to claim add-ons.</div>
                 } @else {
                   <div class="mb-2">
                     <label class="form-label small fw-semibold">Select your active job</label>
-                    <select class="form-select form-select-sm" [(ngModel)]="selectedListing[addon.id]" [name]="'job-' + addon.id">
+                    <select class="form-select form-select-sm" title="Select active job" aria-label="Select active job" [(ngModel)]="selectedListing[addon.id]" [name]="'job-' + addon.id">
                       <option value="">— Choose job —</option>
                       @for (job of myJobs(); track job.id) {
                         <option [value]="job.listingId">{{ job.Listing?.title }}</option>
@@ -58,7 +58,8 @@
                     </select>
                   </div>
                   @if (claimResult[addon.id]) {
-                    <div class="small mb-2" [class.text-success]="claimResult[addon.id].startsWith('✅')" [class.text-danger]="claimResult[addon.id].startsWith('❌')">
+                    <div class="small mb-2 text-truncate" [class.text-success]="claimResult[addon.id].startsWith('Claimed successfully')" [class.text-danger]="claimResult[addon.id].startsWith('Claim failed')">
+                      <span class="material-icons-outlined align-middle me-1 icon-small">{{ claimResult[addon.id].startsWith('Claimed successfully') ? 'check_circle' : 'error' }}</span>
                       {{ claimResult[addon.id] }}
                     </div>
                   }

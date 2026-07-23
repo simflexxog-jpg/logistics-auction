@@ -39,12 +39,12 @@ export class PartnerAddonsComponent implements OnInit {
     this.claimResult[addonId] = '';
     this.api.claimAddOn(addonId, listingId).subscribe({
       next: () => {
-        this.claimResult[addonId] = '✅ Claimed! This add-on is now part of your shipment.';
+        this.claimResult[addonId] = 'Claimed successfully. This add-on is now part of your shipment.';
         this.claiming[addonId] = false;
         this.addons.update(as => as.filter(a => a.id !== addonId));
       },
       error: err => {
-        this.claimResult[addonId] = '❌ ' + (err.error?.error || 'Failed');
+        this.claimResult[addonId] = 'Claim failed: ' + (err.error?.error || 'Unable to claim this add-on.');
         this.claiming[addonId] = false;
       }
     });

@@ -1,11 +1,11 @@
 <div class="app-layout">
   <nav class="sidebar bg-dark text-white">
-    <div class="sidebar-brand px-3 py-4"><span class="fs-5 fw-bold">🚛 LogiAuction</span></div>
+    <div class="sidebar-brand px-3 py-4"><span class="fs-5 fw-bold"><span class="material-icons-outlined align-middle me-1">local_shipping</span>Renta</span></div>
     <ul class="nav flex-column px-2">
-      <li class="nav-item"><a class="nav-link text-white-50" routerLink="/partner/dashboard"><span class="me-2">📊</span>Dashboard</a></li>
-      <li class="nav-item"><a class="nav-link text-white-50" routerLink="/partner/auction"><span class="me-2">🏷</span>Auction Listings</a></li>
-      <li class="nav-item"><a class="nav-link text-white-50" routerLink="/partner/addons"><span class="me-2">➕</span>Add-on Shipments</a></li>
-      <li class="nav-item"><a class="nav-link text-white active"><span class="me-2">🚚</span>My Jobs</a></li>
+      <li class="nav-item"><a class="nav-link text-white-50" routerLink="/partner/dashboard"><span class="material-icons-outlined me-2">analytics</span>Dashboard</a></li>
+      <li class="nav-item"><a class="nav-link text-white-50" routerLink="/partner/auction"><span class="material-icons-outlined me-2">sell</span>Auction Listings</a></li>
+      <li class="nav-item"><a class="nav-link text-white-50" routerLink="/partner/addons"><span class="material-icons-outlined me-2">add</span>Add-on Shipments</a></li>
+      <li class="nav-item"><a class="nav-link text-white active"><span class="material-icons-outlined me-2">local_shipping</span>My Jobs</a></li>
     </ul>
     <div class="mt-auto px-3 pb-4">
       <div class="text-white-50 small mb-2">{{ auth.currentUser()?.name }}</div>
@@ -14,18 +14,18 @@
   </nav>
 
   <main class="main-content p-0">
-    <div class="d-flex" style="min-height:100vh">
+    <div class="d-flex min-vh-100">
       <!-- Jobs list -->
-      <div class="border-end" style="width:340px;min-width:280px;overflow-y:auto;">
+      <div class="border-end sidebar-job-panel">
         <div class="p-3 border-bottom bg-white sticky-top">
-          <h5 class="fw-bold mb-0">🚚 My Won Jobs</h5>
+          <h5 class="fw-bold mb-0"><span class="material-icons-outlined align-middle me-1">local_shipping</span>My won jobs</h5>
           <small class="text-muted">Accepted bids and active shipments</small>
         </div>
         @if (loading()) {
           <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
         } @else if (bids().length === 0) {
           <div class="text-center py-5 text-muted px-3">
-            <div style="font-size:2.5rem">🚚</div>
+            <div class="hero-icon"><span class="material-icons-outlined icon-large">local_shipping</span></div>
             <p class="mt-2">No won jobs yet. Win some auctions!</p>
           </div>
         } @else {
@@ -53,7 +53,7 @@
       <div class="flex-grow-1 overflow-auto p-4">
         @if (!selectedJob()) {
           <div class="text-center py-5 text-muted">
-            <div style="font-size:3rem">🚚</div>
+            <div class="hero-icon large"><span class="material-icons-outlined icon-large">local_shipping</span></div>
             <h5 class="mt-3">Select a job to view details</h5>
           </div>
         } @else {
@@ -63,11 +63,11 @@
               @if (selectedJob().Listing?.status === 'in_transit') {
                 <button class="btn btn-success" (click)="markDelivered()" [disabled]="marking()">
                   @if (marking()) { <span class="spinner-border spinner-border-sm me-2"></span> }
-                  ✓ Mark as Delivered
+                  <span class="material-icons-outlined icon-small align-middle me-1">check</span>Mark as delivered
                 </button>
               }
               @if (selectedJob().Listing?.status === 'delivered') {
-                <span class="badge bg-secondary fs-6">✓ Delivered</span>
+                <span class="badge bg-secondary fs-6"><span class="material-icons-outlined icon-small align-middle">check</span>Delivered</span>
               }
             </div>
           </div>
@@ -75,27 +75,27 @@
           <div class="row g-3 mb-4">
             <div class="col-lg-7">
               <div class="card shadow-sm">
-                <div class="card-header fw-semibold">🗺 Route</div>
+                <div class="card-header fw-semibold"><span class="material-icons-outlined align-middle me-1">map</span>Route</div>
                 <div class="card-body p-0">
-                  <div id="job-map" style="height:250px;border-radius:0 0 8px 8px;"></div>
+                  <div id="job-map" class="map-panel"></div>
                 </div>
                 <div class="card-footer small">
-                  <div class="text-success">📍 {{ selectedJob().Listing?.pickupAddress }}</div>
-                  <div class="text-danger">🏁 {{ selectedJob().Listing?.dropoffAddress }}</div>
+                  <div class="text-success"><span class="material-icons-outlined align-middle me-1">place</span>{{ selectedJob().Listing?.pickupAddress }}</div>
+                  <div class="text-danger"><span class="material-icons-outlined align-middle me-1">flag</span>{{ selectedJob().Listing?.dropoffAddress }}</div>
                 </div>
               </div>
             </div>
             <div class="col-lg-5">
               <div class="card shadow-sm h-100">
-                <div class="card-header fw-semibold">📋 Job Details</div>
+                <div class="card-header fw-semibold"><span class="material-icons-outlined align-middle me-1">description</span>Job Details</div>
                 <div class="card-body">
                   <div class="mb-2"><small class="text-muted d-block">Your Bid</small><span class="fw-bold text-primary fs-5">₹{{ selectedJob().amount }}</span></div>
                   <div class="mb-2"><small class="text-muted d-block">Cargo</small><span>{{ selectedJob().Listing?.cargoType }} · {{ selectedJob().Listing?.weight }}kg</span></div>
                   @if (selectedJob().Listing?.status === 'accepted') {
-                    <div class="alert alert-warning small mt-3">⏳ Awaiting customer payment to start shipment.</div>
+                    <div class="alert alert-warning small mt-3"><span class="material-icons-outlined align-middle me-1">hourglass_top</span>Awaiting customer payment to start shipment.</div>
                   }
                   @if (selectedJob().Listing?.status === 'in_transit') {
-                    <div class="alert alert-success small mt-3">🚚 Shipment in progress. Mark delivered when complete.</div>
+                    <div class="alert alert-success small mt-3"><span class="material-icons-outlined align-middle me-1">local_shipping</span>Shipment in progress. Mark delivered when complete.</div>
                   }
                 </div>
               </div>
@@ -105,19 +105,18 @@
           <!-- Chat -->
           @if (selectedJob().Listing?.status === 'in_transit' || selectedJob().Listing?.status === 'delivered') {
             <div class="card shadow-sm">
-              <div class="card-header fw-semibold">💬 Chat with Customer</div>
+              <div class="card-header fw-semibold"><span class="material-icons-outlined align-middle me-1">chat_bubble_outline</span>Chat with customer</div>
               <div class="card-body p-0">
-                <div class="p-3" style="height:300px;overflow-y:auto;background:#f8f9fa;">
+                <div class="p-3 chat-window">
                   @if (chatMessages().length === 0) {
                     <div class="text-center text-muted py-4">No messages yet.</div>
                   }
                   @for (msg of chatMessages(); track msg.id) {
                     <div class="d-flex mb-3" [class.justify-content-end]="msg.senderId === auth.currentUser()?.id">
-                      <div class="p-3 rounded-3 shadow-sm"
+                      <div class="p-3 rounded-3 shadow-sm chat-bubble"
                         [class.bg-success]="msg.senderId === auth.currentUser()?.id"
                         [class.text-white]="msg.senderId === auth.currentUser()?.id"
-                        [class.bg-white]="msg.senderId !== auth.currentUser()?.id"
-                        style="max-width:70%">
+                        [class.bg-white]="msg.senderId !== auth.currentUser()?.id">
                         <div class="small fw-bold mb-1 opacity-75">{{ msg.senderName }}</div>
                         <div>{{ msg.message }}</div>
                         <div class="small opacity-50 mt-1 text-end">{{ msg.createdAt | date:'h:mm a' }}</div>

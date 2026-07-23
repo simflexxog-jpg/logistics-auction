@@ -12,7 +12,7 @@ import { ApiService } from '../../../services/api.service';
       <div class="col-md-6 text-center">
         @if (submitted()) {
           <div class="py-4">
-            <div style="font-size:3rem">🎉</div>
+            <div style="font-size:3rem"><span class="material-icons-outlined text-success" style="font-size:3rem;">celebration</span></div>
             <h5 class="fw-bold mt-2">Thanks for your feedback!</h5>
             <p class="text-muted">Your rating helps build trust in the platform.</p>
           </div>
@@ -22,7 +22,9 @@ import { ApiService } from '../../../services/api.service';
             @for (s of [1,2,3,4,5]; track s) {
               <span class="star-btn" [class.active]="hoveredStar >= s || selectedStar >= s"
                 (mouseenter)="hoveredStar = s" (mouseleave)="hoveredStar = 0"
-                (click)="selectedStar = s" style="font-size:2.5rem;cursor:pointer;">★</span>
+                (click)="selectedStar = s" style="font-size:2.5rem;cursor:pointer;">
+                <span class="material-icons-outlined" style="font-size:2.5rem;">{{ hoveredStar >= s || selectedStar >= s ? 'star' : 'star_border' }}</span>
+              </span>
             }
           </div>
           <div class="mb-3">

@@ -1,9 +1,9 @@
 <div class="app-layout">
   <nav class="sidebar bg-dark text-white">
-    <div class="sidebar-brand px-3 py-4"><span class="fs-5 fw-bold">🚛 LogiAuction</span></div>
+    <div class="sidebar-brand px-3 py-4"><span class="fs-5 fw-bold"><span class="material-icons-outlined align-middle me-1">local_shipping</span>Renta</span></div>
     <ul class="nav flex-column px-2">
-      <li class="nav-item"><a class="nav-link text-white-50" routerLink="/customer/listings"><span class="me-2">📦</span>My Listings</a></li>
-      <li class="nav-item"><a class="nav-link text-white active"><span class="me-2">➕</span>Add-on Shipments</a></li>
+      <li class="nav-item"><a class="nav-link text-white-50" routerLink="/customer/listings"><span class="material-icons-outlined me-2">inventory_2</span>My Listings</a></li>
+      <li class="nav-item"><a class="nav-link text-white active"><span class="material-icons-outlined me-2">add</span>Add-on Shipments</a></li>
     </ul>
     <div class="mt-auto px-3 pb-4">
       <div class="text-white-50 small mb-2">{{ auth.currentUser()?.name }}</div>
@@ -17,8 +17,9 @@
         <h4 class="mb-0 fw-bold">Add-on Shipments</h4>
         <p class="text-muted mb-0">Small cargo that rides along existing routes (within 2km)</p>
       </div>
-      <button class="btn btn-primary" (click)="showForm.set(!showForm())">
-        {{ showForm() ? '✕ Cancel' : '+ Post Add-on' }}
+      <button class="btn btn-primary d-flex align-items-center gap-2" (click)="showForm.set(!showForm())">
+        <span class="material-icons-outlined">{{ showForm() ? 'close' : 'add' }}</span>
+        {{ showForm() ? 'Cancel' : 'Post Add-on' }}
       </button>
     </div>
 
@@ -27,10 +28,10 @@
 
     @if (showForm()) {
       <div class="card shadow-sm mb-4">
-        <div class="card-header bg-warning text-dark fw-semibold">➕ New Add-on Shipment</div>
+        <div class="card-header bg-warning text-dark fw-semibold"><span class="material-icons-outlined align-middle me-1">add</span>New add-on shipment</div>
         <div class="card-body">
           <div class="alert alert-info small">
-            ℹ️ Pickup and dropoff must be within <strong>2km</strong> of the partner's main route. Partners will see deviation checks before claiming.
+            <span class="material-icons-outlined align-middle me-1">info</span>Pickup and dropoff must be within <strong>2km</strong> of the partner's main route. Partners will see deviation checks before claiming.
           </div>
           <form (ngSubmit)="submit()">
             <div class="row g-3">
@@ -59,12 +60,12 @@
                 <input class="form-control" [(ngModel)]="form.dropoffAddress" name="dropoffAddress" required placeholder="Street, City">
               </div>
               <div class="col-md-3">
-                <label class="form-label fw-semibold">Dropoff Lat</label>
-                <input type="number" step="any" class="form-control" [(ngModel)]="form.dropoffLat" name="dropoffLat" required>
+                <label class="form-label fw-semibold" for="dropoffLat">Dropoff Lat</label>
+                <input id="dropoffLat" type="number" step="any" class="form-control" [(ngModel)]="form.dropoffLat" name="dropoffLat" required placeholder="19.0900">
               </div>
               <div class="col-md-3">
-                <label class="form-label fw-semibold">Dropoff Lng</label>
-                <input type="number" step="any" class="form-control" [(ngModel)]="form.dropoffLng" name="dropoffLng" required>
+                <label class="form-label fw-semibold" for="dropoffLng">Dropoff Lng</label>
+                <input id="dropoffLng" type="number" step="any" class="form-control" [(ngModel)]="form.dropoffLng" name="dropoffLng" required placeholder="72.8777">
               </div>
               <div class="col-md-4">
                 <label class="form-label fw-semibold">Price (₹)</label>
@@ -90,7 +91,7 @@
       <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
     } @else if (addons().length === 0) {
       <div class="text-center py-5">
-        <div style="font-size:3rem">➕</div>
+        <div class="hero-icon"><span class="material-icons-outlined">add</span></div>
         <h5 class="text-muted">No add-on shipments yet</h5>
         <p class="text-muted">Post small cargo that can travel along existing routes</p>
       </div>
@@ -104,9 +105,9 @@
                   <h6 class="fw-bold">{{ addon.title }}</h6>
                   <span class="badge" [class.bg-success]="addon.status === 'open'" [class.bg-primary]="addon.status === 'claimed'" [class.bg-secondary]="addon.status === 'delivered'">{{ addon.status | titlecase }}</span>
                 </div>
-                <p class="small text-muted mb-1">⚖️ {{ addon.weight }}kg · 💰 ₹{{ addon.price }}</p>
-                <p class="small mb-1">📍 {{ addon.pickupAddress }}</p>
-                <p class="small mb-0">🏁 {{ addon.dropoffAddress }}</p>
+                <p class="small text-muted mb-1"><span class="material-icons-outlined align-middle me-1">scale</span>{{ addon.weight }}kg · <span class="material-icons-outlined align-middle me-1">attach_money</span>₹{{ addon.price }}</p>
+                <p class="small mb-1"><span class="material-icons-outlined align-middle me-1">place</span>{{ addon.pickupAddress }}</p>
+                <p class="small mb-0"><span class="material-icons-outlined align-middle me-1">flag</span>{{ addon.dropoffAddress }}</p>
               </div>
             </div>
           </div>
