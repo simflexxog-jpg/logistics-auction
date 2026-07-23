@@ -1,9 +1,16 @@
 <div class="app-layout">
-  <nav class="sidebar">
-    <div class="sidebar-brand px-3 py-4"><span class="fs-5 fw-bold">LogiAuction</span></div>
+  <!-- Sidebar -->
+  <nav class="sidebar bg-dark text-white">
+    <div class="sidebar-brand px-3 py-4">
+      <span class="fs-5 fw-bold">🚛 LogiAuction</span>
+    </div>
     <ul class="nav flex-column px-2">
-      <li class="nav-item"><a class="nav-link active" routerLink="/customer/listings"><span class="material-icons-outlined me-2">inventory_2</span>My Listings</a></li>
-      <li class="nav-item"><a class="nav-link" routerLink="/customer/addons"><span class="material-icons-outlined me-2">add_business</span>Add-ons</a></li>
+      <li class="nav-item">
+        <a class="nav-link text-white active" routerLink="/customer/listings"><span class="me-2">📦</span> My Listings</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-white-50" routerLink="/customer/addons"><span class="me-2">➕</span> Add-on Shipments</a>
+      </li>
     </ul>
     <div class="mt-auto px-3 pb-4">
       <div class="text-white-50 small mb-2">{{ auth.currentUser()?.name }}</div>
@@ -11,198 +18,155 @@
     </div>
   </nav>
 
+  <!-- Main -->
   <main class="main-content">
-    <section class="hero-panel">
+    <div class="page-header d-flex align-items-center justify-content-between mb-4">
       <div>
-        <div class="eyebrow">Enterprise logistics dashboard</div>
-        <h2 class="hero-title">Publish tenders, compare bids, and command every shipment.</h2>
-        <p class="mb-0 text-white-50">A premium freight marketplace experience for data-driven transport teams.</p>
-        <div class="hero-actions">
-          <button class="btn btn-light fw-semibold" (click)="toggleForm()">
-            {{ showForm() ? 'Close form' : 'Create new listing' }}
-          </button>
-          <a class="btn btn-outline-light" routerLink="/customer/addons">Explore add-on routes</a>
-        </div>
+        <h4 class="mb-0 fw-bold">My Logistics Listings</h4>
+        <p class="text-muted mb-0">Post cargo for reverse auction</p>
       </div>
-      <div class="hero-stats">
-        <div class="stat-card">
-          <div class="small text-white-50">Open tenders</div>
-          <div class="fs-4 fw-bold">{{ getOpenCount() }}</div>
-        </div>
-        <div class="stat-card">
-          <div class="small text-white-50">Pending bids</div>
-          <div class="fs-4 fw-bold">{{ getBidCount() }}</div>
-        </div>
-        <div class="stat-card">
-          <div class="small text-white-50">Active routes</div>
-          <div class="fs-4 fw-bold">{{ getRouteCount() }}</div>
-        </div>
-      </div>
-    </section>
+      <button class="btn btn-primary" (click)="toggleForm()">
+        {{ showForm() ? '✕ Cancel' : '+ Post New Listing' }}
+      </button>
+    </div>
 
-    <div class="section-shell">
-      <div class="section-heading">
-        <div>
-          <h5>Freight management</h5>
-          <p class="text-muted">Create listings, set route priorities, and monitor auction performance.</p>
-        </div>
-        <button class="btn btn-primary" (click)="toggleForm()">
-          {{ showForm() ? '✕ Hide form' : '+ New listing' }}
-        </button>
-      </div>
+    @if (success()) {
+      <div class="alert alert-success alert-dismissible">{{ success() }} <button class="btn-close" (click)="success.set('')"></button></div>
+    }
+    @if (error()) {
+      <div class="alert alert-danger alert-dismissible">{{ error() }} <button class="btn-close" (click)="error.set('')"></button></div>
+    }
 
-      @if (success()) {
-        <div class="alert alert-success alert-dismissible">{{ success() }} <button class="btn-close" (click)="success.set('')"></button></div>
-      }
-      @if (error()) {
-        <div class="alert alert-danger alert-dismissible">{{ error() }} <button class="btn-close" (click)="error.set('')"></button></div>
-      }
+    <!-- Create Listing Form -->
+    @if (showForm()) {
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white fw-semibold">📦 New Logistics Listing</div>
+        <div class="card-body">
+          <form (ngSubmit)="submit()">
+            <div class="row g-3">
+              <div class="col-md-8">
+                <label class="form-label fw-semibold">Title</label>
+                <input class="form-control" [(ngModel)]="form.title" name="title" required placeholder="e.g. 5 tons of rice, Mumbai to Delhi">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Cargo Type</label>
+                <select class="form-select" [(ngModel)]="form.cargoType" name="cargoType" required>
+                  <option value="">Select type</option>
+                  <option>General Goods</option>
+                  <option>Perishable</option>
+                  <option>Electronics</option>
+                  <option>Furniture</option>
+                  <option>Industrial</option>
+                  <option>Agricultural</option>
+                  <option>Fragile</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Weight (kg)</label>
+                <input type="number" class="form-control" [(ngModel)]="form.weight" name="weight" required placeholder="1000">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Dimensions (optional)</label>
+                <input class="form-control" [(ngModel)]="form.dimensions" name="dimensions" placeholder="L x W x H cm">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Auction Ends At</label>
+                <input type="datetime-local" class="form-control" [(ngModel)]="form.auctionEndsAt" name="auctionEndsAt" required>
+              </div>
+              <div class="col-12">
+                <label class="form-label fw-semibold">Description</label>
+                <textarea class="form-control" [(ngModel)]="form.description" name="description" rows="2" placeholder="Any special handling requirements..."></textarea>
+              </div>
 
-      @if (showForm()) {
-        <div class="card shadow-sm mb-4 border-0">
-          <div class="card-header bg-primary text-white fw-semibold"><span class="material-icons-outlined align-middle me-2">inventory_2</span>New freight listing</div>
-          <div class="card-body">
-            <form (ngSubmit)="submit()">
-              <div class="row g-3">
-                <div class="col-md-8">
-                  <label class="form-label fw-semibold">Title</label>
-                  <input class="form-control" [(ngModel)]="form.title" name="title" required placeholder="e.g. 5 tons of rice, Mumbai to Delhi">
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label fw-semibold">Cargo type</label>
-                  <select class="form-select" [(ngModel)]="form.cargoType" name="cargoType" required>
-                    <option value="">Select type</option>
-                    <option>General Goods</option>
-                    <option>Perishable</option>
-                    <option>Electronics</option>
-                    <option>Furniture</option>
-                    <option>Industrial</option>
-                    <option>Agricultural</option>
-                    <option>Fragile</option>
-                  </select>
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label fw-semibold">Weight (kg)</label>
-                  <input type="number" class="form-control" [(ngModel)]="form.weight" name="weight" required placeholder="1000">
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label fw-semibold">Dimensions (optional)</label>
-                  <input class="form-control" [(ngModel)]="form.dimensions" name="dimensions" placeholder="L x W x H cm">
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label fw-semibold">Auction ends</label>
-                  <input type="datetime-local" class="form-control" [(ngModel)]="form.auctionEndsAt" name="auctionEndsAt" required>
-                </div>
-                <div class="col-12">
-                  <label class="form-label fw-semibold">Description</label>
-                  <textarea class="form-control" [(ngModel)]="form.description" name="description" rows="2" placeholder="Special handling requirements..."></textarea>
-                </div>
-
-                <div class="col-12">
-                  <label class="form-label fw-semibold">Route</label>
-                  <div class="d-flex flex-wrap gap-2 mb-2">
-                    <button type="button" class="btn btn-sm" [class.btn-success]="selectingFor === 'pickup'" [class.btn-outline-success]="selectingFor !== 'pickup'" (click)="selectPoint('pickup')">
-                      <span class="material-icons-outlined">location_on</span> Set pickup {{ form.pickupLat ? '✓' : '' }}
-                    </button>
-                    <button type="button" class="btn btn-sm" [class.btn-danger]="selectingFor === 'dropoff'" [class.btn-outline-danger]="selectingFor !== 'dropoff'" (click)="selectPoint('dropoff')">
-                      <span class="material-icons-outlined">flag</span> Set dropoff {{ form.dropoffLat ? '✓' : '' }}
-                    </button>
-                    @if (selectingFor) {
-                      <span class="badge bg-warning text-dark align-self-center">Click map to place {{ selectingFor }} point</span>
-                    }
-                  </div>
-                  <div id="listing-map"></div>
-                  @if (form.pickupAddress) {
-                    <small class="text-success"><span class="material-icons-outlined" style="font-size:1rem;vertical-align:middle;">place</span> Pickup: {{ form.pickupAddress }}</small>
-                  }
-                  @if (form.dropoffAddress) {
-                    <br><small class="text-danger"><span class="material-icons-outlined" style="font-size:1rem;vertical-align:middle;">flag</span> Dropoff: {{ form.dropoffAddress }}</small>
+              <!-- Map Section -->
+              <div class="col-12">
+                <label class="form-label fw-semibold">Route (click on map to set points)</label>
+                <div class="d-flex gap-2 mb-2">
+                  <button type="button" class="btn btn-sm" [class.btn-success]="selectingFor === 'pickup'" [class.btn-outline-success]="selectingFor !== 'pickup'" (click)="selectPoint('pickup')">
+                    📍 Set Pickup {{ form.pickupLat ? '✓' : '' }}
+                  </button>
+                  <button type="button" class="btn btn-sm" [class.btn-danger]="selectingFor === 'dropoff'" [class.btn-outline-danger]="selectingFor !== 'dropoff'" (click)="selectPoint('dropoff')">
+                    🏁 Set Dropoff {{ form.dropoffLat ? '✓' : '' }}
+                  </button>
+                  @if (selectingFor) {
+                    <span class="badge bg-warning text-dark align-self-center">Click on map to place {{ selectingFor }} point</span>
                   }
                 </div>
+                <div id="listing-map" style="height:300px;border-radius:8px;border:1px solid #dee2e6;"></div>
+                @if (form.pickupAddress) {
+                  <small class="text-success">📍 Pickup: {{ form.pickupAddress }}</small>
+                }
+                @if (form.dropoffAddress) {
+                  <br><small class="text-danger">🏁 Dropoff: {{ form.dropoffAddress }}</small>
+                }
+              </div>
 
-                <div class="col-12">
-                  <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="addon" [(ngModel)]="form.isAddOnEligible" name="isAddOnEligible">
-                    <label class="form-check-label" for="addon">Allow add-on shipments on this route</label>
-                  </div>
+              <div class="col-12">
+                <div class="form-check">
+                  <input type="checkbox" class="form-check-input" id="addon" [(ngModel)]="form.isAddOnEligible" name="isAddOnEligible">
+                  <label class="form-check-label" for="addon">Allow add-on shipments on this route</label>
                 </div>
-                @if (form.isAddOnEligible) {
-                  <div class="col-md-4">
-                    <label class="form-label fw-semibold">Max add-on weight (kg)</label>
-                    <input type="number" class="form-control" [(ngModel)]="form.maxAddOnWeight" name="maxAddOnWeight">
+              </div>
+              @if (form.isAddOnEligible) {
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold">Max add-on weight (kg)</label>
+                  <input type="number" class="form-control" [(ngModel)]="form.maxAddOnWeight" name="maxAddOnWeight">
+                </div>
+              }
+
+              <div class="col-12">
+                <button type="submit" class="btn btn-primary" [disabled]="submitting()">
+                  @if (submitting()) { <span class="spinner-border spinner-border-sm me-2"></span> }
+                  Post Listing & Start Auction
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    }
+
+    <!-- Listings Grid -->
+    @if (loading()) {
+      <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
+    } @else if (listings().length === 0) {
+      <div class="text-center py-5">
+        <div style="font-size:3rem">📦</div>
+        <h5 class="text-muted">No listings yet</h5>
+        <p class="text-muted">Post your first logistics listing to start receiving bids</p>
+      </div>
+    } @else {
+      <div class="row g-3">
+        @for (listing of listings(); track listing.id) {
+          <div class="col-md-6 col-xl-4">
+            <div class="card h-100 listing-card">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h6 class="fw-bold mb-0">{{ listing.title }}</h6>
+                  <span class="badge bg-{{ statusBadge(listing.status) }}">{{ listing.status | titlecase }}</span>
+                </div>
+                <p class="text-muted small mb-2">🏷 {{ listing.cargoType }} · {{ listing.weight }}kg</p>
+                <p class="small mb-1">📍 {{ listing.pickupAddress }}</p>
+                <p class="small mb-2">🏁 {{ listing.dropoffAddress }}</p>
+
+                @if (listing.status === 'open') {
+                  <div class="alert alert-success py-1 px-2 small mb-2">
+                    ⏱ Auction ends in: <strong>{{ getTimeLeft(listing.auctionEndsAt) }}</strong>
+                    · {{ listing.bids?.length || 0 }} bid(s)
+                  </div>
+                }
+                @if (listing.winningBid) {
+                  <div class="alert alert-info py-1 px-2 small mb-2">
+                    💰 Lowest bid: <strong>₹{{ listing.winningBid }}</strong>
                   </div>
                 }
 
-                <div class="col-12">
-                  <button type="submit" class="btn btn-primary" [disabled]="submitting()">
-                    @if (submitting()) { <span class="spinner-border spinner-border-sm me-2"></span> }
-                    Post listing & launch auction
-                  </button>
-                </div>
+                <a [routerLink]="['/customer/listing', listing.id]" class="btn btn-sm btn-outline-primary w-100">View Details & Bids →</a>
               </div>
-            </form>
-          </div>
-        </div>
-      }
-    </div>
-
-    <div class="section-shell mt-3">
-      <div class="section-heading">
-        <div>
-          <h5>Current listings</h5>
-          <p class="text-muted">Your open freight requests are listed here for review and bidding.</p>
-        </div>
-        <div class="chip">{{ listings().length }} active routes</div>
-      </div>
-
-      @if (loading()) {
-        <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
-      } @else if (listings().length === 0) {
-        <div class="text-center py-5">
-          <div style="font-size:3rem">inventory_2</div>
-          <h5 class="text-muted">No listings yet</h5>
-          <p class="text-muted">Create your first freight tender to begin receiving bids.</p>
-        </div>
-      } @else {
-        <div class="row g-3">
-          @for (listing of listings(); track listing.id) {
-            <div class="col-md-6 col-xl-4">
-              <article class="card h-100 listing-card">
-                <div class="card-body">
-                  <div class="chip-row">
-                    <span class="chip chip-primary">{{ listing.cargoType || 'General' }}</span>
-                    <span class="chip chip-{{ statusBadge(listing.status) }}">{{ listing.status | titlecase }}</span>
-                  </div>
-                  <h6 class="fw-bold mb-2">{{ listing.title }}</h6>
-                  <div class="route-block mb-3">
-                    <div><span class="material-icons-outlined align-middle">place</span> <strong>Pickup</strong> {{ listing.pickupAddress }}</div>
-                    <div class="mt-2"><span class="material-icons-outlined align-middle">flag</span> <strong>Dropoff</strong> {{ listing.dropoffAddress }}</div>
-                  </div>
-                  <div class="d-flex justify-content-between small text-muted mb-3">
-                    <span><span class="material-icons-outlined align-middle">scale</span> {{ listing.weight }}kg</span>
-                    <span><span class="material-icons-outlined align-middle">schedule</span> {{ getTimeLeft(listing.auctionEndsAt) }}</span>
-                  </div>
-
-                  @if (listing.status === 'open') {
-                    <div class="alert alert-soft-success py-2 px-3 small mb-2">
-                      <span class="material-icons-outlined align-middle me-1" style="font-size:1rem;vertical-align:middle;">timer</span>
-                      Auction ends in <strong>{{ getTimeLeft(listing.auctionEndsAt) }}</strong> · {{ listing.bids?.length || 0 }} bid(s)
-                    </div>
-                  }
-                  @if (listing.winningBid) {
-                    <div class="alert alert-soft-info py-2 px-3 small mb-0">
-                      <span class="material-icons-outlined align-middle me-1" style="font-size:1rem;vertical-align:middle;">price_change</span>
-                      Lowest bid <strong>₹{{ listing.winningBid }}</strong>
-                    </div>
-                  }
-
-                  <a [routerLink]="['/customer/listing', listing.id]" class="btn btn-sm btn-outline-primary w-100 mt-3">Open auction details</a>
-                </div>
-              </article>
             </div>
-          }
-        </div>
-      }
-    </div>
+          </div>
+        }
+      </div>
+    }
   </main>
 </div>

@@ -1,98 +1,68 @@
 <div class="auth-page">
-  <div class="container auth-shell">
-    <div class="auth-panel">
-      <div class="auth-hero">
-        <div class="brand-line">
-          <span class="material-icons-outlined">rocket_launch</span>
-          On-demand freight registration
+  <div class="container d-flex align-items-center justify-content-center min-vh-100 py-5">
+    <div class="card auth-card shadow-lg" style="max-width:520px;width:100%">
+      <div class="card-body p-5">
+        <div class="text-center mb-4">
+          <div class="brand-icon mb-2">{{ role === 'customer' ? '📦' : '🚛' }}</div>
+          <h2 class="fw-bold">Register as {{ role === 'customer' ? 'Customer' : 'Logistics Partner' }}</h2>
+          <p class="text-muted">Create your account</p>
         </div>
-        <h1>{{ role === 'customer' ? 'Start posting freight requests' : 'Join our partner fleet' }}</h1>
-        <p>{{ role === 'customer' ? 'Register quickly to publish tenders and receive competitive bids.' : 'Register as a transport partner to bid on high-quality cargo opportunities.' }}</p>
-      </div>
-      <div class="auth-card shadow-lg">
-        <div class="card-body">
-          <div class="d-flex align-items-center justify-content-between mb-4">
-            <div>
-              <h2 class="fw-bold mb-1">Create your account</h2>
-              <p class="text-muted mb-0">{{ role === 'customer' ? 'Customer access' : 'Partner access' }}</p>
+
+        @if (error()) {
+          <div class="alert alert-danger">{{ error() }}</div>
+        }
+
+        <form (ngSubmit)="submit()">
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label fw-semibold">Full Name</label>
+              <input class="form-control" [(ngModel)]="form.name" name="name" required placeholder="John Doe">
             </div>
-            <span class="material-icons-outlined text-success" style="font-size:2.35rem;">person_add</span>
-          </div>
-
-          @if (error()) {
-            <div class="alert alert-danger">{{ error() }}</div>
-          }
-
-          <form (ngSubmit)="submit()">
-            <div class="row g-3">
-              <div class="col-12">
-                <label class="form-label fw-semibold">Full Name</label>
-                <div class="input-group border rounded-4 overflow-hidden">
-                  <span class="input-group-text bg-transparent border-0"><span class="material-icons-outlined text-secondary">badge</span></span>
-                  <input class="form-control bg-transparent border-0" [(ngModel)]="form.name" name="name" required placeholder="John Doe">
-                </div>
-              </div>
-              <div class="col-12">
-                <label class="form-label fw-semibold">Email</label>
-                <div class="input-group border rounded-4 overflow-hidden">
-                  <span class="input-group-text bg-transparent border-0"><span class="material-icons-outlined text-secondary">email</span></span>
-                  <input type="email" class="form-control bg-transparent border-0" [(ngModel)]="form.email" name="email" required placeholder="you@company.com">
-                </div>
-              </div>
-              <div class="col-12">
-                <label class="form-label fw-semibold">Phone</label>
-                <div class="input-group border rounded-4 overflow-hidden">
-                  <span class="input-group-text bg-transparent border-0"><span class="material-icons-outlined text-secondary">phone</span></span>
-                  <input class="form-control bg-transparent border-0" [(ngModel)]="form.phone" name="phone" placeholder="+91 98765 43210">
-                </div>
-              </div>
-              <div class="col-12">
-                <label class="form-label fw-semibold">Password</label>
-                <div class="input-group border rounded-4 overflow-hidden">
-                  <span class="input-group-text bg-transparent border-0"><span class="material-icons-outlined text-secondary">lock</span></span>
-                  <input type="password" class="form-control bg-transparent border-0" [(ngModel)]="form.password" name="password" required placeholder="Create a strong password">
-                </div>
-              </div>
-
-              @if (role === 'partner') {
-                <div class="col-12"><hr class="my-3"><div class="d-flex align-items-center gap-2 mb-2"><span class="material-icons-outlined text-primary">local_shipping</span><h6 class="text-white mb-0 fw-semibold">Partner vehicle details</h6></div></div>
-                <div class="col-md-6">
-                  <label class="form-label fw-semibold">Truck Type</label>
-                  <select class="form-select rounded-4" [(ngModel)]="form.truckType" name="truckType" required>
-                    <option value="">Select type</option>
-                    <option>Mini Truck</option>
-                    <option>Medium Truck</option>
-                    <option>Heavy Truck</option>
-                    <option>Container Truck</option>
-                    <option>Refrigerated Truck</option>
-                  </select>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label fw-semibold">Capacity (tons)</label>
-                  <div class="input-group border rounded-4 overflow-hidden">
-                    <span class="input-group-text bg-transparent border-0"><span class="material-icons-outlined text-secondary">scale</span></span>
-                    <input type="number" class="form-control bg-transparent border-0" [(ngModel)]="form.truckCapacity" name="truckCapacity" required placeholder="5">
-                  </div>
-                </div>
-                <div class="col-12">
-                  <label class="form-label fw-semibold">License Plate</label>
-                  <div class="input-group border rounded-4 overflow-hidden">
-                    <span class="input-group-text bg-transparent border-0"><span class="material-icons-outlined text-secondary">confirmation_number</span></span>
-                    <input class="form-control bg-transparent border-0" [(ngModel)]="form.licensePlate" name="licensePlate" required placeholder="MH 01 AB 1234">
-                  </div>
-                </div>
-              }
+            <div class="col-12">
+              <label class="form-label fw-semibold">Email</label>
+              <input type="email" class="form-control" [(ngModel)]="form.email" name="email" required placeholder="you@example.com">
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Phone</label>
+              <input class="form-control" [(ngModel)]="form.phone" name="phone" placeholder="+91 9876543210">
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Password</label>
+              <input type="password" class="form-control" [(ngModel)]="form.password" name="password" required placeholder="Min 8 characters">
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 mt-4 btn-lg" [disabled]="loading()">
-              @if (loading()) { <span class="spinner-border spinner-border-sm me-2"></span> }
-              Create account
-            </button>
-          </form>
-
-          <div class="text-center mt-4">
-            <small class="text-muted">Already have an account? <a routerLink="/login" class="link-small">Sign in</a></small>
+            @if (role === 'partner') {
+              <div class="col-12"><hr><h6 class="text-success fw-bold">🚛 Truck Information</h6></div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Truck Type</label>
+                <select class="form-select" [(ngModel)]="form.truckType" name="truckType" required>
+                  <option value="">Select type</option>
+                  <option>Mini Truck</option>
+                  <option>Medium Truck</option>
+                  <option>Heavy Truck</option>
+                  <option>Container Truck</option>
+                  <option>Refrigerated Truck</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Capacity (tons)</label>
+                <input type="number" class="form-control" [(ngModel)]="form.truckCapacity" name="truckCapacity" required placeholder="5">
+              </div>
+              <div class="col-12">
+                <label class="form-label fw-semibold">License Plate</label>
+                <input class="form-control" [(ngModel)]="form.licensePlate" name="licensePlate" required placeholder="MH 01 AB 1234">
+              </div>
+            }
           </div>
+
+          <button type="submit" class="btn w-100 mt-4 btn-lg" [class.btn-primary]="role === 'customer'" [class.btn-success]="role === 'partner'" [disabled]="loading()">
+            @if (loading()) { <span class="spinner-border spinner-border-sm me-2"></span> }
+            Create Account
+          </button>
+        </form>
+
+        <div class="text-center mt-3">
+          <small class="text-muted">Already have an account? <a routerLink="/login">Sign in</a></small>
         </div>
       </div>
     </div>

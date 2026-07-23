@@ -1,51 +1,37 @@
 <div class="auth-page">
-  <div class="container auth-shell">
-    <div class="auth-panel">
-      <div class="auth-hero">
-        <div class="brand-line">
-          <span class="material-icons-outlined">local_shipping</span>
-          LogiAuction Enterprise
+  <div class="container d-flex align-items-center justify-content-center min-vh-100">
+    <div class="card auth-card shadow-lg">
+      <div class="card-body p-5">
+        <div class="text-center mb-4">
+          <div class="brand-icon mb-3">🚛</div>
+          <h2 class="fw-bold">LogiAuction</h2>
+          <p class="text-muted">Sign in to your account</p>
         </div>
-        <h1>Sign in to manage your next shipment.</h1>
-        <p>Access real-time partner bids, route visibility, and secure logistics workflows from a streamlined dashboard.</p>
-      </div>
-      <div class="auth-card shadow-lg">
-        <div class="card-body">
-          <div class="d-flex align-items-center justify-content-between mb-4">
-            <div>
-              <h2 class="fw-bold mb-1">Welcome back</h2>
-              <p class="text-muted mb-0">Log in to continue your operations.</p>
-            </div>
-            <span class="material-icons-outlined text-primary" style="font-size:2.35rem;">verified_user</span>
+
+        @if (error()) {
+          <div class="alert alert-danger">{{ error() }}</div>
+        }
+
+        <form (ngSubmit)="submit()">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Email</label>
+            <input type="email" class="form-control form-control-lg" [(ngModel)]="email" name="email" required placeholder="you@example.com">
           </div>
-
-          @if (error()) {
-            <div class="alert alert-danger">{{ error() }}</div>
-          }
-
-          <form (ngSubmit)="submit()">
-            <div class="mb-4 input-group input-group-lg border rounded-4 overflow-hidden">
-              <span class="input-group-text bg-transparent border-0"><span class="material-icons-outlined text-secondary">email</span></span>
-              <input type="email" class="form-control form-control-lg bg-transparent border-0" [(ngModel)]="email" name="email" required placeholder="Email address">
-            </div>
-            <div class="mb-4 input-group input-group-lg border rounded-4 overflow-hidden">
-              <span class="input-group-text bg-transparent border-0"><span class="material-icons-outlined text-secondary">lock</span></span>
-              <input type="password" class="form-control form-control-lg bg-transparent border-0" [(ngModel)]="password" name="password" required placeholder="Password">
-            </div>
-            <button type="submit" class="btn btn-primary btn-lg w-100" [disabled]="loading()">
-              @if (loading()) { <span class="spinner-border spinner-border-sm me-2"></span> }
-              Sign in
-            </button>
-          </form>
-
-          <hr class="my-4">
-          <div class="text-center">
-            <p class="mb-3 text-muted">New to LogiAuction?</p>
-            <div class="d-flex gap-3 justify-content-center flex-wrap register-actions">
-              <a routerLink="/register/customer" class="btn btn-outline-primary w-auto px-4">Register as Customer</a>
-              <a routerLink="/register/partner" class="btn btn-outline-primary w-auto px-4">Register as Partner</a>
-            </div>
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Password</label>
+            <input type="password" class="form-control form-control-lg" [(ngModel)]="password" name="password" required placeholder="••••••••">
           </div>
+          <button type="submit" class="btn btn-primary btn-lg w-100" [disabled]="loading()">
+            @if (loading()) { <span class="spinner-border spinner-border-sm me-2"></span> }
+            Sign In
+          </button>
+        </form>
+
+        <hr class="my-4">
+        <div class="text-center">
+          <p class="mb-2 text-muted">Don't have an account?</p>
+          <a routerLink="/register/customer" class="btn btn-outline-primary me-2">Register as Customer</a>
+          <a routerLink="/register/partner" class="btn btn-outline-success">Register as Partner</a>
         </div>
       </div>
     </div>
