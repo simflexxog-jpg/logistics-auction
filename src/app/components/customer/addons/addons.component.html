@@ -1,9 +1,9 @@
 <div class="app-layout">
-  <nav class="sidebar bg-dark text-white">
-    <div class="sidebar-brand px-3 py-4"><span class="fs-5 fw-bold">🚛 LogiAuction</span></div>
+  <nav class="sidebar">
+    <div class="sidebar-brand px-3 py-4"><span class="fs-5 fw-bold">LogiAuction</span></div>
     <ul class="nav flex-column px-2">
-      <li class="nav-item"><a class="nav-link text-white-50" routerLink="/customer/listings"><span class="me-2">📦</span>My Listings</a></li>
-      <li class="nav-item"><a class="nav-link text-white active"><span class="me-2">➕</span>Add-on Shipments</a></li>
+      <li class="nav-item"><a class="nav-link" routerLink="/customer/listings"><span class="material-icons-outlined me-2">inventory_2</span>My Listings</a></li>
+      <li class="nav-item"><a class="nav-link active" routerLink="/customer/addons"><span class="material-icons-outlined me-2">add_circle_outline</span>Add-ons</a></li>
     </ul>
     <div class="mt-auto px-3 pb-4">
       <div class="text-white-50 small mb-2">{{ auth.currentUser()?.name }}</div>
@@ -12,13 +12,17 @@
   </nav>
 
   <main class="main-content">
-    <div class="page-header d-flex align-items-center justify-content-between mb-4">
+    <div class="page-header d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
       <div>
-        <h4 class="mb-0 fw-bold">Add-on Shipments</h4>
-        <p class="text-muted mb-0">Small cargo that rides along existing routes (within 2km)</p>
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="material-icons-outlined text-info">add_circle_outline</span>
+          <h4 class="mb-0 fw-bold">Add-on shipments</h4>
+        </div>
+        <p class="text-muted mb-0">Small cargo that rides alongside your existing routes.</p>
       </div>
-      <button class="btn btn-primary" (click)="showForm.set(!showForm())">
-        {{ showForm() ? '✕ Cancel' : '+ Post Add-on' }}
+      <button class="btn btn-primary rounded-4" (click)="showForm.set(!showForm())">
+        <span class="material-icons-outlined align-middle">post_add</span>
+        {{ showForm() ? 'Cancel' : 'Post add-on' }}
       </button>
     </div>
 
@@ -26,58 +30,59 @@
     @if (error()) { <div class="alert alert-danger">{{ error() }}</div> }
 
     @if (showForm()) {
-      <div class="card shadow-sm mb-4">
-        <div class="card-header bg-warning text-dark fw-semibold">➕ New Add-on Shipment</div>
+      <div class="card shadow-sm mb-4 border-0 rounded-4">
+        <div class="card-header bg-warning text-dark fw-semibold rounded-top-4"><span class="material-icons-outlined align-middle me-1">add_circle_outline</span>New add-on shipment</div>
         <div class="card-body">
-          <div class="alert alert-info small">
-            ℹ️ Pickup and dropoff must be within <strong>2km</strong> of the partner's main route. Partners will see deviation checks before claiming.
+          <div class="alert alert-info small rounded-4">
+            <span class="material-icons-outlined align-middle me-1">info</span>
+            Pickup and dropoff must be within <strong>2km</strong> of the main route.
           </div>
           <form (ngSubmit)="submit()">
             <div class="row g-3">
               <div class="col-md-8">
                 <label class="form-label fw-semibold">Title</label>
-                <input class="form-control" [(ngModel)]="form.title" name="title" required placeholder="e.g. 2 cartons of books">
+                <input class="form-control rounded-4" [(ngModel)]="form.title" name="title" required placeholder="e.g. 2 cartons of books">
               </div>
               <div class="col-md-4">
                 <label class="form-label fw-semibold">Weight (kg)</label>
-                <input type="number" class="form-control" [(ngModel)]="form.weight" name="weight" required placeholder="50" max="500">
+                <input type="number" class="form-control rounded-4" [(ngModel)]="form.weight" name="weight" required placeholder="50" max="500">
               </div>
               <div class="col-md-6">
-                <label class="form-label fw-semibold">Pickup Address</label>
-                <input class="form-control" [(ngModel)]="form.pickupAddress" name="pickupAddress" required placeholder="Street, City">
+                <label class="form-label fw-semibold">Pickup address</label>
+                <input class="form-control rounded-4" [(ngModel)]="form.pickupAddress" name="pickupAddress" required placeholder="Street, City">
               </div>
               <div class="col-md-3">
-                <label class="form-label fw-semibold">Pickup Lat</label>
-                <input type="number" step="any" class="form-control" [(ngModel)]="form.pickupLat" name="pickupLat" required placeholder="19.0760">
+                <label class="form-label fw-semibold">Pickup lat</label>
+                <input type="number" step="any" class="form-control rounded-4" [(ngModel)]="form.pickupLat" name="pickupLat" required placeholder="19.0760">
               </div>
               <div class="col-md-3">
-                <label class="form-label fw-semibold">Pickup Lng</label>
-                <input type="number" step="any" class="form-control" [(ngModel)]="form.pickupLng" name="pickupLng" required placeholder="72.8777">
+                <label class="form-label fw-semibold">Pickup lng</label>
+                <input type="number" step="any" class="form-control rounded-4" [(ngModel)]="form.pickupLng" name="pickupLng" required placeholder="72.8777">
               </div>
               <div class="col-md-6">
-                <label class="form-label fw-semibold">Dropoff Address</label>
-                <input class="form-control" [(ngModel)]="form.dropoffAddress" name="dropoffAddress" required placeholder="Street, City">
+                <label class="form-label fw-semibold">Dropoff address</label>
+                <input class="form-control rounded-4" [(ngModel)]="form.dropoffAddress" name="dropoffAddress" required placeholder="Street, City">
               </div>
               <div class="col-md-3">
-                <label class="form-label fw-semibold">Dropoff Lat</label>
-                <input type="number" step="any" class="form-control" [(ngModel)]="form.dropoffLat" name="dropoffLat" required>
+                <label class="form-label fw-semibold">Dropoff lat</label>
+                <input type="number" step="any" class="form-control rounded-4" [(ngModel)]="form.dropoffLat" name="dropoffLat" required>
               </div>
               <div class="col-md-3">
-                <label class="form-label fw-semibold">Dropoff Lng</label>
-                <input type="number" step="any" class="form-control" [(ngModel)]="form.dropoffLng" name="dropoffLng" required>
+                <label class="form-label fw-semibold">Dropoff lng</label>
+                <input type="number" step="any" class="form-control rounded-4" [(ngModel)]="form.dropoffLng" name="dropoffLng" required>
               </div>
               <div class="col-md-4">
                 <label class="form-label fw-semibold">Price (₹)</label>
-                <input type="number" class="form-control" [(ngModel)]="form.price" name="price" required placeholder="500">
+                <input type="number" class="form-control rounded-4" [(ngModel)]="form.price" name="price" required placeholder="500">
               </div>
               <div class="col-12">
                 <label class="form-label fw-semibold">Description (optional)</label>
-                <textarea class="form-control" [(ngModel)]="form.description" name="description" rows="2"></textarea>
+                <textarea class="form-control rounded-4" [(ngModel)]="form.description" name="description" rows="2"></textarea>
               </div>
               <div class="col-12">
-                <button type="submit" class="btn btn-warning fw-semibold" [disabled]="submitting()">
+                <button type="submit" class="btn btn-warning fw-semibold rounded-4" [disabled]="submitting()">
                   @if (submitting()) { <span class="spinner-border spinner-border-sm me-2"></span> }
-                  Post Add-on Shipment
+                  Post add-on shipment
                 </button>
               </div>
             </div>
@@ -90,23 +95,25 @@
       <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
     } @else if (addons().length === 0) {
       <div class="text-center py-5">
-        <div style="font-size:3rem">➕</div>
-        <h5 class="text-muted">No add-on shipments yet</h5>
-        <p class="text-muted">Post small cargo that can travel along existing routes</p>
+        <span class="material-icons-outlined" style="font-size:3rem;">add_circle_outline</span>
+        <h5 class="text-muted mt-3">No add-on shipments yet</h5>
+        <p class="text-muted">Post small cargo that can travel along existing routes.</p>
       </div>
     } @else {
       <div class="row g-3">
         @for (addon of addons(); track addon.id) {
           <div class="col-md-6">
-            <div class="card h-100">
+            <div class="card h-100 shadow-sm border-0 rounded-4">
               <div class="card-body">
-                <div class="d-flex justify-content-between mb-2">
-                  <h6 class="fw-bold">{{ addon.title }}</h6>
-                  <span class="badge" [class.bg-success]="addon.status === 'open'" [class.bg-primary]="addon.status === 'claimed'" [class.bg-secondary]="addon.status === 'delivered'">{{ addon.status | titlecase }}</span>
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div>
+                    <h6 class="fw-bold mb-1">{{ addon.title }}</h6>
+                    <div class="small text-muted">{{ addon.weight }}kg · ₹{{ addon.price }}</div>
+                  </div>
+                  <span class="badge rounded-pill bg-{{ addon.status === 'open' ? 'success' : addon.status === 'claimed' ? 'primary' : 'secondary' }}">{{ addon.status | titlecase }}</span>
                 </div>
-                <p class="small text-muted mb-1">⚖️ {{ addon.weight }}kg · 💰 ₹{{ addon.price }}</p>
-                <p class="small mb-1">📍 {{ addon.pickupAddress }}</p>
-                <p class="small mb-0">🏁 {{ addon.dropoffAddress }}</p>
+                <div class="small text-muted mb-1"><span class="material-icons-outlined align-middle">place</span> {{ addon.pickupAddress }}</div>
+                <div class="small text-muted mb-0"><span class="material-icons-outlined align-middle">flag</span> {{ addon.dropoffAddress }}</div>
               </div>
             </div>
           </div>

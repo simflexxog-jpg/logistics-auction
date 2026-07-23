@@ -10,7 +10,53 @@ import * as L from 'leaflet';
   selector: 'app-customer-listings',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
-  templateUrl: './listings.component.html'
+  templateUrl: './listings.component.html',
+  styles: [
+    `:host { display: block; }
+    .app-layout { min-height: 100vh; display: flex; background: linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%); color: #0f172a; }
+    .sidebar { width: 280px; min-height: 100vh; display: flex; flex-direction: column; background: linear-gradient(180deg, #0f172a 0%, #1e3a8a 100%); box-shadow: 18px 0 40px rgba(15, 23, 42, 0.12); }
+    .sidebar-brand { border-bottom: 1px solid rgba(255, 255, 255, 0.12); }
+    .sidebar .nav-link { border-radius: 12px; padding: 0.75rem 0.9rem; margin: 0.2rem 0; transition: background-color 0.2s ease, color 0.2s ease; }
+    .sidebar .nav-link:hover, .sidebar .nav-link.active { background: rgba(255, 255, 255, 0.14); color: #fff !important; }
+    .main-content { flex: 1; padding: 24px 28px 36px; }
+    .hero-panel { position: relative; overflow: hidden; display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 28px; margin-bottom: 20px; border-radius: 24px; color: #fff; background: linear-gradient(120deg, #0f172a 0%, #1d4ed8 55%, #2563eb 100%); box-shadow: 0 20px 45px rgba(37, 99, 235, 0.25); }
+    .hero-panel::after { content: ''; position: absolute; right: -55px; bottom: -80px; width: 220px; height: 220px; border-radius: 50%; background: rgba(255, 255, 255, 0.14); }
+    .eyebrow { display: inline-block; margin-bottom: 10px; padding: 0.35rem 0.7rem; border-radius: 999px; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: rgba(255, 255, 255, 0.18); }
+    .hero-title { font-size: clamp(1.45rem, 2.1vw, 2rem); font-weight: 700; line-height: 1.2; margin-bottom: 8px; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+    .hero-actions .btn-outline-light { border-color: rgba(255, 255, 255, 0.3); color: #fff; }
+    .hero-stats { display: grid; grid-template-columns: repeat(3, minmax(110px, 1fr)); gap: 12px; min-width: 300px; }
+    .stat-card { padding: 14px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.16); background: rgba(255, 255, 255, 0.14); backdrop-filter: blur(10px); }
+    .section-shell { padding: 18px 20px; border-radius: 20px; background: rgba(255, 255, 255, 0.92); border: 1px solid rgba(148, 163, 184, 0.18); box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06); }
+    .section-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .section-heading h5 { margin: 0; font-weight: 700; color: #0f172a; }
+    .section-heading p { margin: 0; }
+    .chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip { display: inline-flex; align-items: center; padding: 0.35rem 0.6rem; border-radius: 999px; font-size: 0.78rem; font-weight: 700; background: #e2e8f0; color: #334155; }
+    .chip-success { background: #dcfce7; color: #166534; }
+    .chip-warning { background: #fef3c7; color: #92400e; }
+    .chip-info { background: #dbeafe; color: #1d4ed8; }
+    .chip-primary { background: #dbeafe; color: #1d4ed8; }
+    .chip-secondary { background: #f1f5f9; color: #475569; }
+    .chip-danger { background: #fee2e2; color: #b91c1c; }
+    .listing-card { border: 0; border-radius: 18px; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .listing-card:hover { transform: translateY(-3px); box-shadow: 0 18px 35px rgba(37, 99, 235, 0.12); }
+    .listing-card .card-body { display: flex; flex-direction: column; gap: 10px; }
+    .route-block { padding: 10px 12px; border-radius: 14px; border: 1px solid #dbeafe; background: #f8fbff; font-size: 0.92rem; }
+    #listing-map { height: 320px; border-radius: 14px; border: 1px solid #dbeafe; box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04); }
+    @media (max-width: 992px) {
+      .app-layout { flex-direction: column; }
+      .sidebar { width: 100%; min-height: auto; }
+      .hero-panel { flex-direction: column; align-items: flex-start; }
+      .hero-stats { min-width: 0; width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 576px) {
+      .main-content { padding: 18px; }
+      .hero-stats { grid-template-columns: 1fr; }
+      .section-heading { flex-direction: column; align-items: flex-start; }
+    }
+    `
+  ]
 })
 export class CustomerListingsComponent implements OnInit, AfterViewInit {
   @ViewChild('mapEl') mapEl!: ElementRef;
@@ -137,6 +183,18 @@ export class CustomerListingsComponent implements OnInit, AfterViewInit {
     const h = Math.floor(diff / 3600000);
     const m = Math.floor((diff % 3600000) / 60000);
     return `${h}h ${m}m`;
+  }
+
+  getOpenCount(): number {
+    return this.listings().filter((listing) => listing.status === 'open').length;
+  }
+
+  getBidCount(): number {
+    return this.listings().reduce((total, listing) => total + (listing.bids?.length || 0), 0);
+  }
+
+  getRouteCount(): number {
+    return this.listings().filter((listing) => listing.pickupAddress && listing.dropoffAddress).length;
   }
 
   statusBadge(status: string): string {
