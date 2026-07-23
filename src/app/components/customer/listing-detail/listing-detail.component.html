@@ -81,6 +81,9 @@
         <li class="nav-item" *ngIf="listing().status === 'in_transit' || listing().status === 'delivered'">
           <button class="nav-link" [class.active]="activeTab() === 'chat'" (click)="activeTab.set('chat')"><span class="material-icons-outlined align-middle me-1">chat_bubble_outline</span>Chat</button>
         </li>
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="activeTab() === 'ai'" (click)="activeTab.set('ai')"><span class="material-icons-outlined align-middle me-1">smart_toy</span>AI Assistant</button>
+        </li>
         <li class="nav-item" *ngIf="listing().status === 'delivered'">
           <button class="nav-link" [class.active]="activeTab() === 'rate'" (click)="activeTab.set('rate')"><span class="material-icons-outlined align-middle me-1">star</span>Rate partner</button>
         </li>
@@ -197,6 +200,31 @@
               <input class="form-control" [(ngModel)]="chatInput" placeholder="Type a message..." (keyup.enter)="sendMessage()">
               <button class="btn btn-primary" (click)="sendMessage()">Send</button>
             </div>
+          </div>
+        </div>
+      }
+      @if (activeTab() === 'ai') {
+        <div class="card shadow-sm">
+          <div class="card-header fw-semibold"><span class="material-icons-outlined align-middle me-1">smart_toy</span>AI Logistics Assistant</div>
+          <div class="card-body ai-chat-body">
+            @if (aiMessages().length === 0) {
+              <div class="text-center text-muted py-5">Ask the assistant for route optimizations or cargo planning.</div>
+            }
+            @for (msg of aiMessages(); track msg.id) {
+              <div class="d-flex mb-3" [class.justify-content-end]="msg.role === 'user'">
+                <div class="ai-message" [class.ai-user]="msg.role === 'user'" [class.ai-assistant]="msg.role === 'assistant'">
+                  <div class="small text-muted mb-1">{{ msg.role === 'user' ? 'You' : 'Renta Assistant' }}</div>
+                  <div>{{ msg.text }}</div>
+                </div>
+              </div>
+            }
+          </div>
+          <div class="card-footer">
+            <div class="input-group">
+              <input class="form-control" [(ngModel)]="aiInput" placeholder="Ask the assistant about route, timing, or pricing" (keyup.enter)="sendAIMessage()">
+              <button class="btn btn-primary" (click)="sendAIMessage()" [disabled]="aiLoading()">Send</button>
+            </div>
+            @if (aiLoading()) { <div class="text-muted small mt-2">Generating expert logistics guidance...</div> }
           </div>
         </div>
       }

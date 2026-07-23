@@ -61,6 +61,14 @@
                   <option>Fragile</option>
                 </select>
               </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold" for="pickupAddress">Pickup Address</label>
+                <input id="pickupAddress" class="form-control" [(ngModel)]="form.pickupAddress" name="pickupAddress" required placeholder="Street, City or click map">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold" for="dropoffAddress">Dropoff Address</label>
+                <input id="dropoffAddress" class="form-control" [(ngModel)]="form.dropoffAddress" name="dropoffAddress" required placeholder="Street, City or click map">
+              </div>
               <div class="col-md-4">
                 <label class="form-label fw-semibold">Weight (kg)</label>
                 <input type="number" class="form-control" [(ngModel)]="form.weight" name="weight" required placeholder="1000">
@@ -70,8 +78,15 @@
                 <input class="form-control" [(ngModel)]="form.dimensions" name="dimensions" placeholder="L x W x H cm">
               </div>
               <div class="col-md-4">
-                <label class="form-label fw-semibold" for="auctionEndsAt">Auction Ends At</label>
-                <input id="auctionEndsAt" type="datetime-local" class="form-control" [(ngModel)]="form.auctionEndsAt" name="auctionEndsAt" required title="Auction end date and time">
+                <label class="form-label fw-semibold" for="auctionDuration">Auction duration</label>
+                <select id="auctionDuration" class="form-select" [(ngModel)]="form.auctionDuration" [ngModelOptions]="{standalone: false}" name="auctionDuration" required>
+                  <option [ngValue]="6">6 hours</option>
+                  <option [ngValue]="12">12 hours</option>
+                  <option [ngValue]="24">24 hours</option>
+                  <option [ngValue]="48">48 hours</option>
+                  <option [ngValue]="72">72 hours</option>
+                </select>
+                <div class="form-text">Auction countdown will start automatically when listing is posted.</div>
               </div>
               <div class="col-12">
                 <label class="form-label fw-semibold">Description</label>

@@ -32,6 +32,7 @@ app.use('/api/listings', require('./routes/listings'));
 app.use('/api/bids', require('./routes/bids'));
 app.use('/api/payments', require('./routes/payments'));
 app.use('/api/chat', require('./routes/chat'));
+app.use('/api/ai', require('./routes/ai'));
 app.use('/api/ratings', require('./routes/ratings'));
 app.use('/api/addons', require('./routes/addons'));
 app.use('/api/partner', require('./routes/partner'));

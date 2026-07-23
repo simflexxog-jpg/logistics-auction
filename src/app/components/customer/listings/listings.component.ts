@@ -32,7 +32,7 @@ export class CustomerListingsComponent implements OnInit, AfterViewInit {
     title: '', description: '', cargoType: '', weight: '', dimensions: '',
     pickupAddress: '', pickupLat: null, pickupLng: null,
     dropoffAddress: '', dropoffLat: null, dropoffLng: null,
-    auctionEndsAt: '', isAddOnEligible: false, maxAddOnWeight: 100
+    auctionDuration: 24, auctionEndsAt: '', isAddOnEligible: false, maxAddOnWeight: 100
   };
 
   constructor(private api: ApiService, public auth: AuthService) {}
@@ -100,9 +100,8 @@ export class CustomerListingsComponent implements OnInit, AfterViewInit {
     this.showForm.set(!this.showForm());
     if (this.showForm()) {
       this.initMap();
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      this.form.auctionEndsAt = tomorrow.toISOString().slice(0, 16);
+      this.form.auctionDuration = 24;
+      this.form.auctionEndsAt = '';
     }
   }
 
@@ -115,13 +114,14 @@ export class CustomerListingsComponent implements OnInit, AfterViewInit {
       this.error.set('Please select pickup and dropoff on the map');
       return;
     }
+    this.form.auctionEndsAt = new Date(Date.now() + Number(this.form.auctionDuration) * 3600000).toISOString();
     this.submitting.set(true);
     this.api.createListing(this.form).subscribe({
       next: () => {
         this.success.set('Listing posted! Auction is live.');
         this.showForm.set(false);
         this.submitting.set(false);
-        this.form = { title: '', cargoType: '', weight: '', pickupAddress: '', pickupLat: null, pickupLng: null, dropoffAddress: '', dropoffLat: null, dropoffLng: null, auctionEndsAt: '', isAddOnEligible: false, maxAddOnWeight: 100 };
+        this.form = { title: '', description: '', cargoType: '', weight: '', dimensions: '', pickupAddress: '', pickupLat: null, pickupLng: null, dropoffAddress: '', dropoffLat: null, dropoffLng: null, auctionDuration: 24, auctionEndsAt: '', isAddOnEligible: false, maxAddOnWeight: 100 };
         this.load();
       },
       error: (err) => {

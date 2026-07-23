@@ -23,11 +23,14 @@ export class ListingDetailComponent implements OnInit, OnDestroy, AfterViewInit 
   error = signal('');
   chatMessages = signal<any[]>([]);
   chatInput = '';
+  aiMessages = signal<any[]>([]);
+  aiInput = '';
+  aiLoading = signal(false);
   timer: any;
   timeLeft = signal('');
   private subs: Subscription[] = [];
   map: L.Map | null = null;
-  activeTab = signal<'bids' | 'chat' | 'payment' | 'rate'>('bids');
+  activeTab = signal<'bids' | 'chat' | 'ai' | 'payment' | 'rate'>('bids');
   paymentMethod = 'card';
 
   constructor(
@@ -133,6 +136,29 @@ export class ListingDetailComponent implements OnInit, OnDestroy, AfterViewInit 
   sendMessage() {
     if (!this.chatInput.trim()) return;
     this.api.sendMessage(this.listing().id, this.chatInput).subscribe(() => this.chatInput = '');
+  }
+
+  private createAIMessage(role: 'user' | 'assistant', text: string) {
+    return { id: `${Date.now()}-${Math.random().toString(36).slice(2)}`, role, text };
+  }
+
+  sendAIMessage() {
+    const prompt = this.aiInput.trim();
+    if (!prompt) return;
+    this.aiMessages.update(msgs => [...msgs, this.createAIMessage('user', prompt)]);
+    this.aiInput = '';
+    this.aiLoading.set(true);
+    this.api.queryAI(this.listing().id, prompt).subscribe({
+      next: (resp) => {
+        const text = typeof resp === 'string' ? resp : (resp?.reply || resp?.replyText || JSON.stringify(resp));
+        this.aiMessages.update(msgs => [...msgs, this.createAIMessage('assistant', text)]);
+        this.aiLoading.set(false);
+      },
+      error: (err) => {
+        this.error.set(err.error?.error || 'AI assistant unavailable');
+        this.aiLoading.set(false);
+      }
+    });
   }
 
   ratePartner(stars: number, comment: string) {

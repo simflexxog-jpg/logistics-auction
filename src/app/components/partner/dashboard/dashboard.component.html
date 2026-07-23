@@ -64,15 +64,36 @@
 
       <!-- Quick actions -->
       <div class="row g-3 mb-4">
-        <div class="col-md-4">
-          <a routerLink="/partner/auction" class="card text-decoration-none action-card border-primary border-2 h-100">
-            <div class="card-body text-center py-4">
-              <div class="hero-icon"><span class="material-icons-outlined icon-large">sell</span></div>
-              <h6 class="fw-bold mt-2 text-primary">Browse & Bid</h6>
-              <p class="text-muted small mb-0">Find open auctions and place bids</p>
-            </div>
-          </a>
+        <div class="col-lg-6">
+          <div class="card shadow-sm route-card h-100">
+            <div class="card-header fw-semibold"><span class="material-icons-outlined align-middle me-1">map</span>Latest route snapshot</div>
+            @if (stats().recentJobs?.length) {
+              <div class="card-body">
+                <div class="route-box route-pickup">
+                  <div class="small text-uppercase text-muted mb-2">Pickup</div>
+                  <div>{{ stats().recentJobs[0].pickupAddress }}</div>
+                </div>
+                <div class="route-box route-dropoff mt-3">
+                  <div class="small text-uppercase text-muted mb-2">Dropoff</div>
+                  <div>{{ stats().recentJobs[0].dropoffAddress }}</div>
+                </div>
+              </div>
+            } @else {
+              <div class="card-body text-muted">No recent job route available yet.</div>
+            }
+          </div>
         </div>
+        <div class="col-lg-6">
+          <div class="row g-3 h-100">
+            <div class="col-6 col-md-4">
+              <a routerLink="/partner/auction" class="card text-decoration-none action-card border-primary border-2 h-100">
+                <div class="card-body text-center py-4">
+                  <div class="hero-icon"><span class="material-icons-outlined icon-large">sell</span></div>
+                  <h6 class="fw-bold mt-2 text-primary">Browse & Bid</h6>
+                  <p class="text-muted small mb-0">Find open auctions and place bids</p>
+                </div>
+              </a>
+            </div>
         <div class="col-md-4">
           <a routerLink="/partner/addons" class="card text-decoration-none action-card border-warning border-2 h-100">
             <div class="card-body text-center py-4">

@@ -47,6 +47,10 @@ export class ApiService {
   // Ratings
   submitRating(data: any) { return this.http.post<any>(`${this.base}/ratings`, data, this.headers()); }
 
+  queryAI(listingId: string, prompt: string) {
+    return this.http.post<any>(`${this.base}/ai/assistant/${listingId}`, { prompt }, this.headers());
+  }
+
   // Add-ons
   getAddOns() { return this.http.get<any[]>(`${this.base}/addons`, this.headers()); }
   createAddOn(data: any) { return this.http.post<any>(`${this.base}/addons`, data, this.headers()); }
