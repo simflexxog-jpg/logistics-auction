@@ -1,0 +1,76 @@
+<div class="app-layout">
+  <nav class="sidebar bg-dark text-white">
+    <div class="sidebar-brand px-4 py-4">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-truck fs-4"></i>
+        <div>
+          <div class="fs-6 text-uppercase text-muted mb-1">Renta</div>
+          <div class="fw-bold fs-5">Logistics</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section px-3 pb-2">
+      <div class="text-uppercase text-white-50 small mb-3">Navigation</div>
+      <ul class="nav nav-pills flex-column gap-1">
+        <li class="nav-item">
+          <a class="nav-link text-white" routerLink="/customer/listings" routerLinkActive="active" *ngIf="role === 'customer'">
+            <i class="bi bi-card-list me-2"></i>Listings
+          </a>
+        </li>
+        <li class="nav-item" *ngIf="role === 'customer'">
+          <a class="nav-link text-white" routerLink="/customer/addons" routerLinkActive="active">
+            <i class="bi bi-plus-square me-2"></i>Add-on Shipments
+          </a>
+        </li>
+        <li class="nav-item" *ngIf="role === 'partner'">
+          <a class="nav-link text-white" routerLink="/partner/dashboard" routerLinkActive="active">
+            <i class="bi bi-speedometer2 me-2"></i>Dashboard
+          </a>
+        </li>
+        <li class="nav-item" *ngIf="role === 'partner'">
+          <a class="nav-link text-white" routerLink="/partner/auction" routerLinkActive="active">
+            <i class="bi bi-tags me-2"></i>Auction Listings
+          </a>
+        </li>
+        <li class="nav-item" *ngIf="role === 'partner'">
+          <a class="nav-link text-white" routerLink="/partner/addons" routerLinkActive="active">
+            <i class="bi bi-plus-square me-2"></i>Add-on Shipments
+          </a>
+        </li>
+        <li class="nav-item" *ngIf="role === 'partner'">
+          <a class="nav-link text-white" routerLink="/partner/jobs" routerLinkActive="active">
+            <i class="bi bi-truck me-2"></i>My Jobs
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="mt-auto px-3 pb-4">
+      <div class="small text-white-50 mb-2">Signed in as</div>
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <span class="avatar bg-white text-dark rounded-circle d-inline-flex align-items-center justify-content-center">{{ auth.currentUser()?.name?.charAt(0) || 'R' }}</span>
+        <div>
+          <div class="fw-semibold text-white">{{ auth.currentUser()?.name || 'User' }}</div>
+          <div class="small text-white-50 text-capitalize">{{ role }}</div>
+        </div>
+      </div>
+      <button class="btn btn-outline-light btn-sm w-100" (click)="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div class="topbar">
+      <div>
+        <div class="text-muted small">Welcome back</div>
+        <h2 class="mb-0 fw-bold">{{ role === 'customer' ? 'Customer Portal' : 'Partner Workspace' }}</h2>
+      </div>
+      <div class="topbar-actions">
+        <span class="badge bg-primary text-white">{{ role | titlecase }}</span>
+        <button class="btn btn-outline-secondary btn-sm" (click)="logout()">Sign out</button>
+      </div>
+    </div>
+
+    <router-outlet></router-outlet>
+  </main>
+</div>

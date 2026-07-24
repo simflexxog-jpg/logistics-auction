@@ -18,6 +18,7 @@ export const routes: Routes = [
     path: 'customer',
     canActivate: [authGuard, roleGuard],
     data: { role: 'customer' },
+    loadComponent: () => import('./components/app-shell/app-shell.component').then(m => m.AppShellComponent),
     children: [
       {
         path: 'listings',
@@ -40,6 +41,7 @@ export const routes: Routes = [
     path: 'partner',
     canActivate: [authGuard, roleGuard],
     data: { role: 'partner' },
+    loadComponent: () => import('./components/app-shell/app-shell.component').then(m => m.AppShellComponent),
     children: [
       {
         path: 'dashboard',
