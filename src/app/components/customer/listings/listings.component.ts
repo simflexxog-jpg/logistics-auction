@@ -140,7 +140,20 @@ export class CustomerListingsComponent implements OnInit, AfterViewInit {
   }
 
   statusBadge(status: string): string {
-    const map: any = { open: 'success', auction_ended: 'warning', accepted: 'info', in_transit: 'primary', delivered: 'secondary', cancelled: 'danger' };
+    const map: any = { open: 'success', auction_ended: 'warning', accepted: 'info', paid: 'info', picked_up: 'primary', in_transit: 'primary', delivered: 'secondary', cancelled: 'danger' };
     return map[status] || 'secondary';
+  }
+  statusLabel(status: string): string {
+    const labels: any = {
+      open: 'Open',
+      auction_ended: 'Auction ended',
+      accepted: 'Accepted',
+      paid: 'Paid',
+      picked_up: 'Picked up',
+      in_transit: 'In transit',
+      delivered: 'Delivered',
+      cancelled: 'Cancelled'
+    };
+    return labels[status] || status;
   }
 }

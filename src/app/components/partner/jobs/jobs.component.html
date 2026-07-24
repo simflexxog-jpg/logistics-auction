@@ -38,10 +38,12 @@
               <div class="d-flex justify-content-between">
                 <span class="fw-bold text-success">₹{{ bid.amount }}</span>
                 <span class="badge"
-                  [class.bg-success]="bid.Listing?.status === 'accepted'"
-                  [class.bg-primary]="bid.Listing?.status === 'in_transit'"
-                  [class.bg-secondary]="bid.Listing?.status === 'delivered'">
-                  {{ bid.Listing?.status | titlecase }}
+                  [class.bg-info]="bid.Listing?.status === 'accepted' || bid.Listing?.status === 'paid'"
+                  [class.bg-primary]="bid.Listing?.status === 'picked_up' || bid.Listing?.status === 'in_transit'"
+                  [class.bg-secondary]="bid.Listing?.status === 'delivered'"
+                  [class.bg-warning]="bid.Listing?.status === 'auction_ended'"
+                  [class.bg-danger]="bid.Listing?.status === 'cancelled'">
+                  {{ bid.Listing?.status === 'paid' ? 'Paid' : bid.Listing?.status === 'picked_up' ? 'Picked up' : (bid.Listing?.status | titlecase) }}
                 </span>
               </div>
             </div>
@@ -60,6 +62,12 @@
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="fw-bold mb-0">{{ selectedJob().Listing?.title }}</h4>
             <div class="d-flex gap-2">
+              @if (selectedJob().Listing?.status === 'picked_up') {
+                <button class="btn btn-primary" (click)="startTransit()" [disabled]="startingTransit()">
+                  @if (startingTransit()) { <span class="spinner-border spinner-border-sm me-2"></span> }
+                  <span class="material-icons-outlined icon-small align-middle me-1">directions_car</span>Start transit
+                </button>
+              }
               @if (selectedJob().Listing?.status === 'in_transit') {
                 <button class="btn btn-success" (click)="markDelivered()" [disabled]="marking()">
                   @if (marking()) { <span class="spinner-border spinner-border-sm me-2"></span> }
@@ -94,6 +102,9 @@
                   @if (selectedJob().Listing?.status === 'accepted') {
                     <div class="alert alert-warning small mt-3"><span class="material-icons-outlined align-middle me-1">hourglass_top</span>Awaiting customer payment to start shipment.</div>
                   }
+                  @if (selectedJob().Listing?.status === 'picked_up') {
+                    <div class="alert alert-info small mt-3"><span class="material-icons-outlined align-middle me-1">local_shipping</span>Shipment picked up. Start transit when you leave the pickup location.</div>
+                  }
                   @if (selectedJob().Listing?.status === 'in_transit') {
                     <div class="alert alert-success small mt-3"><span class="material-icons-outlined align-middle me-1">local_shipping</span>Shipment in progress. Mark delivered when complete.</div>
                   }
@@ -103,7 +114,7 @@
           </div>
 
           <!-- Chat -->
-          @if (selectedJob().Listing?.status === 'in_transit' || selectedJob().Listing?.status === 'delivered') {
+          @if (['picked_up', 'in_transit', 'delivered'].includes(selectedJob().Listing?.status)) {
             <div class="card shadow-sm">
               <div class="card-header fw-semibold"><span class="material-icons-outlined align-middle me-1">chat_bubble_outline</span>Chat with customer</div>
               <div class="card-body p-0">

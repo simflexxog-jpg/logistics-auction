@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { auth, requireRole } = require('../middleware/auth');
-const { Listing, Bid, User } = require('../models');
+const { Listing, Bid, User, Payment } = require('../models');
 const { Op } = require('sequelize');
 
 // Get all open listings (partner can see all, customer sees their own)
@@ -29,7 +29,8 @@ router.get('/:id', auth, async (req, res) => {
     const listing = await Listing.findByPk(req.params.id, {
       include: [
         { model: User, as: 'customer', attributes: ['id', 'name', 'phone'] },
-        { model: Bid, as: 'bids', include: [{ model: User, as: 'partner', attributes: ['id', 'name', 'avgRating', 'truckType'] }], order: [['amount', 'ASC']] }
+        { model: Bid, as: 'bids', include: [{ model: User, as: 'partner', attributes: ['id', 'name', 'avgRating', 'truckType'] }], order: [['amount', 'ASC']] },
+        { model: Payment, as: 'payment' }
       ]
     });
     if (!listing) return res.status(404).json({ error: 'Not found' });
@@ -80,11 +81,40 @@ router.post('/:id/accept-bid', auth, requireRole('customer'), async (req, res) =
   }
 });
 
+// Mark pickup (partner)
+router.post('/:id/pickup', auth, requireRole('partner'), async (req, res) => {
+  try {
+    const listing = await Listing.findByPk(req.params.id);
+    if (!listing || listing.winnerId !== req.user.id) return res.status(403).json({ error: 'Not authorized' });
+    if (listing.status !== 'paid') return res.status(400).json({ error: 'Shipment must be paid before pickup' });
+
+    await listing.update({ status: 'picked_up' });
+    res.json(listing);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Start transit (partner)
+router.post('/:id/start-transit', auth, requireRole('partner'), async (req, res) => {
+  try {
+    const listing = await Listing.findByPk(req.params.id);
+    if (!listing || listing.winnerId !== req.user.id) return res.status(403).json({ error: 'Not authorized' });
+    if (listing.status !== 'picked_up') return res.status(400).json({ error: 'Shipment must be picked up before transit' });
+
+    await listing.update({ status: 'in_transit' });
+    res.json(listing);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Mark delivered (partner)
 router.post('/:id/deliver', auth, requireRole('partner'), async (req, res) => {
   try {
     const listing = await Listing.findByPk(req.params.id);
     if (!listing || listing.winnerId !== req.user.id) return res.status(403).json({ error: 'Not authorized' });
+    if (listing.status !== 'in_transit') return res.status(400).json({ error: 'Shipment must be in transit to complete delivery' });
     await listing.update({ status: 'delivered' });
     res.json(listing);
   } catch (err) {

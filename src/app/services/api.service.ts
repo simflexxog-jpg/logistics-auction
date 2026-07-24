@@ -20,6 +20,12 @@ export class ApiService {
   acceptBid(listingId: string, bidId: string) {
     return this.http.post<any>(`${this.base}/listings/${listingId}/accept-bid`, { bidId }, this.headers());
   }
+  markPickup(listingId: string) {
+    return this.http.post<any>(`${this.base}/listings/${listingId}/pickup`, {}, this.headers());
+  }
+  startTransit(listingId: string) {
+    return this.http.post<any>(`${this.base}/listings/${listingId}/start-transit`, {}, this.headers());
+  }
   markDelivered(listingId: string) {
     return this.http.post<any>(`${this.base}/listings/${listingId}/deliver`, {}, this.headers());
   }

@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const { auth, requireRole } = require('../middleware/auth');
 const { User, Listing, Bid, Payment, Rating } = require('../models');
+const { Op } = require('sequelize');
 
 // Dashboard stats
 router.get('/dashboard', auth, requireRole('partner'), async (req, res) => {
@@ -8,7 +9,7 @@ router.get('/dashboard', auth, requireRole('partner'), async (req, res) => {
     const partner = await User.findByPk(req.user.id, { attributes: { exclude: ['password'] } });
     const myBids = await Bid.count({ where: { partnerId: req.user.id } });
     const wonBids = await Bid.count({ where: { partnerId: req.user.id, status: 'accepted' } });
-    const activeShipments = await Listing.count({ where: { winnerId: req.user.id, status: 'in_transit' } });
+    const activeShipments = await Listing.count({ where: { winnerId: req.user.id, status: { [Op.in]: ['picked_up', 'in_transit'] } } });
     const completedShipments = await Listing.count({ where: { winnerId: req.user.id, status: 'delivered' } });
     const recentJobs = await Listing.findAll({
       where: { winnerId: req.user.id },

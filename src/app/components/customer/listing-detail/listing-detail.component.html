@@ -19,15 +19,40 @@
           <h4 class="fw-bold mb-0">{{ listing().title }}</h4>
           <p class="text-muted mb-0">{{ listing().cargoType }} · {{ listing().weight }}kg</p>
         </div>
-        <span class="badge fs-6 bg-{{ listing().status === 'open' ? 'success' : listing().status === 'auction_ended' ? 'warning' : listing().status === 'in_transit' ? 'primary' : 'secondary' }}">
-          {{ listing().status | titlecase }}
+        <span class="badge fs-6 bg-{{ statusBadge(listing().status) }}">
+          {{ statusLabel(listing().status) }}
         </span>
       </div>
-
-      @if (error()) {
-        <div class="alert alert-danger alert-dismissible">{{ error() }} <button class="btn-close" title="Close notification" aria-label="Close notification" (click)="error.set('')"></button></div>
-      }
-
+        <div class="tracking-stepper mb-4">
+          <div class="step" [class.active]="['accepted','paid','picked_up','in_transit','delivered'].indexOf(listing().status) >= 0" [class.completed]="['paid','picked_up','in_transit','delivered'].indexOf(listing().status) >= 0">
+            <div class="step-badge">1</div>
+            <div>
+              <div class="step-title">Payment accepted</div>
+              <div class="step-text">Customer paid the partner</div>
+            </div>
+          </div>
+          <div class="step" [class.active]="['picked_up','in_transit','delivered'].indexOf(listing().status) >= 0" [class.completed]="['in_transit','delivered'].indexOf(listing().status) >= 0">
+            <div class="step-badge">2</div>
+            <div>
+              <div class="step-title">Picked up</div>
+              <div class="step-text">Partner has collected the cargo</div>
+            </div>
+          </div>
+          <div class="step" [class.active]="['in_transit','delivered'].indexOf(listing().status) >= 0" [class.completed]="listing().status === 'delivered'">
+            <div class="step-badge">3</div>
+            <div>
+              <div class="step-title">In transit</div>
+              <div class="step-text">Cargo is moving to destination</div>
+            </div>
+          </div>
+          <div class="step" [class.active]="listing().status === 'delivered'" [class.completed]="listing().status === 'delivered'">
+            <div class="step-badge">4</div>
+            <div>
+              <div class="step-title">Delivered</div>
+              <div class="step-text">Shipment completed successfully</div>
+            </div>
+          </div>
+        </div>
       <div class="row g-4 mb-4">
         <div class="col-lg-5">
           <div class="card h-100 shadow-sm border-0 rounded-4">
@@ -75,10 +100,10 @@
             <span class="material-icons-outlined align-middle me-1">local_offer</span>Bids ({{ listing().bids?.length || 0 }})
           </button>
         </li>
-        <li class="nav-item" *ngIf="listing().status === 'accepted' || listing().status === 'in_transit' || listing().status === 'delivered'">
+        <li class="nav-item" *ngIf="listing().status === 'accepted' || listing().status === 'picked_up' || listing().status === 'in_transit' || listing().status === 'delivered'">
           <button class="nav-link" [class.active]="activeTab() === 'payment'" (click)="activeTab.set('payment')"><span class="material-icons-outlined align-middle me-1">credit_card</span>Payment</button>
         </li>
-        <li class="nav-item" *ngIf="listing().status === 'in_transit' || listing().status === 'delivered'">
+        <li class="nav-item" *ngIf="listing().status === 'picked_up' || listing().status === 'in_transit' || listing().status === 'delivered'">
           <button class="nav-link" [class.active]="activeTab() === 'chat'" (click)="activeTab.set('chat')"><span class="material-icons-outlined align-middle me-1">chat_bubble_outline</span>Chat</button>
         </li>
         <li class="nav-item">

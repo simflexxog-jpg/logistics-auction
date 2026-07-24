@@ -160,7 +160,7 @@
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start mb-2">
                   <h6 class="fw-bold mb-0">{{ listing.title }}</h6>
-                  <span class="badge bg-{{ statusBadge(listing.status) }}">{{ listing.status | titlecase }}</span>
+                  <span class="badge bg-{{ statusBadge(listing.status) }}">{{ statusLabel(listing.status) }}</span>
                 </div>
                 <p class="text-muted small mb-2"><span class="material-icons-outlined align-middle me-1">label</span>{{ listing.cargoType }} · {{ listing.weight }}kg</p>
                 <p class="small mb-1"><span class="material-icons-outlined align-middle me-1">place</span>{{ listing.pickupAddress }}</p>

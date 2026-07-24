@@ -69,7 +69,7 @@ export class ListingDetailComponent implements OnInit, OnDestroy, AfterViewInit 
         this.loading.set(false);
         this.startTimer();
         setTimeout(() => this.initMap(), 200);
-        if (data.status === 'in_transit' || data.status === 'delivered') {
+        if (['picked_up', 'in_transit', 'delivered'].includes(data.status)) {
           this.loadChat(id);
           this.socket.joinChat(id);
           this.subs.push(
@@ -159,6 +159,32 @@ export class ListingDetailComponent implements OnInit, OnDestroy, AfterViewInit 
         this.aiLoading.set(false);
       }
     });
+  }
+
+  statusBadge(status: string): string {
+    const map: any = {
+      open: 'success',
+      auction_ended: 'warning',
+      accepted: 'info',
+      picked_up: 'primary',
+      in_transit: 'primary',
+      delivered: 'secondary',
+      cancelled: 'danger'
+    };
+    return map[status] || 'secondary';
+  }
+
+  statusLabel(status: string): string {
+    const labels: any = {
+      open: 'Open',
+      auction_ended: 'Auction ended',
+      accepted: 'Accepted',
+      picked_up: 'Picked up',
+      in_transit: 'In transit',
+      delivered: 'Delivered',
+      cancelled: 'Cancelled'
+    };
+    return labels[status] || status;
   }
 
   ratePartner(stars: number, comment: string) {

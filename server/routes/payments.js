@@ -28,7 +28,7 @@ router.post('/', auth, requireRole('customer'), async (req, res) => {
 
     // Update partner earnings
     await User.increment('totalEarnings', { by: listing.winningBid, where: { id: listing.winnerId } });
-    await listing.update({ status: 'in_transit' });
+    await listing.update({ status: 'paid' });
 
     res.json({ payment, message: 'Payment successful! You can now chat with your partner.' });
   } catch (err) {

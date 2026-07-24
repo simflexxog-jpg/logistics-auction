@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { auth, requireRole } = require('../middleware/auth');
-const { Bid, Listing, User } = require('../models');
+const { Bid, Listing, User, Payment } = require('../models');
 
 // Place a bid (partner only)
 router.post('/', auth, requireRole('partner'), async (req, res) => {
@@ -36,7 +36,7 @@ router.get('/my', auth, requireRole('partner'), async (req, res) => {
   try {
     const bids = await Bid.findAll({
       where: { partnerId: req.user.id },
-      include: [{ model: Listing }],
+      include: [{ model: Listing, include: [{ model: Payment, as: 'payment' }] }],
       order: [['createdAt', 'DESC']]
     });
     res.json(bids);

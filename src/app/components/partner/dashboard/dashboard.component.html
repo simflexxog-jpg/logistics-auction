@@ -129,7 +129,14 @@
                 </div>
                 <div class="text-end">
                   <div class="fw-bold text-primary">₹{{ job.winningBid }}</div>
-                  <span class="badge" [class.bg-primary]="job.status === 'in_transit'" [class.bg-secondary]="job.status === 'delivered'" [class.bg-success]="job.status === 'accepted'">{{ job.status | titlecase }}</span>
+                  <span class="badge"
+                    [class.bg-primary]="job.status === 'in_transit' || job.status === 'picked_up'"
+                    [class.bg-info]="job.status === 'accepted' || job.status === 'paid'"
+                    [class.bg-secondary]="job.status === 'delivered'"
+                    [class.bg-warning]="job.status === 'auction_ended'"
+                    [class.bg-danger]="job.status === 'cancelled'">
+                    {{ job.status === 'paid' ? 'Paid' : job.status === 'picked_up' ? 'Picked up' : (job.status | titlecase) }}
+                  </span>
                 </div>
               </a>
             }

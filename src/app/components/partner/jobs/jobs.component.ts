@@ -21,6 +21,7 @@ export class PartnerJobsComponent implements OnInit, OnDestroy {
   chatMessages = signal<any[]>([]);
   chatInput = '';
   marking = signal(false);
+  startingTransit = signal(false);
   private subs: Subscription[] = [];
   private map: L.Map | null = null;
 
@@ -36,7 +37,7 @@ export class PartnerJobsComponent implements OnInit, OnDestroy {
   selectJob(bid: any) {
     this.selectedJob.set(bid);
     this.chatMessages.set([]);
-    if (bid.Listing?.status === 'in_transit' || bid.Listing?.status === 'delivered') {
+    if (['picked_up', 'in_transit', 'delivered'].includes(bid.Listing?.status)) {
       this.api.getChatHistory(bid.listingId).subscribe(msgs => this.chatMessages.set(msgs));
       this.socket.joinChat(bid.listingId);
       this.subs.forEach(s => s.unsubscribe());
@@ -71,6 +72,19 @@ export class PartnerJobsComponent implements OnInit, OnDestroy {
         this.selectedJob.update(j => ({ ...j, Listing: { ...j.Listing, status: 'delivered' } }));
       },
       error: () => this.marking.set(false)
+    });
+  }
+
+  startTransit() {
+    const job = this.selectedJob();
+    if (!job) return;
+    this.startingTransit.set(true);
+    this.api.markPickup(job.listingId).subscribe({
+      next: () => {
+        this.startingTransit.set(false);
+        this.selectedJob.update(j => ({ ...j, Listing: { ...j.Listing, status: 'in_transit' } }));
+      },
+      error: () => this.startingTransit.set(false)
     });
   }
 
