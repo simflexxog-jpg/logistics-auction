@@ -71,12 +71,7 @@ const PORT = process.env.PORT || 3000;
     console.log('Database synced');
   } catch (err) {
     console.error('DB sync failed:', err);
-    if (process.env.NODE_ENV === 'production') {
-      console.error('Exiting because DB sync failed in production');
-      process.exit(1);
-    } else {
-      console.warn('Continuing without DB (development). API endpoints will fail until DB is available.');
-    }
+    console.warn('Continuing without DB. API endpoints will fail until DB is available.');
   }
 
   server.listen(PORT, () => {

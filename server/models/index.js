@@ -20,8 +20,13 @@ Listing.hasOne(Payment, { foreignKey: 'listingId', as: 'payment' });
 Listing.hasOne(Rating, { foreignKey: 'listingId', as: 'rating' });
 
 const syncDB = async () => {
-  await sequelize.sync({ alter: true });
-  console.log('Database synced');
+  try {
+    await sequelize.sync({ alter: true });
+    console.log('Database synced successfully');
+  } catch (err) {
+    // Log error but don't crash - the server will continue without DB
+    console.error('Database sync error:', err.message);
+  }
 };
 
 module.exports = { sequelize, syncDB, User, Listing, Bid, Payment, ChatMessage, Rating, AddOn };

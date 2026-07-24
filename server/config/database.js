@@ -3,10 +3,14 @@ require('dotenv').config();
 const path = require('path');
 
 let sequelize;
+let isPostgres = false;
 
-if (process.env.NODE_ENV === 'production' || process.env.DATABASE_URL) {
-  // Use PostgreSQL in production or if DATABASE_URL is set
-  sequelize = new Sequelize(process.env.DATABASE_URL || 'postgresql://localhost:5432/logistics_auction', {
+// Determine which database to use
+const shouldUsePostgres = process.env.DATABASE_URL && !process.env.FORCE_SQLITE;
+
+if (shouldUsePostgres) {
+  // Create PostgreSQL instance (connection happens on first query)
+  sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect: 'postgres',
     dialectOptions: process.env.NODE_ENV === 'production' ? {
       ssl: { require: true, rejectUnauthorized: false }
@@ -14,6 +18,7 @@ if (process.env.NODE_ENV === 'production' || process.env.DATABASE_URL) {
     logging: false,
     pool: { max: 5, min: 0, acquire: 30000, idle: 10000 }
   });
+  isPostgres = true;
 } else {
   // Use SQLite in development if no DATABASE_URL
   sequelize = new Sequelize({
@@ -24,3 +29,4 @@ if (process.env.NODE_ENV === 'production' || process.env.DATABASE_URL) {
 }
 
 module.exports = sequelize;
+module.exports.isPostgres = isPostgres;
