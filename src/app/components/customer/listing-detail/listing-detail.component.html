@@ -100,7 +100,7 @@
             <span class="material-icons-outlined align-middle me-1">local_offer</span>Bids ({{ listing().bids?.length || 0 }})
           </button>
         </li>
-        <li class="nav-item" *ngIf="listing().status === 'accepted' || listing().status === 'picked_up' || listing().status === 'in_transit' || listing().status === 'delivered'">
+        <li class="nav-item" *ngIf="listing().status === 'accepted' || listing().status === 'paid' || listing().status === 'picked_up' || listing().status === 'in_transit' || listing().status === 'delivered'">
           <button class="nav-link" [class.active]="activeTab() === 'payment'" (click)="activeTab.set('payment')"><span class="material-icons-outlined align-middle me-1">credit_card</span>Payment</button>
         </li>
         <li class="nav-item" *ngIf="listing().status === 'picked_up' || listing().status === 'in_transit' || listing().status === 'delivered'">
