@@ -1,25 +1,54 @@
 <div class="auth-page">
-  <div class="container d-flex align-items-center justify-content-center min-vh-100">
-    <div class="card auth-card shadow-lg">
-      <div class="card-body p-5">
+  <div class="auth-shell">
+    <div class="auth-hero">
+      <div>
+        <div class="hero-badge">Move freight faster</div>
+        <h1>Smarter logistics for every ride and route.</h1>
+        <p>Track live shipments, compare bids instantly, and keep your business moving with the same ease as your favorite ride app.</p>
+      </div>
+
+      <div class="hero-card">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <i class="bi bi-lightning-charge-fill"></i>
+          <span class="fw-semibold">Live demand now</span>
+        </div>
+        <div class="hero-route">Mumbai → Pune • 12 min away</div>
+        <div class="hero-stats">
+          <span>24/7 support</span>
+          <span>Secure payments</span>
+          <span>Real-time tracking</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-panel">
+      <div class="auth-panel-inner">
         <div class="text-center mb-4">
-          <div class="brand-icon mb-3"><span class="material-icons-outlined">local_shipping</span></div>
-          <h2 class="fw-bold">Renta</h2>
-          <p class="text-muted">Sign in to your account</p>
+          <div class="brand-pill mb-3">
+            <i class="bi bi-truck-front-fill"></i>
+          </div>
+          <h2 class="fw-bold mb-1">Welcome back</h2>
+          <p class="text-muted mb-0">Sign in to continue your logistics journey</p>
         </div>
 
         @if (error()) {
-          <div class="alert alert-danger">{{ error() }}</div>
+          <div class="alert alert-danger rounded-pill">{{ error() }}</div>
         }
 
         <form (ngSubmit)="submit()">
           <div class="mb-3">
             <label class="form-label fw-semibold">Email</label>
-            <input type="email" class="form-control form-control-lg" [(ngModel)]="email" name="email" required placeholder="you@example.com">
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+              <input type="email" class="form-control form-control-lg" [(ngModel)]="email" name="email" required placeholder="you@example.com">
+            </div>
           </div>
           <div class="mb-4">
             <label class="form-label fw-semibold">Password</label>
-            <input type="password" class="form-control form-control-lg" [(ngModel)]="password" name="password" required placeholder="••••••••">
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-lock"></i></span>
+              <input type="password" class="form-control form-control-lg" [(ngModel)]="password" name="password" required placeholder="••••••••">
+            </div>
           </div>
           <button type="submit" class="btn btn-primary btn-lg w-100" [disabled]="loading()">
             @if (loading()) { <span class="spinner-border spinner-border-sm me-2"></span> }
@@ -27,11 +56,12 @@
           </button>
         </form>
 
-        <hr class="my-4">
-        <div class="text-center">
-          <p class="mb-2 text-muted">Don't have an account?</p>
-          <a routerLink="/register/customer" class="btn btn-outline-primary me-2">Register as Customer</a>
-          <a routerLink="/register/partner" class="btn btn-outline-success">Register as Partner</a>
+        <div class="text-center mt-4">
+          <p class="mb-3 text-muted">New here?</p>
+          <div class="d-flex flex-wrap justify-content-center gap-2">
+            <a routerLink="/register/customer" class="btn btn-outline-primary">Register as Customer</a>
+            <a routerLink="/register/partner" class="btn btn-outline-success">Register as Partner</a>
+          </div>
         </div>
       </div>
     </div>
