@@ -135,85 +135,44 @@
     <!-- Listings Grid -->
     @if (loading()) {
       <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
-    } @else if (getActiveListings().length === 0 && getOrderHistory().length === 0) {
+    } @else if (getActiveListings().length === 0) {
       <div class="text-center py-5">
         <div class="hero-icon large"><span class="material-icons-outlined icon-large">inventory_2</span></div>
         <h5 class="text-muted">No listings yet</h5>
         <p class="text-muted">Post your first logistics listing to start receiving bids</p>
       </div>
     } @else {
-      @if (getActiveListings().length > 0) {
-        <div class="mb-4">
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <div>
-              <h6 class="fw-bold mb-1">Active Orders</h6>
-              <p class="text-muted small mb-0">Open auctions and live shipments</p>
-            </div>
-            <span class="badge bg-primary-subtle text-primary">{{ getActiveListings().length }} active</span>
-          </div>
-          <div class="row g-3">
-            @for (listing of getActiveListings(); track listing.id) {
-              <div class="col-md-6 col-xl-4">
-                <div class="card h-100 listing-card">
-                  <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                      <h6 class="fw-bold mb-0">{{ listing.title }}</h6>
-                      <span class="badge bg-{{ statusBadge(listing.status) }}">{{ statusLabel(listing.status) }}</span>
-                    </div>
-                    <p class="text-muted small mb-2"><span class="material-icons-outlined align-middle me-1">label</span>{{ listing.cargoType }} · {{ listing.weight }}kg</p>
-                    <p class="small mb-1"><span class="material-icons-outlined align-middle me-1">place</span>{{ listing.pickupAddress }}</p>
-                    <p class="small mb-2"><span class="material-icons-outlined align-middle me-1">flag</span>{{ listing.dropoffAddress }}</p>
-
-                    @if (listing.status === 'open') {
-                      <div class="alert alert-success py-1 px-2 small mb-2">
-                        <span class="material-icons-outlined align-middle me-1">timer</span>Auction ends in: <strong>{{ getTimeLeft(listing.auctionEndsAt) }}</strong>
-                        · {{ listing.bids?.length || 0 }} bid(s)
-                      </div>
-                    }
-                    @if (listing.winningBid) {
-                      <div class="alert alert-info py-1 px-2 small mb-2">
-                        <span class="material-icons-outlined align-middle me-1">attach_money</span>Lowest bid: <strong>₹{{ listing.winningBid }}</strong>
-                      </div>
-                    }
-
-                    <a [routerLink]="['/customer/listing', listing.id]" class="btn btn-sm btn-outline-primary w-100">View details & bids <span class="material-icons-outlined align-middle me-0">east</span></a>
-                  </div>
+      <div class="row g-3">
+        @for (listing of getActiveListings(); track listing.id) {
+          <div class="col-md-6 col-xl-4">
+            <div class="card h-100 listing-card">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h6 class="fw-bold mb-0">{{ listing.title }}</h6>
+                  <span class="badge bg-{{ statusBadge(listing.status) }}">{{ statusLabel(listing.status) }}</span>
                 </div>
-              </div>
-            }
-          </div>
-        </div>
-      }
+                <p class="text-muted small mb-2"><span class="material-icons-outlined align-middle me-1">label</span>{{ listing.cargoType }} · {{ listing.weight }}kg</p>
+                <p class="small mb-1"><span class="material-icons-outlined align-middle me-1">place</span>{{ listing.pickupAddress }}</p>
+                <p class="small mb-2"><span class="material-icons-outlined align-middle me-1">flag</span>{{ listing.dropoffAddress }}</p>
 
-      @if (getOrderHistory().length > 0) {
-        <div class="border-top pt-4">
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <div>
-              <h6 class="fw-bold mb-1">Order History</h6>
-              <p class="text-muted small mb-0">Delivered, expired, or cancelled orders</p>
-            </div>
-            <span class="badge bg-secondary-subtle text-secondary">{{ getOrderHistory().length }} archived</span>
-          </div>
-          <div class="row g-3">
-            @for (listing of getOrderHistory(); track listing.id) {
-              <div class="col-md-6 col-xl-4">
-                <div class="card h-100 border-0 shadow-sm">
-                  <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                      <h6 class="fw-bold mb-0">{{ listing.title }}</h6>
-                      <span class="badge bg-{{ historyBadge(listing.status) }}">{{ historyLabel(listing.status) }}</span>
-                    </div>
-                    <p class="text-muted small mb-2"><span class="material-icons-outlined align-middle me-1">label</span>{{ listing.cargoType }} · {{ listing.weight }}kg</p>
-                    <p class="small mb-1"><span class="material-icons-outlined align-middle me-1">place</span>{{ listing.pickupAddress }}</p>
-                    <p class="small mb-2"><span class="material-icons-outlined align-middle me-1">flag</span>{{ listing.dropoffAddress }}</p>
-                    <a [routerLink]="['/customer/listing', listing.id]" class="btn btn-sm btn-outline-secondary w-100">View history <span class="material-icons-outlined align-middle me-0">east</span></a>
+                @if (listing.status === 'open') {
+                  <div class="alert alert-success py-1 px-2 small mb-2">
+                    <span class="material-icons-outlined align-middle me-1">timer</span>Auction ends in: <strong>{{ getTimeLeft(listing.auctionEndsAt) }}</strong>
+                    · {{ listing.bids?.length || 0 }} bid(s)
                   </div>
-                </div>
+                }
+                @if (listing.winningBid) {
+                  <div class="alert alert-info py-1 px-2 small mb-2">
+                    <span class="material-icons-outlined align-middle me-1">attach_money</span>Lowest bid: <strong>₹{{ listing.winningBid }}</strong>
+                  </div>
+                }
+
+                <a [routerLink]="['/customer/listing', listing.id]" class="btn btn-sm btn-outline-primary w-100">View details & bids <span class="material-icons-outlined align-middle me-0">east</span></a>
               </div>
-            }
+            </div>
           </div>
-        </div>
-      }
+        }
+      </div>
     }
       </div>
     </div>
