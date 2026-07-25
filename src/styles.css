@@ -61,55 +61,171 @@ select {
 }
 
 .sidebar {
-  width: 260px;
-  min-width: 260px;
+  width: 280px;
+  min-width: 280px;
   display: flex;
   flex-direction: column;
   position: sticky;
   top: 0;
   height: 100vh;
   overflow-y: auto;
-  background: var(--sidebar-bg);
-  box-shadow: inset -1px 0 0 rgba(255,255,255,0.08), var(--shadow-soft);
+  padding: 1rem 0 1.2rem;
+  background: linear-gradient(180deg, #0b1830 0%, #111f3d 100%);
+  box-shadow: inset -1px 0 0 rgba(255,255,255,0.08), 0 22px 48px rgba(9, 21, 44, 0.22);
 }
 
 .sidebar-brand {
-  padding: 1.5rem 1.25rem;
-  border-bottom: 1px solid rgba(255,255,255,0.12);
-  font-size: 0.95rem;
-  letter-spacing: 0.12em;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem 1.15rem 1.2rem;
+  margin: 0 0.8rem 0.6rem;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.brand-mark {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 1.15rem;
+  background: linear-gradient(135deg, #2563eb 0%, #38bdf8 100%);
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.28);
+}
+
+.brand-kicker {
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.82);
+  color: rgba(255,255,255,0.72);
+}
+
+.brand-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.sidebar-section {
+  padding: 0.4rem 0.8rem 0.6rem;
+}
+
+.sidebar-section-title {
+  margin: 0.35rem 0.75rem 0.65rem;
+  font-size: 0.74rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.58);
 }
 
 .sidebar .nav-link {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.7rem;
   border-radius: 16px;
-  padding: 0.95rem 1.25rem;
-  margin: 0.35rem 1rem;
-  transition: background 0.2s ease, transform 0.2s ease;
-  color: rgba(255,255,255,0.85);
-}
-
-.sidebar .nav-link.text-white-50 {
-  color: rgba(255,255,255,0.68) !important;
-}
-
-.sidebar .nav-link.text-white {
-  color: #ffffff !important;
+  padding: 0.8rem 0.8rem;
+  margin: 0.25rem 0.4rem;
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  color: rgba(255,255,255,0.86);
 }
 
 .sidebar .nav-link:hover,
 .sidebar .nav-link.active {
-  background: rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.12);
   color: #ffffff;
   transform: translateX(2px);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
 }
 
-.sidebar .nav-link span {
-  font-size: 1.05rem;
+.nav-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: rgba(255,255,255,0.1);
+  color: #dbeafe;
+  flex-shrink: 0;
+}
+
+.sidebar .nav-link.active .nav-icon {
+  background: linear-gradient(135deg, #2563eb 0%, #38bdf8 100%);
+  color: #fff;
+}
+
+.nav-label {
+  flex: 1;
+  font-weight: 600;
+}
+
+.nav-hint {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.72);
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 0.8rem 1rem 0.2rem;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.sidebar-user-card {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.75rem;
+  border-radius: 1rem;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.sidebar .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #fff 0%, #dbeafe 100%);
+  color: #102a43;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.user-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-meta .small {
+  color: rgba(255,255,255,0.72);
+}
+
+.sidebar-status-pill {
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(22, 163, 74, 0.2);
+  color: #bbf7d0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.sidebar .btn-outline-light {
+  border-color: rgba(255,255,255,0.18);
+  color: #fff;
+}
+
+.sidebar .btn-outline-light:hover {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.24);
+  color: #fff;
 }
 
 .main-content {
