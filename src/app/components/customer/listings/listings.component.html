@@ -1,23 +1,34 @@
-    <div class="page-header d-flex align-items-center justify-content-between mb-4">
-      <div>
-        <h4 class="mb-0 fw-bold">My Logistics Listings</h4>
-        <p class="text-muted mb-0">Post cargo for reverse auction</p>
+    <div class="customer-portal-surface">
+      <div class="portal-hero d-flex align-items-center justify-content-between gap-3 flex-wrap">
+        <div>
+          <div class="hero-badge mb-3">Customer Portal</div>
+          <h4 class="mb-1">Manage freight requests and auction activity</h4>
+          <p>Post cargo, track bids, and keep your shipment flow moving with the same ease as a modern booking app.</p>
+        </div>
+        <button class="btn btn-light fw-semibold" (click)="toggleForm()">
+          {{ showForm() ? 'Cancel' : 'Post New Listing' }}
+        </button>
       </div>
-      <button class="btn btn-primary" (click)="toggleForm()">
-        {{ showForm() ? 'Cancel' : 'Post New Listing' }}
-      </button>
-    </div>
+
+      <div class="portal-panel">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div>
+            <h5 class="fw-bold mb-1">My Logistics Listings</h5>
+            <p class="text-muted mb-0">Post cargo for reverse auction</p>
+          </div>
+          <span class="badge bg-primary-subtle text-primary">Live marketplace</span>
+        </div>
 
     @if (success()) {
-      <div class="alert alert-success alert-dismissible">{{ success() }} <button class="btn-close" title="Close notification" aria-label="Close notification" (click)="success.set('')"></button></div>
+      <div class="alert alert-success alert-dismissible rounded-pill">{{ success() }} <button class="btn-close" title="Close notification" aria-label="Close notification" (click)="success.set('')"></button></div>
     }
     @if (error()) {
-      <div class="alert alert-danger alert-dismissible">{{ error() }} <button class="btn-close" title="Close notification" aria-label="Close notification" (click)="error.set('')"></button></div>
+      <div class="alert alert-danger alert-dismissible rounded-pill">{{ error() }} <button class="btn-close" title="Close notification" aria-label="Close notification" (click)="error.set('')"></button></div>
     }
 
     <!-- Create Listing Form -->
     @if (showForm()) {
-      <div class="card shadow-sm mb-4">
+      <div class="card shadow-sm mb-4 border-0">
         <div class="card-header bg-primary text-white fw-semibold"><span class="material-icons-outlined align-middle me-1">inventory_2</span>New logistics listing</div>
         <div class="card-body">
           <form (ngSubmit)="submit()">
@@ -163,3 +174,5 @@
         }
       </div>
     }
+      </div>
+    </div>

@@ -1,16 +1,27 @@
-    <div class="page-header d-flex align-items-center justify-content-between mb-4">
-      <div>
-        <h4 class="mb-0 fw-bold">Add-on Shipments</h4>
-        <p class="text-muted mb-0">Small cargo that rides along existing routes (within 2km)</p>
+    <div class="customer-portal-surface">
+      <div class="portal-hero d-flex align-items-center justify-content-between gap-3 flex-wrap">
+        <div>
+          <div class="hero-badge mb-3">Customer Portal</div>
+          <h4 class="mb-1">Add-on shipments that fit your existing routes</h4>
+          <p>Post small cargo alongside active freight moves and keep every mile productive.</p>
+        </div>
+        <button class="btn btn-light fw-semibold d-flex align-items-center gap-2" (click)="showForm.set(!showForm())">
+          <span class="material-icons-outlined">{{ showForm() ? 'close' : 'add' }}</span>
+          {{ showForm() ? 'Cancel' : 'Post Add-on' }}
+        </button>
       </div>
-      <button class="btn btn-primary d-flex align-items-center gap-2" (click)="showForm.set(!showForm())">
-        <span class="material-icons-outlined">{{ showForm() ? 'close' : 'add' }}</span>
-        {{ showForm() ? 'Cancel' : 'Post Add-on' }}
-      </button>
-    </div>
 
-    @if (success()) { <div class="alert alert-success">{{ success() }}</div> }
-    @if (error()) { <div class="alert alert-danger">{{ error() }}</div> }
+      <div class="portal-panel">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div>
+            <h5 class="fw-bold mb-1">Add-on Shipments</h5>
+            <p class="text-muted mb-0">Small cargo that rides along existing routes (within 2km)</p>
+          </div>
+          <span class="badge bg-primary-subtle text-primary">Route-ready</span>
+        </div>
+
+    @if (success()) { <div class="alert alert-success rounded-pill">{{ success() }}</div> }
+    @if (error()) { <div class="alert alert-danger rounded-pill">{{ error() }}</div> }
 
     @if (showForm()) {
       <div class="card shadow-sm mb-4">
@@ -85,7 +96,7 @@
       <div class="row g-3">
         @for (addon of addons(); track addon.id) {
           <div class="col-md-6">
-            <div class="card h-100">
+            <div class="card h-100 listing-card">
               <div class="card-body">
                 <div class="d-flex justify-content-between mb-2">
                   <h6 class="fw-bold">{{ addon.title }}</h6>
@@ -100,3 +111,5 @@
         }
       </div>
     }
+      </div>
+    </div>
