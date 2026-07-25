@@ -27,6 +27,8 @@ export class CustomerListingsComponent implements OnInit, AfterViewInit {
   dropoffMarker: L.Marker | null = null;
   routeLine: L.Polyline | null = null;
   selectingFor: 'pickup' | 'dropoff' | null = null;
+  private pickupAddressTimer: any = null;
+  private dropoffAddressTimer: any = null;
 
   form: any = {
     title: '', description: '', cargoType: '', weight: '', dimensions: '',
@@ -64,26 +66,97 @@ export class CustomerListingsComponent implements OnInit, AfterViewInit {
         if (!this.selectingFor) return;
         const { lat, lng } = e.latlng;
         if (this.selectingFor === 'pickup') {
-          this.form.pickupLat = lat;
-          this.form.pickupLng = lng;
-          this.form.pickupAddress = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-          if (this.pickupMarker) this.map!.removeLayer(this.pickupMarker);
-          this.pickupMarker = L.marker([lat, lng], {
-            icon: L.divIcon({ className: '', html: '<div class="map-marker pickup">P</div>', iconSize: [32, 32] })
-          }).addTo(this.map!).bindPopup('Pickup Point').openPopup();
+          this.reverseGeocode(lat, lng, 'pickup');
         } else {
-          this.form.dropoffLat = lat;
-          this.form.dropoffLng = lng;
-          this.form.dropoffAddress = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-          if (this.dropoffMarker) this.map!.removeLayer(this.dropoffMarker);
-          this.dropoffMarker = L.marker([lat, lng], {
-            icon: L.divIcon({ className: '', html: '<div class="map-marker dropoff">D</div>', iconSize: [32, 32] })
-          }).addTo(this.map!).bindPopup('Dropoff Point').openPopup();
+          this.reverseGeocode(lat, lng, 'dropoff');
         }
         this.selectingFor = null;
+      });
+
+      if (this.form.pickupLat && this.form.pickupLng) {
+        this.setPoint('pickup', this.form.pickupLat, this.form.pickupLng, this.form.pickupAddress || 'Pickup point');
+      }
+      if (this.form.dropoffLat && this.form.dropoffLng) {
+        this.setPoint('dropoff', this.form.dropoffLat, this.form.dropoffLng, this.form.dropoffAddress || 'Dropoff point');
+      }
+      this.drawRoute();
+    }, 100);
+  }
+
+  setPoint(type: 'pickup' | 'dropoff', lat: number, lng: number, address: string) {
+    if (type === 'pickup') {
+      this.form.pickupLat = lat;
+      this.form.pickupLng = lng;
+      this.form.pickupAddress = address;
+      if (this.pickupMarker) this.map!.removeLayer(this.pickupMarker);
+      this.pickupMarker = L.marker([lat, lng], {
+        icon: L.divIcon({ className: '', html: '<div class="map-marker pickup">P</div>', iconSize: [32, 32] })
+      }).addTo(this.map!).bindPopup('Pickup Point').openPopup();
+    } else {
+      this.form.dropoffLat = lat;
+      this.form.dropoffLng = lng;
+      this.form.dropoffAddress = address;
+      if (this.dropoffMarker) this.map!.removeLayer(this.dropoffMarker);
+      this.dropoffMarker = L.marker([lat, lng], {
+        icon: L.divIcon({ className: '', html: '<div class="map-marker dropoff">D</div>', iconSize: [32, 32] })
+      }).addTo(this.map!).bindPopup('Dropoff Point').openPopup();
+    }
+
+    if (this.form.pickupLat && this.form.dropoffLat) {
+      const bounds = L.latLngBounds([
+        [this.form.pickupLat, this.form.pickupLng],
+        [this.form.dropoffLat, this.form.dropoffLng]
+      ]);
+      this.map!.fitBounds(bounds, { padding: [40, 40] });
+    }
+  }
+
+  onPickupAddressInput(value: string) {
+    this.form.pickupAddress = value;
+    if (!value?.trim()) return;
+    if (this.pickupAddressTimer) clearTimeout(this.pickupAddressTimer);
+    this.pickupAddressTimer = setTimeout(() => this.geocodeAddress(value, 'pickup'), 600);
+  }
+
+  onDropoffAddressInput(value: string) {
+    this.form.dropoffAddress = value;
+    if (!value?.trim()) return;
+    if (this.dropoffAddressTimer) clearTimeout(this.dropoffAddressTimer);
+    this.dropoffAddressTimer = setTimeout(() => this.geocodeAddress(value, 'dropoff'), 600);
+  }
+
+  geocodeAddress(address: string, type: 'pickup' | 'dropoff') {
+    if (!address?.trim()) return;
+    this.initMap();
+    const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(address)}`;
+    fetch(url, { headers: { Accept: 'application/json' } as HeadersInit })
+      .then((res) => res.json())
+      .then((results) => {
+        if (!results?.length) return;
+        const result = results[0];
+        const lat = parseFloat(result.lat);
+        const lng = parseFloat(result.lon);
+        this.setPoint(type, lat, lng, result.display_name || address);
+        this.drawRoute();
+      })
+      .catch(() => {
+        // Ignore geocoding failures and keep the typed address visible.
+      });
+  }
+
+  reverseGeocode(lat: number, lng: number, type: 'pickup' | 'dropoff') {
+    const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`;
+    fetch(url, { headers: { Accept: 'application/json' } as HeadersInit })
+      .then((res) => res.json())
+      .then((result) => {
+        const label = result?.display_name || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+        this.setPoint(type, lat, lng, label);
+        this.drawRoute();
+      })
+      .catch(() => {
+        this.setPoint(type, lat, lng, `${lat.toFixed(4)}, ${lng.toFixed(4)}`);
         this.drawRoute();
       });
-    }, 100);
   }
 
   drawRoute() {

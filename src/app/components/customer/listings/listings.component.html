@@ -52,11 +52,11 @@
               </div>
               <div class="col-md-6">
                 <label class="form-label fw-semibold" for="pickupAddress">Pickup Address</label>
-                <input id="pickupAddress" class="form-control" [(ngModel)]="form.pickupAddress" name="pickupAddress" required placeholder="Street, City or click map">
+                <input id="pickupAddress" class="form-control" [ngModel]="form.pickupAddress" (ngModelChange)="onPickupAddressInput($event)" name="pickupAddress" required placeholder="Street, City or click map">
               </div>
               <div class="col-md-6">
                 <label class="form-label fw-semibold" for="dropoffAddress">Dropoff Address</label>
-                <input id="dropoffAddress" class="form-control" [(ngModel)]="form.dropoffAddress" name="dropoffAddress" required placeholder="Street, City or click map">
+                <input id="dropoffAddress" class="form-control" [ngModel]="form.dropoffAddress" (ngModelChange)="onDropoffAddressInput($event)" name="dropoffAddress" required placeholder="Street, City or click map">
               </div>
               <div class="col-md-4">
                 <label class="form-label fw-semibold">Weight (kg)</label>
