@@ -1,0 +1,49 @@
+<div class="customer-portal-surface">
+  <div class="portal-hero d-flex align-items-center justify-content-between gap-3 flex-wrap">
+    <div>
+      <div class="hero-badge mb-3">Order History</div>
+      <h4 class="mb-1">Archived customer shipments and completed requests</h4>
+      <p>Review delivered, expired, and cancelled orders in one place without cluttering the active dashboard.</p>
+    </div>
+    <button class="btn btn-outline-light" routerLink="/customer/listings">Back to active orders</button>
+  </div>
+
+  <div class="portal-panel">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <div>
+        <h5 class="fw-bold mb-1">Past Orders</h5>
+        <p class="text-muted mb-0">Everything that has already finished or expired</p>
+      </div>
+      <span class="badge bg-secondary-subtle text-secondary">{{ history().length }} archived</span>
+    </div>
+
+    @if (loading()) {
+      <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
+    } @else if (history().length === 0) {
+      <div class="text-center py-5">
+        <div class="hero-icon large"><span class="material-icons-outlined icon-large">history</span></div>
+        <h5 class="text-muted">No completed orders yet</h5>
+        <p class="text-muted">Your delivered, cancelled, or expired shipments will appear here.</p>
+      </div>
+    } @else {
+      <div class="row g-3">
+        @for (order of history(); track order.id) {
+          <div class="col-md-6 col-xl-4">
+            <div class="card h-100 border-0 shadow-sm">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h6 class="fw-bold mb-0">{{ order.title }}</h6>
+                  <span class="badge bg-{{ statusBadge(order.status) }}">{{ statusLabel(order.status) }}</span>
+                </div>
+                <p class="text-muted small mb-2"><span class="material-icons-outlined align-middle me-1">label</span>{{ order.cargoType }} · {{ order.weight }}kg</p>
+                <p class="small mb-1"><span class="material-icons-outlined align-middle me-1">place</span>{{ order.pickupAddress }}</p>
+                <p class="small mb-2"><span class="material-icons-outlined align-middle me-1">flag</span>{{ order.dropoffAddress }}</p>
+                <a [routerLink]="['/customer/listing', order.id]" class="btn btn-sm btn-outline-secondary w-100">View details <span class="material-icons-outlined align-middle me-0">east</span></a>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

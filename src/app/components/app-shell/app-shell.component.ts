@@ -10,10 +10,16 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './app-shell.component.html'
 })
 export class AppShellComponent {
+  sidebarCollapsed = false;
+
   constructor(public auth: AuthService, private router: Router) {}
 
   get role(): 'customer' | 'partner' {
     return (this.auth.currentUser()?.role as 'customer' | 'partner') || 'customer';
+  }
+
+  toggleSidebar() {
+    this.sidebarCollapsed = !this.sidebarCollapsed;
   }
 
   logout() {

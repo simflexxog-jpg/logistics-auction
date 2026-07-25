@@ -72,6 +72,12 @@ select {
   padding: 1rem 0 1.2rem;
   background: linear-gradient(180deg, #0b1830 0%, #111f3d 100%);
   box-shadow: inset -1px 0 0 rgba(255,255,255,0.08), 0 22px 48px rgba(9, 21, 44, 0.22);
+  transition: width 0.25s ease, min-width 0.25s ease;
+}
+
+.sidebar.collapsed {
+  width: 92px;
+  min-width: 92px;
 }
 
 .sidebar-brand {
@@ -81,6 +87,37 @@ select {
   padding: 0.8rem 1.15rem 1.2rem;
   margin: 0 0.8rem 0.6rem;
   border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.brand-copy {
+  min-width: 0;
+}
+
+.sidebar.collapsed .brand-copy,
+.sidebar.collapsed .sidebar-section-title,
+.sidebar.collapsed .nav-label,
+.sidebar.collapsed .nav-hint,
+.sidebar.collapsed .sidebar-user-card .user-meta,
+.sidebar.collapsed .sidebar-footer .btn,
+.sidebar.collapsed .sidebar-status-pill {
+  display: none;
+}
+
+.sidebar-toggle {
+  margin-left: auto;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  cursor: pointer;
+}
+
+.sidebar-toggle:hover {
+  background: rgba(255,255,255,0.16);
 }
 
 .brand-mark {
@@ -185,6 +222,10 @@ select {
   margin-top: auto;
   padding: 0.8rem 1rem 0.2rem;
   border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.sidebar.collapsed .sidebar-footer {
+  padding: 0.8rem 0.6rem 0.2rem;
 }
 
 .sidebar-user-card {

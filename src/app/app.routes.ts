@@ -32,6 +32,10 @@ export const routes: Routes = [
         path: 'addons',
         loadComponent: () => import('./components/customer/addons/addons.component').then(m => m.CustomerAddonsComponent)
       },
+      {
+        path: 'order-history',
+        loadComponent: () => import('./components/customer/order-history/order-history.component').then(m => m.OrderHistoryComponent)
+      },
       { path: '', redirectTo: 'listings', pathMatch: 'full' }
     ]
   },

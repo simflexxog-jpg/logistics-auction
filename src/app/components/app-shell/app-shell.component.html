@@ -1,13 +1,16 @@
 <div class="app-layout">
-  <nav class="sidebar">
+  <nav class="sidebar" [class.collapsed]="sidebarCollapsed">
     <div class="sidebar-brand">
       <div class="brand-mark sidebar-symbol">
         <i class="bi bi-truck"></i>
       </div>
-      <div>
+      <div class="brand-copy">
         <div class="brand-kicker">Renta</div>
         <div class="brand-title">Logistics</div>
       </div>
+      <button class="sidebar-toggle" type="button" (click)="toggleSidebar()" [attr.aria-label]="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+        <i class="bi" [class.bi-chevron-left]="!sidebarCollapsed" [class.bi-chevron-right]="sidebarCollapsed"></i>
+      </button>
     </div>
 
     <div class="sidebar-section">
@@ -25,6 +28,13 @@
             <span class="nav-icon"><i class="bi bi-plus-square"></i></span>
             <span class="nav-label">Add-on Shipments</span>
             <span class="nav-hint">Brief</span>
+          </a>
+        </li>
+        <li class="nav-item" *ngIf="role === 'customer'">
+          <a class="nav-link sidebar-nav-link" routerLink="/customer/order-history" routerLinkActive="active">
+            <span class="nav-icon"><i class="bi bi-clock-history"></i></span>
+            <span class="nav-label">Order History</span>
+            <span class="nav-hint">Archive</span>
           </a>
         </li>
         <li class="nav-item" *ngIf="role === 'partner'">
