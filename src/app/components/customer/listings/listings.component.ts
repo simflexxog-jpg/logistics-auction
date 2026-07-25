@@ -212,6 +212,28 @@ export class CustomerListingsComponent implements OnInit, AfterViewInit {
     return `${h}h ${m}m`;
   }
 
+  getActiveListings() {
+    return this.listings().filter((listing) => !this.isOrderHistoryStatus(listing.status));
+  }
+
+  getOrderHistory() {
+    return this.listings().filter((listing) => this.isOrderHistoryStatus(listing.status));
+  }
+
+  isOrderHistoryStatus(status: string): boolean {
+    return ['delivered', 'auction_ended', 'cancelled'].includes((status || '').toLowerCase());
+  }
+
+  historyBadge(status: string): string {
+    const map: any = { delivered: 'success', auction_ended: 'warning', cancelled: 'secondary' };
+    return map[status] || 'secondary';
+  }
+
+  historyLabel(status: string): string {
+    const labels: any = { delivered: 'Delivered', auction_ended: 'Expired', cancelled: 'Cancelled' };
+    return labels[status] || status;
+  }
+
   statusBadge(status: string): string {
     const map: any = { open: 'success', auction_ended: 'warning', accepted: 'info', paid: 'info', picked_up: 'primary', in_transit: 'primary', delivered: 'secondary', cancelled: 'danger' };
     return map[status] || 'secondary';
