@@ -1,10 +1,21 @@
     @if (loading()) {
       <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
     } @else if (stats()) {
-      <div class="mb-4">
-        <h4 class="fw-bold mb-0">Welcome back, {{ stats().partner?.name }} <span class="material-icons-outlined align-middle">wave</span></h4>
-        <p class="text-muted">{{ stats().partner?.truckType }} · {{ stats().partner?.truckCapacity }} ton capacity</p>
-      </div>
+      <div class="customer-portal-surface">
+        <div class="portal-hero d-flex align-items-center justify-content-between gap-3 flex-wrap">
+          <div>
+            <div class="hero-badge mb-3">Partner Workspace</div>
+            <h4 class="fw-bold mb-1">Welcome back, {{ stats().partner?.name }}</h4>
+            <p>{{ stats().partner?.truckType }} · {{ stats().partner?.truckCapacity }} ton capacity</p>
+          </div>
+          <span class="badge bg-light text-primary fw-semibold">Live operations</span>
+        </div>
+
+        <div class="portal-panel">
+          <div class="mb-4">
+            <h5 class="fw-bold mb-1">Fleet performance at a glance</h5>
+            <p class="text-muted mb-0">Track revenue, bids, and active jobs from one polished control center.</p>
+          </div>
 
       <!-- Stats cards -->
       <div class="row g-3 mb-4">
@@ -102,7 +113,7 @@
 
       <!-- Recent jobs -->
       @if (stats().recentJobs?.length) {
-        <div class="card shadow-sm">
+        <div class="card shadow-sm border-0">
           <div class="card-header fw-semibold"><span class="material-icons-outlined align-middle me-1">schedule</span>Recent Jobs</div>
           <div class="list-group list-group-flush">
             @for (job of stats().recentJobs; track job.id) {
@@ -127,4 +138,6 @@
           </div>
         </div>
       }
+        </div>
+      </div>
     }

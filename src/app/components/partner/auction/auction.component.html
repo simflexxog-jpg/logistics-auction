@@ -1,7 +1,16 @@
-    <div class="d-flex h-100 min-vh-100">
+    <div class="customer-portal-surface p-0">
+      <div class="portal-hero d-flex align-items-center justify-content-between gap-3 flex-wrap mb-3">
+        <div>
+          <div class="hero-badge mb-3">Partner Auctions</div>
+          <h4 class="fw-bold mb-1">Find freight and place smarter bids</h4>
+          <p>Browse live listings, compare routes, and win jobs with confidence.</p>
+        </div>
+        <span class="badge bg-light text-primary fw-semibold">Live bidding</span>
+      </div>
 
+      <div class="d-flex h-100 min-vh-100 rounded-4 overflow-hidden border border-1 border-light-subtle">
       <!-- Listing list panel -->
-      <div class="auction-list border-end sidebar-scroll">
+      <div class="auction-list border-end sidebar-scroll bg-white">
         <div class="p-3 border-bottom bg-white sticky-top">
           <h5 class="fw-bold mb-0"><span class="material-icons-outlined align-middle me-1">sell</span>Open Auctions</h5>
           <small class="text-muted">Click a listing to bid · Lowest bid wins</small>
@@ -36,7 +45,7 @@
       </div>
 
       <!-- Detail + bid panel -->
-      <div class="flex-grow-1 overflow-auto p-4">
+      <div class="flex-grow-1 overflow-auto p-4 bg-light-subtle">
         @if (!selectedListing()) {
           <div class="text-center py-5 text-muted">
             <div class="hero-icon large"><span class="material-icons-outlined icon-large">sell</span></div>
@@ -123,4 +132,5 @@
           </div>
         }
       </div>
+    </div>
     </div>

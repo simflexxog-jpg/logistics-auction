@@ -153,6 +153,19 @@ select {
 .sidebar .nav-link.active .nav-icon {
   background: linear-gradient(135deg, #2563eb 0%, #38bdf8 100%);
   color: #fff;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.28);
+}
+
+.sidebar-symbol {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+  color: #fff;
+  font-size: 1.05rem;
+  border: 1px solid rgba(255,255,255,0.14);
 }
 
 .nav-label {

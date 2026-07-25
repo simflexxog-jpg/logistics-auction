@@ -1,6 +1,16 @@
-    <div class="d-flex min-vh-100">
+    <div class="customer-portal-surface p-0">
+      <div class="portal-hero d-flex align-items-center justify-content-between gap-3 flex-wrap mb-3">
+        <div>
+          <div class="hero-badge mb-3">Partner Jobs</div>
+          <h4 class="fw-bold mb-1">Manage active shipments and customer communication</h4>
+          <p>Track every accepted delivery from pickup to final handoff.</p>
+        </div>
+        <span class="badge bg-light text-success fw-semibold">Shipment board</span>
+      </div>
+
+      <div class="d-flex min-vh-100 rounded-4 overflow-hidden border border-1 border-light-subtle">
       <!-- Jobs list -->
-      <div class="border-end sidebar-job-panel">
+      <div class="border-end sidebar-job-panel bg-white">
         <div class="p-3 border-bottom bg-white sticky-top">
           <h5 class="fw-bold mb-0"><span class="material-icons-outlined align-middle me-1">local_shipping</span>My won jobs</h5>
           <small class="text-muted">Accepted bids and active shipments</small>
@@ -36,7 +46,7 @@
       </div>
 
       <!-- Job detail -->
-      <div class="flex-grow-1 overflow-auto p-4">
+      <div class="flex-grow-1 overflow-auto p-4 bg-light-subtle">
         @if (!selectedJob()) {
           <div class="text-center py-5 text-muted">
             <div class="hero-icon large"><span class="material-icons-outlined icon-large">local_shipping</span></div>
@@ -132,4 +142,5 @@
           }
         }
       </div>
+    </div>
     </div>
