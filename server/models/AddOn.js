@@ -6,6 +6,7 @@ const AddOn = sequelize.define('AddOn', {
   customerId: { type: DataTypes.UUID, allowNull: false },
   mainListingId: { type: DataTypes.UUID }, // claimed to this listing
   partnerId: { type: DataTypes.UUID },
+  orgId: { type: DataTypes.UUID }, // Multi-tenancy
   title: { type: DataTypes.STRING, allowNull: false },
   description: { type: DataTypes.TEXT },
   weight: { type: DataTypes.FLOAT, allowNull: false },

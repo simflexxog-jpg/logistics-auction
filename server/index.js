@@ -3,12 +3,15 @@ const express = require('express');
 const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
+const helmet = require('helmet');
 const path = require('path');
 const fs = require('fs');
 
 const { syncDB } = require('./models');
 const setupSocket = require('./socket');
 const { startAuctionCron } = require('./cron');
+const { apiLimiter } = require('./middleware/rateLimit');
+const { redis } = require('./utils/redis');
 
 const app = express();
 const server = http.createServer(app);
@@ -21,10 +24,18 @@ const io = new Server(server, {
 
 app.set('io', io);
 
-// Middleware
+// Security middleware
+app.use(helmet()); // Adds various HTTP headers to protect against vulnerabilities
+
+// CORS middleware
 app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:4200', credentials: true }));
+
+// Body parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// General API rate limiting
+app.use(apiLimiter);
 
 // API Routes
 app.use('/api/auth', require('./routes/auth'));
@@ -36,6 +47,9 @@ app.use('/api/ai', require('./routes/ai'));
 app.use('/api/ratings', require('./routes/ratings'));
 app.use('/api/addons', require('./routes/addons'));
 app.use('/api/partner', require('./routes/partner'));
+app.use('/api/customer', require('./routes/customer.routes'));
+app.use('/api/carrier', require('./routes/carrier.routes'));
+app.use('/api/admin', require('./routes/admin.routes'));
 
 // Health check
 app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date() }));
