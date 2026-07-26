@@ -46,12 +46,15 @@ router.post('/', auth, requireRole('customer'), async (req, res) => {
     const { title, description, cargoType, weight, dimensions,
       pickupAddress, pickupLat, pickupLng,
       dropoffAddress, dropoffLat, dropoffLng,
-      auctionEndsAt, isAddOnEligible, maxAddOnWeight } = req.body;
+      auctionEndsAt, auctionDuration, auctionDurationHours, isAddOnEligible, maxAddOnWeight } = req.body;
+
+    const durationHours = Number(auctionDurationHours ?? auctionDuration ?? 24);
+    const computedAuctionEndsAt = auctionEndsAt || new Date(Date.now() + durationHours * 3600000).toISOString();
 
     const listing = await Listing.create({
       customerId: req.user.id, title, description, cargoType, weight, dimensions,
       pickupAddress, pickupLat, pickupLng, dropoffAddress, dropoffLat, dropoffLng,
-      auctionEndsAt, isAddOnEligible, maxAddOnWeight
+      auctionEndsAt: computedAuctionEndsAt, isAddOnEligible, maxAddOnWeight
     });
     res.status(201).json(listing);
   } catch (err) {
