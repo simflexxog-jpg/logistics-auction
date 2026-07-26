@@ -1,4 +1,7 @@
-﻿*, *::before, *::after {
+﻿@import "bootstrap/dist/css/bootstrap.min.css";
+@import "bootstrap-icons/font/bootstrap-icons.css";
+
+*, *::before, *::after {
   box-sizing: border-box;
 }
 

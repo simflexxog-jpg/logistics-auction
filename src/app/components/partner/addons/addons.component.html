@@ -18,17 +18,19 @@
       <strong>How it works:</strong> Pick an add-on and select your active main shipment. The system checks that the add-on pickup and dropoff are within <strong>2km</strong> of your route. If valid, it's yours.
     </div>
 
-    @if (loading()) {
+    <ng-container *ngIf="loading()">
       <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
-    } @else if (addons().length === 0) {
+    </ng-container>
+    <ng-container *ngIf="!loading() && addons().length === 0">
       <div class="text-center py-5">
         <div class="hero-icon large"><span class="material-icons-outlined icon-large">add</span></div>
         <h5 class="text-muted">No add-on shipments available</h5>
         <p class="text-muted">Check back when you have an active shipment</p>
       </div>
-    } @else {
+    </ng-container>
+    <ng-container *ngIf="!loading() && addons().length > 0">
       <div class="row g-3">
-        @for (addon of addons(); track addon.id) {
+        <ng-container *ngFor="let addon of addons()">
           <div class="col-md-6 col-xl-4">
             <div class="card h-100 listing-card">
               <div class="card-body">
@@ -40,34 +42,33 @@
                 <p class="small mb-1"><span class="material-icons-outlined align-middle me-1">place</span>{{ addon.pickupAddress }}</p>
                 <p class="small mb-3"><span class="material-icons-outlined align-middle me-1">flag</span>{{ addon.dropoffAddress }}</p>
 
-                @if (myJobs().length === 0) {
+                <ng-container *ngIf="myJobs().length === 0">
                   <div class="alert alert-warning small py-2">You need an active in-transit shipment to claim add-ons.</div>
-                } @else {
+                </ng-container>
+                <ng-container *ngIf="myJobs().length > 0">
                   <div class="mb-2">
                     <label class="form-label small fw-semibold">Select your active job</label>
                     <select class="form-select form-select-sm" title="Select active job" aria-label="Select active job" [(ngModel)]="selectedListing[addon.id]" [name]="'job-' + addon.id">
                       <option value="">— Choose job —</option>
-                      @for (job of myJobs(); track job.id) {
+                      <ng-container *ngFor="let job of myJobs()">
                         <option [value]="job.listingId">{{ job.Listing?.title }}</option>
-                      }
+                      </ng-container>
                     </select>
                   </div>
-                  @if (claimResult[addon.id]) {
-                    <div class="small mb-2 text-truncate" [class.text-success]="claimResult[addon.id].startsWith('Claimed successfully')" [class.text-danger]="claimResult[addon.id].startsWith('Claim failed')">
-                      <span class="material-icons-outlined align-middle me-1 icon-small">{{ claimResult[addon.id].startsWith('Claimed successfully') ? 'check_circle' : 'error' }}</span>
-                      {{ claimResult[addon.id] }}
-                    </div>
-                  }
+                  <div *ngIf="claimResult[addon.id]" class="small mb-2 text-truncate" [class.text-success]="claimResult[addon.id].startsWith('Claimed successfully')" [class.text-danger]="claimResult[addon.id].startsWith('Claim failed')">
+                    <span class="material-icons-outlined align-middle me-1 icon-small">{{ claimResult[addon.id].startsWith('Claimed successfully') ? 'check_circle' : 'error' }}</span>
+                    {{ claimResult[addon.id] }}
+                  </div>
                   <button class="btn btn-sm btn-warning w-100 fw-semibold" (click)="claim(addon.id)" [disabled]="claiming[addon.id]">
-                    @if (claiming[addon.id]) { <span class="spinner-border spinner-border-sm me-1"></span> }
+                    <span *ngIf="claiming[addon.id]" class="spinner-border spinner-border-sm me-1"></span>
                     Claim Add-on (2km check)
                   </button>
-                }
+                </ng-container>
               </div>
             </div>
           </div>
-        }
+        </ng-container>
       </div>
-    }
+    </ng-container>
       </div>
     </div>

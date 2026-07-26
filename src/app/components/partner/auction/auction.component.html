@@ -16,12 +16,14 @@
           <small class="text-muted">Click a listing to bid · Lowest bid wins</small>
         </div>
 
-        @if (loading()) {
+        <ng-container *ngIf="loading()">
           <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
-        } @else if (listings().length === 0) {
+        </ng-container>
+        <ng-container *ngIf="!loading() && listings().length === 0">
           <div class="text-center py-5 text-muted">No open auctions right now</div>
-        } @else {
-          @for (l of listings(); track l.id) {
+        </ng-container>
+        <ng-container *ngIf="!loading() && listings().length > 0">
+          <ng-container *ngFor="let l of listings()">
             <div class="auction-item p-3 border-bottom cursor-pointer"
               [class.selected]="selectedListing()?.id === l.id"
               (click)="selectListing(l)">
@@ -35,23 +37,22 @@
               <div class="d-flex justify-content-between align-items-center">
                 <span class="badge bg-danger small"><span class="material-icons-outlined icon-small align-middle">schedule</span> {{ timers[l.id] || '...' }}</span>
                 <span class="small text-muted">{{ l.bids?.length || 0 }} bid(s)</span>
-                @if (myBid(l)) {
-                  <span class="badge bg-primary small">My bid: ₹{{ myBid(l).amount }}</span>
-                }
+                <span *ngIf="myBid(l)" class="badge bg-primary small">My bid: ₹{{ myBid(l).amount }}</span>
               </div>
             </div>
-          }
-        }
+          </ng-container>
+        </ng-container>
       </div>
 
       <!-- Detail + bid panel -->
       <div class="flex-grow-1 overflow-auto p-4 bg-light-subtle">
-        @if (!selectedListing()) {
+        <ng-container *ngIf="!selectedListing()">
           <div class="text-center py-5 text-muted">
             <div class="hero-icon large"><span class="material-icons-outlined icon-large">sell</span></div>
             <h5 class="mt-3">Select a listing to view details and place a bid</h5>
           </div>
-        } @else {
+        </ng-container>
+        <ng-container *ngIf="selectedListing()">
           <div class="d-flex justify-content-between align-items-start mb-3">
             <div>
               <h4 class="fw-bold mb-1">{{ selectedListing().title }}</h4>
@@ -59,9 +60,7 @@
             </div>
             <div class="text-end">
               <div class="badge bg-danger fs-6 mb-1"><span class="material-icons-outlined icon-small align-middle">schedule</span> {{ timers[selectedListing().id] }}</div>
-              @if (lowestBid(selectedListing())) {
-                <div class="small text-muted">Current lowest: <strong class="text-primary">₹{{ lowestBid(selectedListing()) }}</strong></div>
-              }
+              <div *ngIf="lowestBid(selectedListing())" class="small text-muted">Current lowest: <strong class="text-primary">₹{{ lowestBid(selectedListing()) }}</strong></div>
             </div>
           </div>
 
@@ -78,15 +77,9 @@
               <div class="card border-primary shadow-sm h-100">
                 <div class="card-header bg-primary text-white fw-semibold">Place Your Bid</div>
                 <div class="card-body">
-                  @if (bidSuccess()) {
-                    <div class="alert alert-success">{{ bidSuccess() }}</div>
-                  }
-                  @if (bidError()) {
-                    <div class="alert alert-danger">{{ bidError() }}</div>
-                  }
-                  @if (myBid(selectedListing())) {
-                    <div class="alert alert-info small">Your current bid: <strong>₹{{ myBid(selectedListing()).amount }}</strong>. Submit again to update.</div>
-                  }
+                  <div *ngIf="bidSuccess()" class="alert alert-success">{{ bidSuccess() }}</div>
+                  <div *ngIf="bidError()" class="alert alert-danger">{{ bidError() }}</div>
+                  <div *ngIf="myBid(selectedListing())" class="alert alert-info small">Your current bid: <strong>₹{{ myBid(selectedListing()).amount }}</strong>. Submit again to update.</div>
                   <div class="mb-3">
                     <label class="form-label fw-semibold">Your Bid Amount (₹)</label>
                     <input type="number" class="form-control form-control-lg" [(ngModel)]="bidAmount" placeholder="e.g. 4500" min="1">
@@ -97,7 +90,7 @@
                     <textarea class="form-control" [(ngModel)]="bidNote" rows="2" placeholder="Availability, special notes..."></textarea>
                   </div>
                   <button class="btn btn-primary w-100" (click)="placeBid()" [disabled]="placing() || selectedListing().status !== 'open'">
-                    @if (placing()) { <span class="spinner-border spinner-border-sm me-2"></span> }
+                    <span *ngIf="placing()" class="spinner-border spinner-border-sm me-2"></span>
                     {{ myBid(selectedListing()) ? 'Update Bid' : 'Place Bid' }}
                   </button>
                 </div>
@@ -109,25 +102,26 @@
           <div class="card shadow-sm">
             <div class="card-header fw-semibold"><span class="material-icons-outlined align-middle me-1">analytics</span>Live bid leaderboard</div>
             <div class="card-body p-0">
-              @if (!selectedListing().bids?.length) {
+              <ng-container *ngIf="!selectedListing().bids?.length">
                 <div class="text-center py-3 text-muted">No bids yet — be the first!</div>
-              } @else {
+              </ng-container>
+              <ng-container *ngIf="selectedListing().bids?.length">
                 <table class="table table-sm mb-0">
                   <thead class="table-light">
                     <tr><th>Rank</th><th>Partner</th><th>Rating</th><th>Amount</th></tr>
                   </thead>
                   <tbody>
-                    @for (bid of sortedListingBids(selectedListing()); track bid.id; let i = $index) {
+                    <ng-container *ngFor="let bid of sortedListingBids(selectedListing()); let i = index">
                       <tr [class.table-success]="i === 0" [class.table-primary]="bid.partnerId === auth.currentUser()?.id">
                         <td>{{ i + 1 }}</td>
-                        <td>{{ bid.partner?.name }} @if (bid.partnerId === auth.currentUser()?.id) { <span class="badge bg-primary ms-1">You</span> }</td>
+                        <td>{{ bid.partner?.name }} <span *ngIf="bid.partnerId === auth.currentUser()?.id" class="badge bg-primary ms-1">You</span></td>
                         <td><span class="material-icons-outlined align-middle icon-small">star</span> {{ bid.partner?.avgRating || 'New' }}</td>
                         <td class="fw-bold">₹{{ bid.amount }}</td>
                       </tr>
-                    }
+                    </ng-container>
                   </tbody>
                 </table>
-              }
+              </ng-container>
             </div>
           </div>
         }

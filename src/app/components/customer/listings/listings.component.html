@@ -19,15 +19,11 @@
           <span class="badge bg-primary-subtle text-primary">Live marketplace</span>
         </div>
 
-    @if (success()) {
-      <div class="alert alert-success alert-dismissible rounded-pill">{{ success() }} <button class="btn-close" title="Close notification" aria-label="Close notification" (click)="success.set('')"></button></div>
-    }
-    @if (error()) {
-      <div class="alert alert-danger alert-dismissible rounded-pill">{{ error() }} <button class="btn-close" title="Close notification" aria-label="Close notification" (click)="error.set('')"></button></div>
-    }
+    <div *ngIf="success()" class="alert alert-success alert-dismissible rounded-pill">{{ success() }} <button class="btn-close" title="Close notification" aria-label="Close notification" (click)="success.set('')"></button></div>
+    <div *ngIf="error()" class="alert alert-danger alert-dismissible rounded-pill">{{ error() }} <button class="btn-close" title="Close notification" aria-label="Close notification" (click)="error.set('')"></button></div>
 
     <!-- Create Listing Form -->
-    @if (showForm()) {
+    <ng-container *ngIf="showForm()">
       <div class="card shadow-sm mb-4 border-0">
         <div class="card-header bg-primary text-white fw-semibold"><span class="material-icons-outlined align-middle me-1">inventory_2</span>New logistics listing</div>
         <div class="card-body">
@@ -88,23 +84,17 @@
                 <div class="d-flex gap-2 mb-2">
                   <button type="button" class="btn btn-sm" [class.btn-success]="selectingFor === 'pickup'" [class.btn-outline-success]="selectingFor !== 'pickup'" (click)="selectPoint('pickup')">
                     <span class="material-icons-outlined align-middle me-1">place</span>Set pickup
-                    @if (form.pickupLat) { <span class="material-icons-outlined align-middle ms-1 icon-small">check</span> }
+                    <span *ngIf="form.pickupLat" class="material-icons-outlined align-middle ms-1 icon-small">check</span>
                   </button>
                   <button type="button" class="btn btn-sm" [class.btn-danger]="selectingFor === 'dropoff'" [class.btn-outline-danger]="selectingFor !== 'dropoff'" (click)="selectPoint('dropoff')">
                     <span class="material-icons-outlined align-middle me-1">flag</span>Set dropoff
-                    @if (form.dropoffLat) { <span class="material-icons-outlined align-middle ms-1 icon-small">check</span> }
+                    <span *ngIf="form.dropoffLat" class="material-icons-outlined align-middle ms-1 icon-small">check</span>
                   </button>
-                  @if (selectingFor) {
-                    <span class="badge bg-warning text-dark align-self-center">Click on map to place {{ selectingFor }} point</span>
-                  }
+                  <span *ngIf="selectingFor" class="badge bg-warning text-dark align-self-center">Click on map to place {{ selectingFor }} point</span>
                 </div>
                 <div id="listing-map" class="map-box"></div>
-                @if (form.pickupAddress) {
-                  <small class="text-success"><span class="material-icons-outlined align-middle me-1">place</span>Pickup: {{ form.pickupAddress }}</small>
-                }
-                @if (form.dropoffAddress) {
-                  <br><small class="text-danger"><span class="material-icons-outlined align-middle me-1">flag</span>Dropoff: {{ form.dropoffAddress }}</small>
-                }
+                <small *ngIf="form.pickupAddress" class="text-success"><span class="material-icons-outlined align-middle me-1">place</span>Pickup: {{ form.pickupAddress }}</small>
+                <br *ngIf="form.dropoffAddress"><small *ngIf="form.dropoffAddress" class="text-danger"><span class="material-icons-outlined align-middle me-1">flag</span>Dropoff: {{ form.dropoffAddress }}</small>
               </div>
 
               <div class="col-12">
@@ -113,16 +103,14 @@
                   <label class="form-check-label" for="addon">Allow add-on shipments on this route</label>
                 </div>
               </div>
-              @if (form.isAddOnEligible) {
-                <div class="col-md-4">
-                  <label class="form-label fw-semibold" for="maxAddOnWeight">Max add-on weight (kg)</label>
-                  <input id="maxAddOnWeight" type="number" class="form-control" [(ngModel)]="form.maxAddOnWeight" name="maxAddOnWeight" placeholder="e.g. 200">
-                </div>
-              }
+              <div *ngIf="form.isAddOnEligible" class="col-md-4">
+                <label class="form-label fw-semibold" for="maxAddOnWeight">Max add-on weight (kg)</label>
+                <input id="maxAddOnWeight" type="number" class="form-control" [(ngModel)]="form.maxAddOnWeight" name="maxAddOnWeight" placeholder="e.g. 200">
+              </div>
 
               <div class="col-12">
                 <button type="submit" class="btn btn-primary" [disabled]="submitting()">
-                  @if (submitting()) { <span class="spinner-border spinner-border-sm me-2"></span> }
+                  <span *ngIf="submitting()" class="spinner-border spinner-border-sm me-2"></span>
                   Post Listing & Start Auction
                 </button>
               </div>
@@ -130,20 +118,22 @@
           </form>
         </div>
       </div>
-    }
+    </ng-container>
 
     <!-- Listings Grid -->
-    @if (loading()) {
+    <ng-container *ngIf="loading()">
       <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
-    } @else if (getActiveListings().length === 0) {
+    </ng-container>
+    <ng-container *ngIf="!loading() && getActiveListings().length === 0">
       <div class="text-center py-5">
         <div class="hero-icon large"><span class="material-icons-outlined icon-large">inventory_2</span></div>
         <h5 class="text-muted">No listings yet</h5>
         <p class="text-muted">Post your first logistics listing to start receiving bids</p>
       </div>
-    } @else {
+    </ng-container>
+    <ng-container *ngIf="!loading() && getActiveListings().length > 0">
       <div class="row g-3">
-        @for (listing of getActiveListings(); track listing.id) {
+        <ng-container *ngFor="let listing of getActiveListings()">
           <div class="col-md-6 col-xl-4">
             <div class="card h-100 listing-card">
               <div class="card-body">
@@ -155,24 +145,20 @@
                 <p class="small mb-1"><span class="material-icons-outlined align-middle me-1">place</span>{{ listing.pickupAddress }}</p>
                 <p class="small mb-2"><span class="material-icons-outlined align-middle me-1">flag</span>{{ listing.dropoffAddress }}</p>
 
-                @if (listing.status === 'open') {
-                  <div class="alert alert-success py-1 px-2 small mb-2">
-                    <span class="material-icons-outlined align-middle me-1">timer</span>Auction ends in: <strong>{{ getTimeLeft(listing.auctionEndsAt) }}</strong>
-                    · {{ listing.bids?.length || 0 }} bid(s)
-                  </div>
-                }
-                @if (listing.winningBid) {
-                  <div class="alert alert-info py-1 px-2 small mb-2">
-                    <span class="material-icons-outlined align-middle me-1">attach_money</span>Lowest bid: <strong>₹{{ listing.winningBid }}</strong>
-                  </div>
-                }
+                <div *ngIf="listing.status === 'open'" class="alert alert-success py-1 px-2 small mb-2">
+                  <span class="material-icons-outlined align-middle me-1">timer</span>Auction ends in: <strong>{{ getTimeLeft(listing.auctionEndsAt) }}</strong>
+                  · {{ listing.bids?.length || 0 }} bid(s)
+                </div>
+                <div *ngIf="listing.winningBid" class="alert alert-info py-1 px-2 small mb-2">
+                  <span class="material-icons-outlined align-middle me-1">attach_money</span>Lowest bid: <strong>₹{{ listing.winningBid }}</strong>
+                </div>
 
                 <a [routerLink]="['/customer/listing', listing.id]" class="btn btn-sm btn-outline-primary w-100">View details & bids <span class="material-icons-outlined align-middle me-0">east</span></a>
               </div>
             </div>
           </div>
-        }
+        </ng-container>
       </div>
-    }
+    </ng-container>
       </div>
     </div>

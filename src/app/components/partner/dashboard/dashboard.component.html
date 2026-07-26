@@ -1,6 +1,7 @@
-    @if (loading()) {
+    <ng-container *ngIf="loading()">
       <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
-    } @else if (stats()) {
+    </ng-container>
+    <ng-container *ngIf="!loading() && stats()">
       <div class="customer-portal-surface">
         <div class="portal-hero d-flex align-items-center justify-content-between gap-3 flex-wrap">
           <div>
@@ -62,7 +63,7 @@
         <div class="col-lg-6">
           <div class="card shadow-sm route-card h-100">
             <div class="card-header fw-semibold"><span class="material-icons-outlined align-middle me-1">map</span>Latest route snapshot</div>
-            @if (stats().recentJobs?.length) {
+            <ng-container *ngIf="stats().recentJobs?.length">
               <div class="card-body">
                 <div class="route-box route-pickup">
                   <div class="small text-uppercase text-muted mb-2">Pickup</div>
@@ -73,9 +74,10 @@
                   <div>{{ stats().recentJobs[0].dropoffAddress }}</div>
                 </div>
               </div>
-            } @else {
+            </ng-container>
+            <ng-container *ngIf="!stats().recentJobs?.length">
               <div class="card-body text-muted">No recent job route available yet.</div>
-            }
+            </ng-container>
           </div>
         </div>
         <div class="col-lg-6">
@@ -112,11 +114,11 @@
   </div>
 
       <!-- Recent jobs -->
-      @if (stats().recentJobs?.length) {
+      <ng-container *ngIf="stats().recentJobs?.length">
         <div class="card shadow-sm border-0">
           <div class="card-header fw-semibold"><span class="material-icons-outlined align-middle me-1">schedule</span>Recent Jobs</div>
           <div class="list-group list-group-flush">
-            @for (job of stats().recentJobs; track job.id) {
+            <ng-container *ngFor="let job of stats().recentJobs">
               <a [routerLink]="['/partner/job', job.id]" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                 <div>
                   <div class="fw-semibold">{{ job.title }}</div>
@@ -134,10 +136,10 @@
                   </span>
                 </div>
               </a>
-            }
+            </ng-container>
           </div>
         </div>
-      }
+      </ng-container>
         </div>
       </div>
     }

@@ -20,10 +20,10 @@
           <span class="badge bg-primary-subtle text-primary">Route-ready</span>
         </div>
 
-    @if (success()) { <div class="alert alert-success rounded-pill">{{ success() }}</div> }
-    @if (error()) { <div class="alert alert-danger rounded-pill">{{ error() }}</div> }
+    <div *ngIf="success()" class="alert alert-success rounded-pill">{{ success() }}</div>
+    <div *ngIf="error()" class="alert alert-danger rounded-pill">{{ error() }}</div>
 
-    @if (showForm()) {
+    <ng-container *ngIf="showForm()">
       <div class="card shadow-sm mb-4">
         <div class="card-header bg-warning text-dark fw-semibold"><span class="material-icons-outlined align-middle me-1">add</span>New add-on shipment</div>
         <div class="card-body">
@@ -74,7 +74,7 @@
               </div>
               <div class="col-12">
                 <button type="submit" class="btn btn-warning fw-semibold" [disabled]="submitting()">
-                  @if (submitting()) { <span class="spinner-border spinner-border-sm me-2"></span> }
+                  <span *ngIf="submitting()" class="spinner-border spinner-border-sm me-2"></span>
                   Post Add-on Shipment
                 </button>
               </div>
@@ -82,19 +82,21 @@
           </form>
         </div>
       </div>
-    }
+    </ng-container>
 
-    @if (loading()) {
+    <ng-container *ngIf="loading()">
       <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
-    } @else if (addons().length === 0) {
+    </ng-container>
+    <ng-container *ngIf="!loading() && addons().length === 0">
       <div class="text-center py-5">
         <div class="hero-icon"><span class="material-icons-outlined">add</span></div>
         <h5 class="text-muted">No add-on shipments yet</h5>
         <p class="text-muted">Post small cargo that can travel along existing routes</p>
       </div>
-    } @else {
+    </ng-container>
+    <ng-container *ngIf="!loading() && addons().length > 0">
       <div class="row g-3">
-        @for (addon of addons(); track addon.id) {
+        <ng-container *ngFor="let addon of addons()">
           <div class="col-md-6">
             <div class="card h-100 listing-card">
               <div class="card-body">
@@ -108,8 +110,8 @@
               </div>
             </div>
           </div>
-        }
+        </ng-container>
       </div>
-    }
+    </ng-container>
       </div>
     </div>

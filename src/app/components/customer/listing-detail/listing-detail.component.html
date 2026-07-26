@@ -1,6 +1,7 @@
-    @if (loading()) {
+    <ng-container *ngIf="loading()">
       <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
-    } @else if (listing()) {
+    </ng-container>
+    <ng-container *ngIf="!loading() && listing()">
       <div class="customer-portal-surface">
         <div class="portal-hero d-flex align-items-center justify-content-between gap-3 flex-wrap">
           <div>
@@ -71,22 +72,18 @@
               <div class="row g-2">
                 <div class="col-6"><small class="text-muted">Cargo Type</small><div class="fw-semibold">{{ listing().cargoType }}</div></div>
                 <div class="col-6"><small class="text-muted">Weight</small><div class="fw-semibold">{{ listing().weight }} kg</div></div>
-                @if (listing().dimensions) {
+                <ng-container *ngIf="listing().dimensions">
                   <div class="col-6"><small class="text-muted">Dimensions</small><div class="fw-semibold">{{ listing().dimensions }}</div></div>
-                }
+                </ng-container>
                 <div class="col-6"><small class="text-muted">Add-on Eligible</small><div class="fw-semibold">{{ listing().isAddOnEligible ? 'Yes (max ' + listing().maxAddOnWeight + 'kg)' : 'No' }}</div></div>
               </div>
-              @if (listing().status === 'open') {
-                <div class="mt-3 p-3 rounded bg-success bg-opacity-10 border border-success">
-                  <div class="text-success fw-bold text-center fs-5"><span class="material-icons-outlined align-middle me-1">timer</span>{{ timeLeft() }}</div>
-                  <div class="text-center text-muted small">Time remaining in auction</div>
-                </div>
-              }
-              @if (listing().winningBid) {
-                <div class="mt-3 p-3 rounded bg-info bg-opacity-10 border border-info">
-                  <div class="text-info fw-bold"><span class="material-icons-outlined align-middle me-1">attach_money</span>Lowest bid: ₹{{ listing().winningBid }}</div>
-                </div>
-              }
+              <div *ngIf="listing().status === 'open'" class="mt-3 p-3 rounded bg-success bg-opacity-10 border border-success">
+                <div class="text-success fw-bold text-center fs-5"><span class="material-icons-outlined align-middle me-1">timer</span>{{ timeLeft() }}</div>
+                <div class="text-center text-muted small">Time remaining in auction</div>
+              </div>
+              <div *ngIf="listing().winningBid" class="mt-3 p-3 rounded bg-info bg-opacity-10 border border-info">
+                <div class="text-info fw-bold"><span class="material-icons-outlined align-middle me-1">attach_money</span>Lowest bid: ₹{{ listing().winningBid }}</div>
+              </div>
             </div>
           </div>
         </div>
@@ -112,62 +109,65 @@
         </li>
       </ul>
 
-      @if (activeTab() === 'bids') {
+      <ng-container *ngIf="activeTab() === 'bids'">
         <div class="card shadow-sm">
           <div class="card-header fw-semibold d-flex justify-content-between">
             <span>Bids — lowest wins</span>
-            @if (listing().status === 'auction_ended') {
-              <span class="badge bg-warning text-dark">Auction ended — accept a bid</span>
-            }
+            <span *ngIf="listing().status === 'auction_ended'" class="badge bg-warning text-dark">Auction ended — accept a bid</span>
           </div>
           <div class="card-body p-0">
-            @if (sortedBids().length === 0) {
+            <ng-container *ngIf="sortedBids().length === 0">
               <div class="text-center py-4 text-muted">No bids yet.</div>
-            } @else {
+            </ng-container>
+            <ng-container *ngIf="sortedBids().length > 0">
               <table class="table table-hover mb-0">
                 <thead class="table-light">
                   <tr>
                     <th>Rank</th><th>Partner</th><th>Rating</th><th>Bid Amount</th><th>Note</th>
-                    @if (listing().status === 'auction_ended') { <th>Action</th> }
+                    <th *ngIf="listing().status === 'auction_ended'">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  @for (bid of sortedBids(); track bid.id; let i = $index) {
+                  <ng-container *ngFor="let bid of sortedBids(); let i = index">
                     <tr [class.table-success]="i === 0">
-                      <td>@if (i === 0) { <span class="badge bg-success"><span class="material-icons-outlined align-middle icon-small">emoji_events</span> Lowest</span> } @else { #{{ i + 1 }} }</td>
+                      <td>
+                        <ng-container *ngIf="i === 0">
+                          <span class="badge bg-success"><span class="material-icons-outlined align-middle icon-small">emoji_events</span> Lowest</span>
+                        </ng-container>
+                        <ng-container *ngIf="i !== 0">#{{ i + 1 }}</ng-container>
+                      </td>
                       <td class="fw-semibold">{{ bid.partner?.name }}</td>
                       <td>
-                        @for (s of [1,2,3,4,5]; track s) {
+                        <ng-container *ngFor="let s of [1,2,3,4,5]">
                           <span class="material-icons-outlined align-middle icon-small" [class.text-warning]="s <= (bid.partner?.avgRating || 0)" [class.text-muted]="s > (bid.partner?.avgRating || 0)">star</span>
-                        }
+                        </ng-container>
                         <small class="text-muted ms-1">({{ bid.partner?.avgRating || 'New' }})</small>
                       </td>
                       <td class="fw-bold text-primary">₹{{ bid.amount }}</td>
                       <td><small class="text-muted">{{ bid.note || '—' }}</small></td>
-                      @if (listing().status === 'auction_ended') {
-                        <td><button class="btn btn-sm btn-success" (click)="acceptBid(bid.id)">Accept</button></td>
-                      }
+                      <td *ngIf="listing().status === 'auction_ended'"><button class="btn btn-sm btn-success" (click)="acceptBid(bid.id)">Accept</button></td>
                     </tr>
-                  }
+                  </ng-container>
                 </tbody>
               </table>
-            }
+            </ng-container>
           </div>
         </div>
-      }
+      </ng-container>
 
-      @if (activeTab() === 'payment') {
+      <ng-container *ngIf="activeTab() === 'payment'">
         <div class="card shadow-sm">
           <div class="card-header fw-semibold"><span class="material-icons-outlined align-middle me-1">credit_card</span>Payment</div>
           <div class="card-body">
-            @if (paySuccess()) {
+            <ng-container *ngIf="paySuccess()">
               <div class="text-center py-4">
                 <div class="hero-icon large text-success"><span class="material-icons-outlined icon-large">check_circle</span></div>
                 <h4 class="text-success fw-bold mt-2">Payment Successful!</h4>
                 <p class="text-muted">₹{{ listing().winningBid }} paid. Your shipment is now in transit.</p>
                 <button class="btn btn-primary" (click)="activeTab.set('chat')">Open chat <span class="material-icons-outlined align-middle ms-1">east</span></button>
               </div>
-            } @else {
+            </ng-container>
+            <ng-container *ngIf="!paySuccess()">
               <div class="row justify-content-center">
                 <div class="col-md-5">
                   <div class="p-4 bg-light rounded mb-4">
@@ -185,7 +185,7 @@
                     </div>
                   </div>
                   <button class="btn btn-primary btn-lg w-100" (click)="pay()" [disabled]="paying()">
-                    @if (paying()) { <span class="spinner-border spinner-border-sm me-2"></span> }
+                    <span *ngIf="paying()" class="spinner-border spinner-border-sm me-2"></span>
                     Pay ₹{{ (listing().winningBid * 1.02).toFixed(2) }}
                   </button>
                   <p class="text-muted small text-center mt-2"><span class="material-icons-outlined align-middle me-1">lock</span>Secure simulated payment</p>
@@ -196,15 +196,13 @@
         </div>
       }
 
-      @if (activeTab() === 'chat') {
+      <ng-container *ngIf="activeTab() === 'chat'">
         <div class="card shadow-sm">
           <div class="card-header fw-semibold"><span class="material-icons-outlined align-middle me-1">chat_bubble_outline</span>Chat with partner</div>
           <div class="card-body p-0">
             <div class="p-3 chat-window" #chatWindow>
-              @if (chatMessages().length === 0) {
-                <div class="text-center text-muted py-5">No messages yet. Say hello!</div>
-              }
-              @for (msg of chatMessages(); track msg.id) {
+              <div *ngIf="chatMessages().length === 0" class="text-center text-muted py-5">No messages yet. Say hello!</div>
+              <ng-container *ngFor="let msg of chatMessages()">
                 <div class="d-flex mb-3" [class.justify-content-end]="msg.senderId === auth.currentUser()?.id">
                   <div class="p-3 rounded-3 shadow-sm chat-bubble"
                     [class.bg-primary]="msg.senderId === auth.currentUser()?.id"
@@ -215,7 +213,7 @@
                     <div class="small opacity-50 mt-1 text-end">{{ msg.createdAt | date:'h:mm a' }}</div>
                   </div>
                 </div>
-              }
+              </ng-container>
             </div>
           </div>
           <div class="card-footer">
@@ -225,41 +223,39 @@
             </div>
           </div>
         </div>
-      }
-      @if (activeTab() === 'ai') {
+      </ng-container>
+      <ng-container *ngIf="activeTab() === 'ai'">
         <div class="card shadow-sm">
           <div class="card-header fw-semibold"><span class="material-icons-outlined align-middle me-1">smart_toy</span>AI Logistics Assistant</div>
           <div class="card-body ai-chat-body">
-            @if (aiMessages().length === 0) {
-              <div class="text-center text-muted py-5">Ask the assistant for route optimizations or cargo planning.</div>
-            }
-            @for (msg of aiMessages(); track msg.id) {
+            <div *ngIf="aiMessages().length === 0" class="text-center text-muted py-5">Ask the assistant for route optimizations or cargo planning.</div>
+            <ng-container *ngFor="let msg of aiMessages()">
               <div class="d-flex mb-3" [class.justify-content-end]="msg.role === 'user'">
                 <div class="ai-message" [class.ai-user]="msg.role === 'user'" [class.ai-assistant]="msg.role === 'assistant'">
                   <div class="small text-muted mb-1">{{ msg.role === 'user' ? 'You' : 'Renta Assistant' }}</div>
                   <div>{{ msg.text }}</div>
                 </div>
               </div>
-            }
+            </ng-container>
           </div>
           <div class="card-footer">
             <div class="input-group">
               <input class="form-control" [(ngModel)]="aiInput" placeholder="Ask the assistant about route, timing, or pricing" (keyup.enter)="sendAIMessage()">
               <button class="btn btn-primary" (click)="sendAIMessage()" [disabled]="aiLoading()">Send</button>
             </div>
-            @if (aiLoading()) { <div class="text-muted small mt-2">Generating expert logistics guidance...</div> }
+            <div *ngIf="aiLoading()" class="text-muted small mt-2">Generating expert logistics guidance...</div>
           </div>
         </div>
-      }
+      </ng-container>
 
-      @if (activeTab() === 'rate') {
+      <ng-container *ngIf="activeTab() === 'rate'">
         <div class="card shadow-sm">
           <div class="card-header fw-semibold"><span class="material-icons-outlined align-middle me-1">star</span>Rate your partner</div>
           <div class="card-body">
             <app-rating-form [listingId]="listing().id" (rated)="load(listing().id)"></app-rating-form>
           </div>
         </div>
-      }
+      </ng-container>
         </div>
       </div>
-    }
+    </ng-container>
