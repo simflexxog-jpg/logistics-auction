@@ -17,7 +17,7 @@ const Listing = sequelize.define('Listing', {
   dropoffLng: { type: DataTypes.FLOAT, allowNull: false },
   auctionEndsAt: { type: DataTypes.DATE, allowNull: false },
   status: {
-    type: DataTypes.ENUM('open', 'auction_ended', 'accepted', 'paid', 'picked_up', 'in_transit', 'delivered', 'cancelled'),
+    type: DataTypes.STRING,
     defaultValue: 'open'
   },
   winnerId: { type: DataTypes.UUID },
