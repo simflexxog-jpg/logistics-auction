@@ -47,6 +47,7 @@ router.post('/register', authLimiter, auditLog('CREATE', 'User'), asyncHandler(a
 
   res.status(201).json({
     accessToken,
+    token: accessToken,
     refreshToken,
     user: { id: user.id, name: user.name, email: user.email, role: user.role }
   });
@@ -73,8 +74,7 @@ router.post('/login', authLimiter, auditLog('READ', 'User'), asyncHandler(async 
   });
 
   res.json({
-    accessToken,
-    refreshToken,
+    accessToken,    token: accessToken,    refreshToken,
     user: { id: user.id, name: user.name, email: user.email, role: user.role, avgRating: user.avgRating }
   });
 }));

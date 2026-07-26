@@ -39,7 +39,9 @@ export class AuthService {
   login(email: string, password: string) {
     return this.http.post<any>(`${this.apiUrl}/auth/login`, { email, password }).pipe(
       tap(res => {
-        localStorage.setItem('token', res.token);
+        const token = res.accessToken || res.token;
+        localStorage.setItem('token', token);
+        localStorage.setItem('refreshToken', res.refreshToken);
         localStorage.setItem('user', JSON.stringify(res.user));
         this.currentUser.set(res.user);
       })
@@ -49,7 +51,9 @@ export class AuthService {
   register(data: any) {
     return this.http.post<any>(`${this.apiUrl}/auth/register`, data).pipe(
       tap(res => {
-        localStorage.setItem('token', res.token);
+        const token = res.accessToken || res.token;
+        localStorage.setItem('token', token);
+        localStorage.setItem('refreshToken', res.refreshToken);
         localStorage.setItem('user', JSON.stringify(res.user));
         this.currentUser.set(res.user);
       })
