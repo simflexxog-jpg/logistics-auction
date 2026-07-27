@@ -6,7 +6,6 @@ const Payment = sequelize.define('Payment', {
   listingId: { type: DataTypes.UUID, allowNull: false },
   customerId: { type: DataTypes.UUID, allowNull: false },
   partnerId: { type: DataTypes.UUID, allowNull: false },
-  orgId: { type: DataTypes.UUID }, // Multi-tenancy
   amount: { type: DataTypes.FLOAT, allowNull: false },
   status: { type: DataTypes.ENUM('pending', 'completed', 'refunded'), defaultValue: 'pending' },
   transactionId: { type: DataTypes.STRING },

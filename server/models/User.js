@@ -6,10 +6,8 @@ const User = sequelize.define('User', {
   name: { type: DataTypes.STRING, allowNull: false },
   email: { type: DataTypes.STRING, allowNull: false, unique: true },
   password: { type: DataTypes.STRING, allowNull: false },
-  role: { type: DataTypes.ENUM('customer', 'partner', 'ADMIN', 'CARRIER', 'SHIPPER', 'VIEWER'), allowNull: false, defaultValue: 'customer' },
+  role: { type: DataTypes.ENUM('customer', 'partner'), allowNull: false },
   phone: { type: DataTypes.STRING },
-  // Multi-tenancy: Organization ID
-  orgId: { type: DataTypes.UUID },
   // Partner specific
   truckType: { type: DataTypes.STRING },
   truckCapacity: { type: DataTypes.FLOAT },
