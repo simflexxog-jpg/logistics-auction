@@ -23,24 +23,22 @@
           <div class="text-center py-5 text-muted">No open auctions right now</div>
         </ng-container>
         <ng-container *ngIf="!loading() && listings().length > 0">
-          <ng-container *ngFor="let l of listings()">
-            <div class="auction-item p-3 border-bottom cursor-pointer"
-              [class.selected]="selectedListing()?.id === l.id"
-              (click)="selectListing(l)">
-              <div class="d-flex justify-content-between mb-1">
-                <span class="fw-semibold small">{{ l.title }}</span>
-                <span class="badge bg-success">Live</span>
-              </div>
-              <div class="small text-muted mb-1">{{ l.cargoType }} · {{ l.weight }}kg</div>
-              <div class="small mb-1"><span class="material-icons-outlined align-middle text-success me-1">place</span>{{ l.pickupAddress }}</div>
-              <div class="small mb-2"><span class="material-icons-outlined align-middle text-danger me-1">flag</span>{{ l.dropoffAddress }}</div>
-              <div class="d-flex justify-content-between align-items-center">
-                <span class="badge bg-danger small"><span class="material-icons-outlined icon-small align-middle">schedule</span> {{ timers[l.id] || '...' }}</span>
-                <span class="small text-muted">{{ l.bids?.length || 0 }} bid(s)</span>
-                <span *ngIf="myBid(l)" class="badge bg-primary small">My bid: ₹{{ myBid(l).amount }}</span>
-              </div>
+          <div *ngFor="let l of listings()" class="auction-item p-3 border-bottom cursor-pointer"
+            [class.selected]="selectedListing()?.id === l.id"
+            (click)="selectListing(l)">
+            <div class="d-flex justify-content-between mb-1">
+              <span class="fw-semibold small">{{ l.title }}</span>
+              <span class="badge bg-success">Live</span>
             </div>
-          </ng-container>
+            <div class="small text-muted mb-1">{{ l.cargoType }} · {{ l.weight }}kg</div>
+            <div class="small mb-1"><span class="material-icons-outlined align-middle text-success me-1">place</span>{{ l.pickupAddress }}</div>
+            <div class="small mb-2"><span class="material-icons-outlined align-middle text-danger me-1">flag</span>{{ l.dropoffAddress }}</div>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="badge bg-danger small"><span class="material-icons-outlined icon-small align-middle">schedule</span> {{ timers[l.id] || '...' }}</span>
+              <span class="small text-muted">{{ l.bids?.length || 0 }} bid(s)</span>
+              <span *ngIf="myBid(l)" class="badge bg-primary small">My bid: ₹{{ myBid(l).amount }}</span>
+            </div>
+          </div>
         </ng-container>
       </div>
 
@@ -111,20 +109,19 @@
                     <tr><th>Rank</th><th>Partner</th><th>Rating</th><th>Amount</th></tr>
                   </thead>
                   <tbody>
-                    <ng-container *ngFor="let bid of sortedListingBids(selectedListing()); let i = index">
-                      <tr [class.table-success]="i === 0" [class.table-primary]="bid.partnerId === auth.currentUser()?.id">
-                        <td>{{ i + 1 }}</td>
-                        <td>{{ bid.partner?.name }} <span *ngIf="bid.partnerId === auth.currentUser()?.id" class="badge bg-primary ms-1">You</span></td>
-                        <td><span class="material-icons-outlined align-middle icon-small">star</span> {{ bid.partner?.avgRating || 'New' }}</td>
-                        <td class="fw-bold">₹{{ bid.amount }}</td>
-                      </tr>
-                    </ng-container>
+                    <tr *ngFor="let bid of sortedListingBids(selectedListing()); let i = index"
+                      [class.table-success]="i === 0" [class.table-primary]="bid.partnerId === auth.currentUser()?.id">
+                      <td>{{ i + 1 }}</td>
+                      <td>{{ bid.partner?.name }} <span *ngIf="bid.partnerId === auth.currentUser()?.id" class="badge bg-primary ms-1">You</span></td>
+                      <td><span class="material-icons-outlined align-middle icon-small">star</span> {{ bid.partner?.avgRating || 'New' }}</td>
+                      <td class="fw-bold">₹{{ bid.amount }}</td>
+                    </tr>
                   </tbody>
                 </table>
               </ng-container>
             </div>
           </div>
-        </div>
+        </ng-container>
       </div>
     </div>
-    </div>
+  </div>

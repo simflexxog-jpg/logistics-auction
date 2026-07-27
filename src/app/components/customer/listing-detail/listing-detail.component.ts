@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, signal, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink, ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../../services/api.service';
 import { SocketService } from '../../../services/socket.service';
 import { AuthService } from '../../../services/auth.service';
@@ -12,7 +12,7 @@ import { RatingFormComponent } from '../../shared/rating-form/rating-form.compon
 @Component({
   selector: 'app-listing-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, RatingFormComponent],
+  imports: [CommonModule, FormsModule, RatingFormComponent],
   templateUrl: './listing-detail.component.html'
 })
 export class ListingDetailComponent implements OnInit, OnDestroy, AfterViewInit {
