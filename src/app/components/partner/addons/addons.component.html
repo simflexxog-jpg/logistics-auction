@@ -49,9 +49,9 @@
                   <div class="mb-2">
                     <label class="form-label small fw-semibold">Select your active job</label>
                     <select class="form-select form-select-sm" title="Select active job" aria-label="Select active job" [(ngModel)]="selectedListing[addon.id]" [name]="'job-' + addon.id">
-                      <option value="">— Choose job —</option>
+                      <option value="">🧭 Choose job</option>
                       <ng-container *ngFor="let job of myJobs()">
-                        <option [value]="job.listingId">{{ job.Listing?.title }}</option>
+                        <option [value]="job.listingId">🚚 {{ job.Listing?.title }}</option>
                       </ng-container>
                     </select>
                   </div>
