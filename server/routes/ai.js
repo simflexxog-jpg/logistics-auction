@@ -90,8 +90,4 @@ router.post('/assistant/:listingId', auth, async (req, res) => {
   }
 });
 
-module.exports = {
-  router,
-  buildLocalReply,
-  extractReply
-};
+module.exports = router;
