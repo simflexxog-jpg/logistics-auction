@@ -192,8 +192,9 @@ export class CustomerListingsComponent implements OnInit, AfterViewInit {
       auctionDuration: Number(this.form.auctionDuration || 24)
     };
     this.api.createListing(payload).subscribe({
-      next: () => {
-        this.success.set('Listing posted! Auction is live.');
+      next: (res: any) => {
+        const message = res?.message || 'Listing posted! Auction is live.';
+        this.success.set(message);
         this.showForm.set(false);
         this.submitting.set(false);
         this.form = { title: '', description: '', cargoType: '', weight: '', dimensions: '', pickupAddress: '', pickupLat: null, pickupLng: null, dropoffAddress: '', dropoffLat: null, dropoffLng: null, auctionDuration: 24, isAddOnEligible: false, maxAddOnWeight: 100 };

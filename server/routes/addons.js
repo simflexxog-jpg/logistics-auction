@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const { Op } = require('sequelize');
 const { auth, requireRole } = require('../middleware/auth');
 const { AddOn, Listing } = require('../models');
 
@@ -24,7 +25,10 @@ function pointToSegmentDistance(pLat, pLng, aLat, aLng, bLat, bLng) {
 // Get all open add-ons
 router.get('/', auth, async (req, res) => {
   try {
-    const where = req.user.role === 'customer' ? { customerId: req.user.id } : { status: 'open' };
+    const baseWhere = { weight: { [Op.lt]: 100 } };
+    const where = req.user.role === 'customer'
+      ? { ...baseWhere, customerId: req.user.id }
+      : { ...baseWhere, status: 'open' };
     const addons = await AddOn.findAll({ where, order: [['createdAt', 'DESC']] });
     res.json(addons);
   } catch (err) {
@@ -35,7 +39,12 @@ router.get('/', auth, async (req, res) => {
 // Post an add-on (customer)
 router.post('/', auth, requireRole('customer'), async (req, res) => {
   try {
-    const addon = await AddOn.create({ ...req.body, customerId: req.user.id });
+    const weight = Number(req.body.weight);
+    if (!Number.isFinite(weight) || weight <= 0 || weight >= 100) {
+      return res.status(400).json({ error: 'Add-on shipments must be less than 100kg.' });
+    }
+
+    const addon = await AddOn.create({ ...req.body, weight, customerId: req.user.id });
     res.status(201).json(addon);
   } catch (err) {
     res.status(500).json({ error: err.message });

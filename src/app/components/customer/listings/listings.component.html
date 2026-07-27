@@ -63,15 +63,9 @@
                 <input class="form-control" [(ngModel)]="form.dimensions" name="dimensions" placeholder="L x W x H cm">
               </div>
               <div class="col-md-4">
-                <label class="form-label fw-semibold" for="auctionDuration">Auction countdown</label>
-                <select id="auctionDuration" class="form-select" [(ngModel)]="form.auctionDuration" [ngModelOptions]="{standalone: false}" name="auctionDuration" required>
-                  <option [ngValue]="6">6 hours</option>
-                  <option [ngValue]="12">12 hours</option>
-                  <option [ngValue]="24">24 hours</option>
-                  <option [ngValue]="48">48 hours</option>
-                  <option [ngValue]="72">72 hours</option>
-                </select>
-                <div class="form-text">Choose how long the auction should stay open. The countdown starts automatically when the listing is posted.</div>
+                <label class="form-label fw-semibold" for="auctionDuration">Auction duration (hours)</label>
+                <input id="auctionDuration" type="number" class="form-control" [(ngModel)]="form.auctionDuration" name="auctionDuration" required min="1" max="2160" step="1" placeholder="24">
+                <div class="form-text">Enter any duration in hours. Shipments under 100kg will be posted as add-ons automatically.</div>
               </div>
               <div class="col-12">
                 <label class="form-label fw-semibold">Description</label>

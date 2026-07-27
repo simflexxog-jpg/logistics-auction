@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { auth, requireRole } = require('../middleware/auth');
-const { Listing, Bid, User, Payment } = require('../models');
+const { Listing, Bid, User, Payment, AddOn } = require('../models');
 const { Op } = require('sequelize');
 
 // Get all open listings (partner can see all, customer sees their own)
@@ -46,10 +46,33 @@ router.post('/', auth, requireRole('customer'), async (req, res) => {
     const { title, description, cargoType, weight, dimensions,
       pickupAddress, pickupLat, pickupLng,
       dropoffAddress, dropoffLat, dropoffLng,
-      auctionEndsAt, auctionDuration, auctionDurationHours, isAddOnEligible, maxAddOnWeight } = req.body;
+      auctionEndsAt, auctionDuration, auctionDurationHours, isAddOnEligible, maxAddOnWeight, price } = req.body;
 
+    const parsedWeight = Number(weight);
     const durationHours = Number(auctionDurationHours ?? auctionDuration ?? 24);
     const computedAuctionEndsAt = auctionEndsAt || new Date(Date.now() + durationHours * 3600000).toISOString();
+
+    if (Number.isFinite(parsedWeight) && parsedWeight < 100) {
+      const addon = await AddOn.create({
+        customerId: req.user.id,
+        title,
+        description,
+        weight: parsedWeight,
+        pickupAddress,
+        pickupLat,
+        pickupLng,
+        dropoffAddress,
+        dropoffLat,
+        dropoffLng,
+        price: Number(price || 0),
+        status: 'open'
+      });
+
+      return res.status(201).json({
+        message: 'This shipment is under 100kg, so it has been posted as an add-on shipment instead of a main listing.',
+        addon
+      });
+    }
 
     const listing = await Listing.create({
       customerId: req.user.id, title, description, cargoType, weight, dimensions,

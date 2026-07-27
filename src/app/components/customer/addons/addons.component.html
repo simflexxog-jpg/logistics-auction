@@ -28,7 +28,7 @@
         <div class="card-header bg-warning text-dark fw-semibold"><span class="material-icons-outlined align-middle me-1">add</span>New add-on shipment</div>
         <div class="card-body">
           <div class="alert alert-info small">
-            <span class="material-icons-outlined align-middle me-1">info</span>Pickup and dropoff must be within <strong>2km</strong> of the partner's main route. Partners will see deviation checks before claiming.
+            <span class="material-icons-outlined align-middle me-1">info</span>Pickup and dropoff must be within <strong>2km</strong> of the partner's main route. Only shipments under <strong>100kg</strong> can be listed as add-ons.
           </div>
           <form (ngSubmit)="submit()">
             <div class="row g-3">
@@ -38,7 +38,7 @@
               </div>
               <div class="col-md-4">
                 <label class="form-label fw-semibold">Weight (kg)</label>
-                <input type="number" class="form-control" [(ngModel)]="form.weight" name="weight" required placeholder="50" max="500">
+                <input type="number" class="form-control" [(ngModel)]="form.weight" name="weight" required placeholder="50" min="0.1" max="99.99">
               </div>
               <div class="col-md-6">
                 <label class="form-label fw-semibold">Pickup Address</label>

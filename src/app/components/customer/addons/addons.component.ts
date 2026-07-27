@@ -37,8 +37,15 @@ export class CustomerAddonsComponent implements OnInit {
   }
 
   submit() {
+    const weight = Number(this.form.weight);
+
+    if (!Number.isFinite(weight) || weight <= 0 || weight >= 100) {
+      this.error.set('Add-on shipments must be less than 100kg.');
+      return;
+    }
+
     this.submitting.set(true);
-    this.api.createAddOn(this.form).subscribe({
+    this.api.createAddOn({ ...this.form, weight }).subscribe({
       next: () => {
         this.success.set('Add-on shipment posted!');
         this.showForm.set(false);
