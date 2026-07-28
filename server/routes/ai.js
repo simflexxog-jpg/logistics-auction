@@ -97,8 +97,8 @@ router.post('/support', auth, async (req, res) => {
       return res.status(400).json({ error: 'Prompt is required' });
     }
 
-    const fallback = 'Support is available 24/7. Please ask about routes, add-ons, or shipment planning.
-If your prompt includes shipment details, I can help you summarize them for your carrier or customer.';
+    const fallback = 'Support is available 24/7. Please ask about routes, add-ons, or shipment planning. ' +
+      'If your prompt includes shipment details, I can help you summarize them for your carrier or customer.';
     if (!GROQ_API_KEY) {
       return res.json({ reply: fallback });
     }
