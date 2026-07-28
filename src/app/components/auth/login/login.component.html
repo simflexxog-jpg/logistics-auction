@@ -22,44 +22,44 @@
     </div>
 
     <div class="auth-panel">
-      <div class="auth-panel-inner">
-        <div class="text-center mb-4">
-          <div class="brand-pill mb-3">
-            <img class="auth-logo-mark" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJyZW50YS1mYXN0IiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMjJkM2VlIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjM2I4MmY2Ii8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHBhdGggZD0iTTIyIDUyIEwzMCAxNiIgc3Ryb2tlPSJ1cmwoI3JlbnRhLWZhc3QpIiBzdHJva2Utd2lkdGg9IjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxwYXRoIGQ9Ik0zMCAxNiBINDQgQzUwLjYgMTYgNTIgMjMgNDggMzAgQzQ0IDM3IDM4IDM2IDM0IDM2IiBzdHJva2U9InVybCgjcmVudGEtZmFzdCkiIHN0cm9rZS13aWR0aD0iNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PHBhdGggZD0iTTM2IDM2IEw1MCA1MiIgc3Ryb2tlPSIjMjJkM2VlIiBzdHJva2Utd2lkdGg9IjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxwYXRoIGQ9Ik00MCA1MiBINTAgVjQyIiBzdHJva2U9IiMyMmQzZWUiIHN0cm9rZS13aWR0aD0iNiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+" alt="Renta logo">
-          </div>
-          <h2 class="fw-bold mb-1">Welcome back</h2>
-          <p class="text-muted mb-0">Sign in to continue your logistics journey</p>
+      <div class="auth-panel-inner login-placeholder">
+        <div class="login-header text-center mb-3">
+          <h2>Sign in to continue</h2>
+          <p>Choose your role, enter your credentials, and get moving.</p>
+        </div>
+
+        <div class="role-toggle mb-3" role="tablist" aria-label="Select role">
+          <button type="button" (click)="selectedRole='customer'" [class.active]="selectedRole==='customer'">CUSTOMER</button>
+          <button type="button" (click)="selectedRole='partner'" [class.active]="selectedRole==='partner'">PARTNER</button>
         </div>
 
         <div *ngIf="error()" class="alert alert-danger rounded-pill">{{ error() }}</div>
 
         <form (ngSubmit)="submit()">
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Email</label>
-            <div class="input-group">
-              <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-              <input type="email" class="form-control form-control-lg" [(ngModel)]="email" name="email" required placeholder="you@example.com">
-            </div>
+          <label class="form-label">EMAIL ADDRESS</label>
+          <div class="mb-3 input-group">
+            <input type="email" class="form-control input-pill" [(ngModel)]="email" name="email" required placeholder="agnibsikder@gmail.com">
           </div>
-          <div class="mb-4">
-            <label class="form-label fw-semibold">Password</label>
-            <div class="input-group">
-              <span class="input-group-text"><i class="bi bi-lock"></i></span>
-              <input type="password" class="form-control form-control-lg" [(ngModel)]="password" name="password" required placeholder="••••••••">
-            </div>
+
+          <label class="form-label">PASSWORD</label>
+          <div class="mb-3 input-group">
+            <input type="password" class="form-control input-pill" [(ngModel)]="password" name="password" required placeholder="•••••">
           </div>
-          <button type="submit" class="btn btn-primary btn-lg w-100" [disabled]="loading()">
+
+          <div class="checkbox-row">
+            <input id="remember" type="checkbox" [(ngModel)]="remember" name="remember">
+            <label for="remember">Keep me signed in for 7 days</label>
+          </div>
+
+          <button type="submit" class="continue-btn" [disabled]="loading()">
             <span *ngIf="loading()" class="spinner-border spinner-border-sm me-2"></span>
-            Sign In
+            CONTINUE
           </button>
         </form>
 
-        <div class="text-center mt-4">
-          <p class="mb-3 text-muted">New here?</p>
-          <div class="d-flex flex-wrap justify-content-center gap-2">
-            <a routerLink="/register/customer" class="btn btn-outline-primary">Register as Customer</a>
-            <a routerLink="/register/partner" class="btn btn-outline-success">Register as Partner</a>
-          </div>
+        <div class="text-center small-muted mt-3">
+          <div>New to Renta?</div>
+          <a routerLink="/register" class="create-link">Create an account</a>
         </div>
       </div>
     </div>

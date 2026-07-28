@@ -90,4 +90,53 @@ router.post('/assistant/:listingId', auth, async (req, res) => {
   }
 });
 
+router.post('/support', auth, async (req, res) => {
+  try {
+    const prompt = req.body.prompt;
+    if (!prompt || typeof prompt !== 'string') {
+      return res.status(400).json({ error: 'Prompt is required' });
+    }
+
+    const fallback = 'Support is available 24/7. Please ask about routes, add-ons, or shipment planning.
+If your prompt includes shipment details, I can help you summarize them for your carrier or customer.';
+    if (!GROQ_API_KEY) {
+      return res.json({ reply: fallback });
+    }
+
+    const requestBody = {
+      model: GROQ_MODEL,
+      messages: [
+        {
+          role: 'system',
+          content: 'You are Renta AI Support, a 24/7 logistics assistant. Provide concise, reliable guidance for customers and partners.'
+        },
+        {
+          role: 'user',
+          content: `${prompt}`
+        }
+      ],
+      temperature: 0.7
+    };
+
+    const response = await fetch(GROQ_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${GROQ_API_KEY}`
+      },
+      body: JSON.stringify(requestBody)
+    });
+
+    if (!response.ok) {
+      return res.json({ reply: fallback });
+    }
+
+    const result = await response.json();
+    const reply = extractReply(result) || fallback;
+    res.json({ reply });
+  } catch (err) {
+    res.json({ reply: 'Support is temporarily unavailable. Please try again shortly.' });
+  }
+});
+
 module.exports = router;

@@ -36,6 +36,10 @@ export const routes: Routes = [
         path: 'order-history',
         loadComponent: () => import('./components/customer/order-history/order-history.component').then(m => m.OrderHistoryComponent)
       },
+      {
+        path: 'support',
+        loadComponent: () => import('./components/support/support.component').then(m => m.SupportComponent)
+      },
       { path: '', redirectTo: 'listings', pathMatch: 'full' }
     ]
   },
@@ -62,8 +66,10 @@ export const routes: Routes = [
       {
         path: 'addons',
         loadComponent: () => import('./components/partner/addons/addons.component').then(m => m.PartnerAddonsComponent)
-      },
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+      },      {
+        path: 'support',
+        loadComponent: () => import('./components/support/support.component').then(m => m.SupportComponent)
+      },      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },
 
