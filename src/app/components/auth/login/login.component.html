@@ -59,7 +59,7 @@
 
         <div class="text-center small-muted mt-3">
           <div>New to Renta?</div>
-          <a routerLink="/register" class="create-link">Create an account</a>
+          <a [routerLink]="['/register', selectedRole]" class="create-link">Create an account</a>
         </div>
       </div>
     </div>
