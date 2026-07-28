@@ -9,16 +9,13 @@ import { SocketService } from '../../../services/socket.service';
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  templateUrl: './login.component.html'
 })
 export class LoginComponent {
   email = '';
   password = '';
   error = signal('');
   loading = signal(false);
-  selectedRole: 'customer' | 'partner' = 'customer';
-  remember = false;
 
   constructor(private auth: AuthService, private router: Router, private socket: SocketService) {}
 
