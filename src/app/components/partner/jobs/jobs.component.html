@@ -59,6 +59,10 @@
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="fw-bold mb-0">{{ selectedJob().Listing?.title }}</h4>
             <div class="d-flex gap-2">
+              <button *ngIf="selectedJob().Listing?.status === 'paid'" class="btn btn-warning text-dark" (click)="markPickup()" [disabled]="startingTransit()">
+                <span *ngIf="startingTransit()" class="spinner-border spinner-border-sm me-2"></span>
+                <span class="material-icons-outlined icon-small align-middle me-1">inventory_2</span>Mark pickup
+              </button>
               <button *ngIf="selectedJob().Listing?.status === 'picked_up'" class="btn btn-primary" (click)="startTransit()" [disabled]="startingTransit()">
                 <span *ngIf="startingTransit()" class="spinner-border spinner-border-sm me-2"></span>
                 <span class="material-icons-outlined icon-small align-middle me-1">directions_car</span>Start transit

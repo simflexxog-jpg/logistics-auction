@@ -56,6 +56,21 @@ export class ListingDetailComponent implements OnInit, OnDestroy, AfterViewInit 
           return { ...l, bids };
         });
       }),
+      this.socket.on<any>('listing:updated').subscribe((updated: any) => {
+        if (updated.id === id) {
+          const prev = this.listing();
+          this.listing.set(updated);
+          // If listing just moved to paid, switch to chat tab automatically
+          if (updated.status === 'paid' && this.activeTab() === 'payment') {
+            this.activeTab.set('chat');
+          }
+          if (['paid','picked_up', 'in_transit', 'delivered'].includes(updated.status) && this.chatMessages().length === 0) {
+            this.loadChat(id);
+            this.socket.joinChat(id);
+            this.subs.push(this.socket.on<any>('chat:message').subscribe(msg => this.chatMessages.update(msgs => [...msgs, msg])));
+          }
+        }
+      }),
       this.socket.on<any>('auction:ended').subscribe(() => this.load(id))
     );
   }

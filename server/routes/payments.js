@@ -29,6 +29,9 @@ router.post('/', auth, requireRole('customer'), async (req, res) => {
 
     await User.increment('totalEarnings', { by: winningAmount, where: { id: partnerId } });
     await listing.update({ status: 'paid', winnerId: partnerId, winningBid: winningAmount });
+    await listing.reload();
+    const io = req.app.get('io');
+    io?.to(`listing:${listing.id}`).emit('listing:updated', listing);
 
     res.json({ payment, message: 'Prototype payment successful.' });
   } catch (err) {

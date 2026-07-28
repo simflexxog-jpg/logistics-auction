@@ -115,6 +115,9 @@ router.post('/:id/pickup', auth, requireRole('partner'), async (req, res) => {
     if (listing.status !== 'paid') return res.status(400).json({ error: 'Shipment must be paid before pickup' });
 
     await listing.update({ status: 'picked_up' });
+    await listing.reload();
+    const io = req.app.get('io');
+    io?.to(`listing:${listing.id}`).emit('listing:updated', listing);
     res.json(listing);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -129,6 +132,9 @@ router.post('/:id/start-transit', auth, requireRole('partner'), async (req, res)
     if (listing.status !== 'picked_up') return res.status(400).json({ error: 'Shipment must be picked up before transit' });
 
     await listing.update({ status: 'in_transit' });
+    await listing.reload();
+    const io = req.app.get('io');
+    io?.to(`listing:${listing.id}`).emit('listing:updated', listing);
     res.json(listing);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -142,6 +148,9 @@ router.post('/:id/deliver', auth, requireRole('partner'), async (req, res) => {
     if (!listing || listing.winnerId !== req.user.id) return res.status(403).json({ error: 'Not authorized' });
     if (listing.status !== 'in_transit') return res.status(400).json({ error: 'Shipment must be in transit to complete delivery' });
     await listing.update({ status: 'delivered' });
+    await listing.reload();
+    const io = req.app.get('io');
+    io?.to(`listing:${listing.id}`).emit('listing:updated', listing);
     res.json(listing);
   } catch (err) {
     res.status(500).json({ error: err.message });

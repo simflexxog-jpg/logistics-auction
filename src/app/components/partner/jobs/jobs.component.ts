@@ -43,6 +43,11 @@ export class PartnerJobsComponent implements OnInit, OnDestroy {
       this.subs = [
         this.socket.on<any>('chat:message').subscribe(msg => {
           if (msg.listingId === bid.listingId) this.chatMessages.update(ms => [...ms, msg]);
+        }),
+        this.socket.on<any>('listing:updated').subscribe((updated: any) => {
+          if (updated.id === bid.Listing.id) {
+            this.selectedJob.update(j => ({ ...j, Listing: { ...j.Listing, status: updated.status } }));
+          }
         })
       ];
     }
@@ -78,10 +83,23 @@ export class PartnerJobsComponent implements OnInit, OnDestroy {
     const job = this.selectedJob();
     if (!job) return;
     this.startingTransit.set(true);
-    this.api.markPickup(job.listingId).subscribe({
+    this.api.startTransit(job.listingId).subscribe({
       next: () => {
         this.startingTransit.set(false);
         this.selectedJob.update(j => ({ ...j, Listing: { ...j.Listing, status: 'in_transit' } }));
+      },
+      error: () => this.startingTransit.set(false)
+    });
+  }
+
+  markPickup() {
+    const job = this.selectedJob();
+    if (!job) return;
+    this.startingTransit.set(true);
+    this.api.markPickup(job.listingId).subscribe({
+      next: () => {
+        this.startingTransit.set(false);
+        this.selectedJob.update(j => ({ ...j, Listing: { ...j.Listing, status: 'picked_up' } }));
       },
       error: () => this.startingTransit.set(false)
     });
