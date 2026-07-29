@@ -13,7 +13,8 @@ import { SocketService } from '../../../services/socket.service';
 })
 export class RegisterComponent implements OnInit {
   role: 'customer' | 'partner' = 'customer';
-  form: any = { name: '', email: '', password: '', phone: '', truckType: '', truckCapacity: '', licensePlate: '' };
+  form: any = { name: '', email: '', password: '', phone: '', truckType: '', truckCapacity: '', licensePlate: '', adminCode: '' };
+  registerAsAdmin = false;
   error = signal('');
   loading = signal(false);
 
@@ -31,7 +32,10 @@ export class RegisterComponent implements OnInit {
   submit() {
     this.error.set('');
     this.loading.set(true);
-    this.auth.register({ ...this.form, role: this.role }).subscribe({
+    const payload = { ...this.form, role: this.role } as any;
+    if (this.registerAsAdmin) payload.adminCode = this.form.adminCode;
+
+    this.auth.register(payload).subscribe({
       next: (res) => {
         this.socket.connect(res.token);
         this.router.navigate([this.role === 'customer' ? '/customer/listings' : '/partner/dashboard']);

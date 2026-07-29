@@ -65,4 +65,15 @@ export class AuthService {
     this.currentUser.set(null);
     this.router.navigate(['/login']);
   }
+
+  // Accept a token (from OAuth redirect), store it and load the user
+  handleToken(token: string) {
+    localStorage.setItem('token', token);
+    return this.http.get<User>(`${this.apiUrl}/auth/me`, { headers: { Authorization: `Bearer ${token}` } }).pipe(
+      tap(user => {
+        localStorage.setItem('user', JSON.stringify(user));
+        this.currentUser.set(user as any);
+      })
+    );
+  }
 }

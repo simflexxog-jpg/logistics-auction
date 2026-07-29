@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
+import { environment } from '../../../../environments/environment';
 import { SocketService } from '../../../services/socket.service';
 
 @Component({
@@ -16,6 +17,7 @@ export class LoginComponent {
   password = '';
   error = signal('');
   loading = signal(false);
+  oauthUrl = environment.apiUrl + '/auth/google';
 
   constructor(private auth: AuthService, private router: Router, private socket: SocketService) {}
 
