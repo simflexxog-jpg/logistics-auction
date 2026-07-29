@@ -52,8 +52,6 @@ router.post('/login', async (req, res) => {
   }
 });
 
-module.exports = router;
-
 // Return current user info
 router.get('/me', async (req, res) => {
   try {
