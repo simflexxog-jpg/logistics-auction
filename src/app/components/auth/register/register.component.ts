@@ -43,7 +43,11 @@ export class RegisterComponent implements OnInit {
     this.auth.register(payload).subscribe({
       next: (res) => {
         this.socket.connect(res.token);
-        this.router.navigate([this.role === 'customer' ? '/customer/listings' : '/partner/dashboard']);
+        if (res.user?.isAdmin) {
+          this.router.navigate(['/admin']);
+        } else {
+          this.router.navigate([this.role === 'customer' ? '/customer/listings' : '/partner/dashboard']);
+        }
       },
       error: (err) => {
         this.error.set(err.error?.error || 'Registration failed');

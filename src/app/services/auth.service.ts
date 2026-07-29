@@ -8,7 +8,8 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: 'customer' | 'partner';
+  role: 'customer' | 'partner' | 'admin' | null;
+  isAdmin?: boolean;
   avgRating?: number;
 }
 

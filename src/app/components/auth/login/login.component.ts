@@ -35,8 +35,13 @@ export class LoginComponent {
     this.auth.login(this.email, this.password).subscribe({
       next: (res) => {
         this.socket.connect(res.token);
-        const role = res.user.role;
-        this.router.navigate([role === 'customer' ? '/customer/listings' : '/partner/dashboard']);
+        const user = res.user;
+        if (user?.isAdmin) {
+          this.router.navigate(['/admin']);
+        } else {
+          const role = user?.role;
+          this.router.navigate([role === 'customer' ? '/customer/listings' : '/partner/dashboard']);
+        }
       },
       error: (err) => {
         this.error.set(err.error?.error || 'Login failed');

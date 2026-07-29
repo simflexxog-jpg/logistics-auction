@@ -6,7 +6,17 @@ export const roleGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
   const auth = inject(AuthService);
   const router = inject(Router);
   const required = route.data['role'];
+  if (auth.currentUser()?.isAdmin) {
+    router.navigate(['/admin']);
+    return false;
+  }
   if (auth.role === required) return true;
-  router.navigate([auth.role === 'customer' ? '/customer/listings' : '/partner/dashboard']);
+  if (auth.role === 'customer') {
+    router.navigate(['/customer/listings']);
+  } else if (auth.role === 'partner') {
+    router.navigate(['/partner/dashboard']);
+  } else {
+    router.navigate(['/login']);
+  }
   return false;
 };
