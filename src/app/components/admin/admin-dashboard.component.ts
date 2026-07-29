@@ -16,6 +16,12 @@ export class AdminDashboardComponent {
   audit: any[] = [];
   loading = false;
   searchQ = '';
+  // pagination
+  usersPage = 1;
+  usersLimit = 25;
+  usersTotal = 0;
+  usersSort: 'createdAt'|'name'|'email' = 'createdAt';
+  usersOrder: 'asc'|'desc' = 'desc';
 
   constructor(private api: ApiService) { this.load(); }
 
@@ -33,7 +39,11 @@ export class AdminDashboardComponent {
 
   loadUsers() {
     this.loading = true;
-    this.api.getUsers(this.searchQ).subscribe(r => { this.users = r; this.loading = false; }, () => this.loading = false);
+    this.api.getUsers(this.searchQ, this.usersPage, this.usersLimit, this.usersSort, this.usersOrder).subscribe(r => {
+      this.users = r.rows || r;
+      this.usersTotal = r.count || (Array.isArray(r) ? r.length : 0);
+      this.loading = false;
+    }, () => this.loading = false);
   }
 
   viewUser(id: string) {
@@ -50,5 +60,28 @@ export class AdminDashboardComponent {
     if (t === 'users') this.loadUsers();
     if (t === 'audit') this.loadAudit();
     if (t === 'pending') this.load();
+  }
+
+  exportUsersCsv() {
+    if (!this.users || this.users.length === 0) return alert('No users to export');
+    const rows = this.users.map(u => ({ id: u.id, name: u.name, email: u.email, role: u.role, isVerified: u.isVerified }));
+    const csv = [Object.keys(rows[0]).join(',')].concat(rows.map(r => Object.values(r).map(v => '"' + (v ?? '') + '"').join(','))).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `users_page${this.usersPage}.csv`; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  totalPages() {
+    return Math.max(1, Math.ceil(this.usersTotal / this.usersLimit));
+  }
+
+  prevPage() { if (this.usersPage > 1) { this.usersPage--; this.loadUsers(); } }
+  nextPage() { if (this.usersPage < this.totalPages()) { this.usersPage++; this.loadUsers(); } }
+
+  filterAudit(action?: string, from?: string, to?: string) {
+    this.loading = true;
+    this.api.getAuditLogs(200, action, from, to).subscribe(r => { this.audit = r.reverse(); this.loading = false; }, () => this.loading = false);
   }
 }

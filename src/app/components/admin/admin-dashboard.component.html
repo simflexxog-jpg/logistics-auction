@@ -35,7 +35,22 @@
     <h3>Users</h3>
     <div class="mb-2 d-flex gap-2 align-items-center">
       <input class="form-control" placeholder="Search by name or email" [(ngModel)]="searchQ" />
-      <button class="btn btn-primary" (click)="loadUsers()">Search</button>
+      <select class="form-select" style="width:160px" [(ngModel)]="usersSort">
+        <option value="createdAt">Created</option>
+        <option value="name">Name</option>
+        <option value="email">Email</option>
+      </select>
+      <select class="form-select" style="width:120px" [(ngModel)]="usersOrder">
+        <option value="desc">Desc</option>
+        <option value="asc">Asc</option>
+      </select>
+      <select class="form-select" style="width:120px" [(ngModel)]="usersLimit">
+        <option [ngValue]="10">10</option>
+        <option [ngValue]="25">25</option>
+        <option [ngValue]="50">50</option>
+      </select>
+      <button class="btn btn-primary" (click)="usersPage=1; loadUsers()">Search</button>
+      <button class="btn btn-outline-secondary" (click)="exportUsersCsv()">Export CSV</button>
     </div>
     <table class="table table-sm">
       <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Verified</th><th></th></tr></thead>
@@ -49,10 +64,23 @@
         </tr>
       </tbody>
     </table>
+    <div class="d-flex gap-2 align-items-center">
+      <button class="btn btn-sm btn-secondary" [disabled]="usersPage<=1" (click)="prevPage()">Prev</button>
+      <div>Page {{usersPage}} / {{ totalPages() }}</div>
+      <button class="btn btn-sm btn-secondary" [disabled]="usersPage>=totalPages()" (click)="nextPage()">Next</button>
+      <div class="ms-auto text-muted">Total: {{usersTotal}}</div>
+    </div>
   </ng-container>
 
   <ng-container *ngIf="tab === 'audit'">
     <h3>Audit Logs</h3>
+    <div class="mb-2 d-flex gap-2 align-items-center">
+      <input class="form-control" placeholder="Action filter" #actionFilter />
+      <input type="date" class="form-control" #fromDate />
+      <input type="date" class="form-control" #toDate />
+      <button class="btn btn-primary" (click)="filterAudit(actionFilter.value, fromDate.value, toDate.value)">Filter</button>
+      <button class="btn btn-outline-secondary" (click)="loadAudit()">Reset</button>
+    </div>
     <div *ngIf="audit.length === 0" class="text-muted">No audit entries.</div>
     <ul class="list-group">
       <li *ngFor="let a of audit" class="list-group-item small">

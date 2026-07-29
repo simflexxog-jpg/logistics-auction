@@ -88,5 +88,11 @@ export const routes: Routes = [
 routes.splice(routes.length - 1, 0, {
   path: 'admin',
   canActivate: [() => import('./guards/admin.guard').then(m => m.adminGuard)],
-  loadComponent: () => import('./components/admin/admin-dashboard.component').then(m => m.AdminDashboardComponent)
+  loadComponent: () => import('./components/admin/admin-layout.component').then(m => m.AdminLayoutComponent),
+  children: [
+    { path: '', pathMatch: 'full', loadComponent: () => import('./components/admin/admin-dashboard.component').then(m => m.AdminDashboardComponent) },
+    { path: 'users', loadComponent: () => import('./components/admin/admin-dashboard.component').then(m => m.AdminDashboardComponent) },
+    { path: 'audit', loadComponent: () => import('./components/admin/admin-dashboard.component').then(m => m.AdminDashboardComponent) },
+    { path: 'partners', loadComponent: () => import('./components/admin/admin-dashboard.component').then(m => m.AdminDashboardComponent) }
+  ]
 });

@@ -76,7 +76,22 @@ export class ApiService {
   approvePartner(partnerId: string) { return this.http.post<any>(`${this.base}/admin/partners/${partnerId}/approve`, {}, this.headers()); }
   rejectPartner(partnerId: string, reason?: string) { return this.http.post<any>(`${this.base}/admin/partners/${partnerId}/reject`, { reason }, this.headers()); }
   notifyPartner(partnerId: string, message: string) { return this.http.post<any>(`${this.base}/admin/partners/${partnerId}/notify`, { message }, this.headers()); }
-  getUsers(q?: string) { return this.http.get<any[]>(`${this.base}/admin/users${q ? '?q=' + encodeURIComponent(q) : ''}`, this.headers()); }
+  getUsers(q?: string, page = 1, limit = 50, sort = 'createdAt', order: 'asc'|'desc' = 'desc') {
+    const params = new URLSearchParams();
+    if (q) params.set('q', q);
+    params.set('page', String(page));
+    params.set('limit', String(limit));
+    params.set('sort', sort);
+    params.set('order', order);
+    return this.http.get<any>(`${this.base}/admin/users?${params.toString()}`, this.headers());
+  }
   getUser(userId: string) { return this.http.get<any>(`${this.base}/admin/users/${userId}`, this.headers()); }
-  getAuditLogs(lines = 200) { return this.http.get<any[]>(`${this.base}/admin/audit?lines=${lines}`, this.headers()); }
+  getAuditLogs(lines = 200, action?: string, from?: string, to?: string) {
+    const params = new URLSearchParams();
+    params.set('lines', String(lines));
+    if (action) params.set('action', action);
+    if (from) params.set('from', from);
+    if (to) params.set('to', to);
+    return this.http.get<any[]>(`${this.base}/admin/audit?${params.toString()}`, this.headers());
+  }
 }
