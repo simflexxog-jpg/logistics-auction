@@ -76,7 +76,10 @@ router.post('/partners/:id/notify', auth, requireAdmin, async (req, res) => {
 // List all users (with optional search)
 router.get('/users', auth, requireAdmin, async (req, res) => {
   try {
-    const q = (req.query.q || '').toString();
+    const sanitize = require('../utils/sanitize');
+    let q = (req.query.q || '').toString();
+    // strip LIKE wildcards to avoid pattern injection
+    q = sanitize.stripLikeWildcards(q);
     const page = Math.max(parseInt(req.query.page || '1', 10), 1);
     const limit = Math.min(parseInt(req.query.limit || '50', 10), 1000);
     const sort = (req.query.sort || 'createdAt').toString();

@@ -7,6 +7,8 @@ const passport = require('passport');
 const path = require('path');
 const fs = require('fs');
 const promClient = require('prom-client');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 
 const { syncDB } = require('./models');
 const setupSocket = require('./socket');
@@ -24,9 +26,57 @@ const io = new Server(server, {
 app.set('io', io);
 
 // Middleware
-app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:4200', credentials: true }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Security middlewares
+app.use(helmet());
+
+// Basic rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use(limiter);
+
+// Limit JSON body size to reduce risk of large payload attacks
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+
+// Lightweight request inspector to catch obvious SQL injection patterns in strings.
+// This is not a substitute for prepared statements/ORM protections but helps reject common attack payloads early.
+app.use((req, res, next) => {
+  const injectorPattern = /(--|;\s*--|;\s*DROP\b|UNION\s+SELECT|\bOR\b\s+1=1|\/*|\*\/)/i;
+  function checkObj(obj) {
+    for (const k in obj) {
+      const v = obj[k];
+      if (typeof v === 'string' && injectorPattern.test(v)) return true;
+      if (typeof v === 'object' && v !== null) {
+        if (checkObj(v)) return true;
+      }
+    }
+    return false;
+  }
+  if (checkObj(req.body) || checkObj(req.query) || checkObj(req.params)) {
+    console.warn('Rejected request with suspicious payload from', req.ip, 'path', req.path);
+    return res.status(400).json({ error: 'Invalid request payload' });
+  }
+  next();
+});
+
+// Enforce numeric IDs for params that look like ids (id, listingId, userId, etc.)
+app.use((req, res, next) => {
+  for (const key of Object.keys(req.params || {})) {
+    if (/id$/i.test(key)) {
+      const val = req.params[key];
+      if (!/^[0-9]+$/.test(val)) {
+        return res.status(400).json({ error: 'Invalid identifier in URL path' });
+      }
+      // coerce to number for downstream handlers
+      req.params[key] = parseInt(val, 10);
+    }
+  }
+  next();
+});
 
 // Initialize metrics
 try {
