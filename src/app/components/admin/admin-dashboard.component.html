@@ -3,11 +3,21 @@
   <div *ngIf="loading">Loading...</div>
   <div *ngIf="!loading && pending.length === 0">No pending partners.</div>
   <ul *ngIf="pending.length">
-    <li *ngFor="let p of pending" class="mb-2">
-      <strong>{{p.name}}</strong> — {{p.email}} — {{p.truckType || 'N/A'}}
-      <div class="mt-1">
-        <button (click)="approve(p.id)" class="btn btn-sm btn-success me-2">Approve</button>
-        <button (click)="reject(p.id)" class="btn btn-sm btn-danger">Reject</button>
+    <li *ngFor="let p of pending" class="mb-3 border p-2 rounded">
+      <div class="d-flex align-items-center justify-content-between">
+        <div>
+          <strong>{{p.name}}</strong> — {{p.email}} — {{p.truckType || 'N/A'}}
+          <div class="text-muted small">Phone: {{p.phone || '—'}}</div>
+        </div>
+        <div>
+          <button (click)="approve(p.id)" class="btn btn-sm btn-success me-2">Approve</button>
+          <button (click)="reject(p.id)" class="btn btn-sm btn-danger me-2">Reject</button>
+          <button (click)="notify(p.id)" class="btn btn-sm btn-secondary">Notify</button>
+        </div>
+      </div>
+      <div class="mt-2 d-flex gap-2">
+        <div *ngIf="p.truckPhoto"><img [src]="p.truckPhoto" alt="truck" style="height:72px;object-fit:cover;border-radius:6px" /></div>
+        <div *ngIf="p.licenseDoc"><img [src]="p.licenseDoc" alt="license" style="height:72px;object-fit:cover;border-radius:6px" /></div>
       </div>
     </li>
   </ul>

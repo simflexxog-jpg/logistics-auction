@@ -75,4 +75,5 @@ export class ApiService {
   getPendingPartners() { return this.http.get<any[]>(`${this.base}/admin/partners/pending`, this.headers()); }
   approvePartner(partnerId: string) { return this.http.post<any>(`${this.base}/admin/partners/${partnerId}/approve`, {}, this.headers()); }
   rejectPartner(partnerId: string, reason?: string) { return this.http.post<any>(`${this.base}/admin/partners/${partnerId}/reject`, { reason }, this.headers()); }
+  notifyPartner(partnerId: string, message: string) { return this.http.post<any>(`${this.base}/admin/partners/${partnerId}/notify`, { message }, this.headers()); }
 }

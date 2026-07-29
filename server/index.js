@@ -3,8 +3,10 @@ const express = require('express');
 const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
+const passport = require('passport');
 const path = require('path');
 const fs = require('fs');
+const promClient = require('prom-client');
 
 const { syncDB } = require('./models');
 const setupSocket = require('./socket');
@@ -26,6 +28,20 @@ app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:4200', cred
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Initialize metrics
+try {
+  promClient.collectDefaultMetrics();
+  app.get('/metrics', async (req, res) => {
+    res.set('Content-Type', promClient.register.contentType);
+    res.send(await promClient.register.metrics());
+  });
+} catch (e) {
+  console.warn('Prometheus metrics init failed:', e && e.message);
+}
+
+// Initialize passport for OAuth
+app.use(passport.initialize());
+
 // API Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/listings', require('./routes/listings'));
@@ -37,6 +53,7 @@ app.use('/api/ratings', require('./routes/ratings'));
 app.use('/api/addons', require('./routes/addons'));
 app.use('/api/partner', require('./routes/partner'));
 app.use('/api/admin', require('./routes/admin'));
+app.use('/api/auth', require('./routes/oauth'));
 
 // Health check
 app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date() }));
@@ -78,5 +95,6 @@ const PORT = process.env.PORT || 3000;
   server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     try { startAuctionCron(io); } catch (e) { console.warn('Auction cron failed to start:', e && e.message); }
+    // Telemetry: Prometheus metrics exposed at /metrics
   });
 })();

@@ -2,6 +2,21 @@ const router = require('express').Router();
 const { auth, requireAdmin } = require('../middleware/auth');
 const { User } = require('../models');
 const { audit } = require('../utils/audit');
+const nodemailer = require('nodemailer');
+
+async function sendEmail(to, subject, text) {
+  if (!process.env.SMTP_HOST) {
+    console.log('SMTP not configured, skipping email to', to, 'subject:', subject);
+    return;
+  }
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: process.env.SMTP_PORT || 587,
+    secure: process.env.SMTP_SECURE === 'true',
+    auth: process.env.SMTP_USER ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } : undefined
+  });
+  await transporter.sendMail({ from: process.env.SMTP_FROM || 'no-reply@example.com', to, subject, text });
+}
 
 // List pending partners
 router.get('/partners/pending', auth, requireAdmin, async (req, res) => {
@@ -38,6 +53,20 @@ router.post('/partners/:id/reject', auth, requireAdmin, async (req, res) => {
     u.isVerified = false;
     await u.save();
     audit(req.user.id, 'reject_partner', { partnerId: u.id, reason });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Notify partner (email)
+router.post('/partners/:id/notify', auth, requireAdmin, async (req, res) => {
+  try {
+    const { message } = req.body;
+    const u = await User.findByPk(req.params.id);
+    if (!u) return res.status(404).json({ error: 'User not found' });
+    await sendEmail(u.email, 'Platform notification', message || 'Please verify your account');
+    audit(req.user.id, 'notify_partner', { partnerId: u.id, message });
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
