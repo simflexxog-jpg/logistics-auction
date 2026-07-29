@@ -129,21 +129,74 @@
 
 .admin-main {
   min-height: 100vh;
-  background: radial-gradient(circle at top right, rgba(56,189,248,0.1), transparent 30%),
-    linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));
+  background: radial-gradient(circle at top right, rgba(56,189,248,0.12), transparent 30%),
+    linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.06));
+  color: #eef2ff;
 }
 
 .admin-main .container {
   max-width: 1200px;
 }
 
-.admin-main h3 {
-  color: #e2e8f0;
+.admin-main h2,
+.admin-main h3,
+.admin-main h5,
+.admin-main h6,
+.admin-main .fw-bold {
+  color: #f8fafc;
+}
+
+.admin-main p,
+.admin-main .text-muted,
+.admin-main .small,
+.admin-main .form-label,
+.admin-main .badge,
+.admin-main .text-capitalize {
+  color: #cbd5e1;
 }
 
 .admin-main .btn-primary {
-  background: linear-gradient(90deg, #22d3ee, #2563eb);
+  background: linear-gradient(90deg, #7dd3fc, #38bdf8);
   border: none;
+  color: #0f172a;
+}
+
+.admin-main .btn-outline-light,
+.admin-main .btn-outline-secondary {
+  color: #e2e8f0;
+  border-color: rgba(226,232,240,0.2);
+}
+
+.admin-main .btn-outline-light:hover,
+.admin-main .btn-outline-secondary:hover {
+  color: #ffffff;
+}
+
+.admin-main .table {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.admin-main .table th,
+.admin-main .table td {
+  color: #f8fafc;
+}
+
+.admin-main .list-group-item,
+.admin-main .card {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.admin-main input.form-control,
+.admin-main select.form-select {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.16);
+  color: #f8fafc;
+}
+
+.admin-main input.form-control::placeholder {
+  color: #cbd5e1;
 }
 
 .admin-main .btn-outline-secondary {
