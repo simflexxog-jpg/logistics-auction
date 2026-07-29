@@ -1,7 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { environment } from '../../../../environments/environment';
 import { SocketService } from '../../../services/socket.service';
@@ -10,6 +10,7 @@ import { SocketService } from '../../../services/socket.service';
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
+  styleUrls: ['./login-admin.css', './login.component.css'],
   templateUrl: './login.component.html'
 })
 export class LoginComponent {
@@ -19,7 +20,14 @@ export class LoginComponent {
   loading = signal(false);
   oauthUrl = environment.apiUrl + '/auth/google';
 
-  constructor(private auth: AuthService, private router: Router, private socket: SocketService) {}
+  adminMode = false;
+
+  constructor(private auth: AuthService, private router: Router, private socket: SocketService, private route: ActivatedRoute) {}
+
+  ngOnInit(): void {
+    const isAdmin = this.route.snapshot.queryParamMap.get('admin');
+    this.adminMode = isAdmin === 'true' || isAdmin === '1' || isAdmin === '';
+  }
 
   submit() {
     this.error.set('');

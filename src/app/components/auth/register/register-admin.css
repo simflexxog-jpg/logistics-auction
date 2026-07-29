@@ -1,0 +1,3 @@
+.auth-panel.admin { background: linear-gradient(180deg,#071029 0%,#071226 100%); color:#eaf6ff }
+.auth-panel.admin .form-control { background: rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); color:#e6eef8 }
+.auth-panel.admin .btn-outline-primary { color:#cfe9ff; border-color: rgba(255,255,255,0.06) }

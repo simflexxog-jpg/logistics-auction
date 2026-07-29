@@ -1,0 +1,6 @@
+.auth-page.admin { background: linear-gradient(180deg,#071029 0%,#071226 100%); }
+.auth-panel.admin { border: 1px solid rgba(255,255,255,0.04); }
+.auth-panel.admin .brand-mark rect { fill: url(#g); }
+.auth-panel.admin h2 { color: #e6f0ff; }
+.auth-panel.admin p { color: #bcd8ff; }
+.btn-outline-danger { border-color: rgba(255,255,255,0.06); color:#ffd6d6 }

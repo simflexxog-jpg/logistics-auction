@@ -9,6 +9,7 @@ import { SocketService } from '../../../services/socket.service';
   selector: 'app-register',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
+  styleUrls: ['./register-admin.css', './register.component.css'],
   templateUrl: './register.component.html'
 })
 export class RegisterComponent implements OnInit {

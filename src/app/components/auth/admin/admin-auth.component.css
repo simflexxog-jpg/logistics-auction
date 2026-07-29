@@ -1,0 +1,7 @@
+.auth-page { background: linear-gradient(180deg,#0f172a 0%,#0b1220 100%); color: #e6eef8; }
+.auth-shell { display:flex; align-items:center; justify-content:center; min-height:70vh; }
+.auth-panel { background: rgba(255,255,255,0.04); border-radius:12px; padding:24px; box-shadow:0 6px 20px rgba(2,6,23,0.6); }
+.auth-panel .btn-primary { background: linear-gradient(90deg,#0ea5e9,#2563eb); border: none; }
+.auth-panel .btn-outline-secondary { color: #cfe9ff; border-color: rgba(255,255,255,0.08); }
+.auth-panel-inner { max-width:420px; margin:0 auto; }
+.brand-mark svg { filter: drop-shadow(0 6px 16px rgba(0,0,0,0.6)); }

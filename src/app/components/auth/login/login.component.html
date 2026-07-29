@@ -1,4 +1,4 @@
-<div class="auth-page">
+<div [class.auth-page]="true" [class.admin]="adminMode">
   <div class="auth-shell">
     <div class="auth-hero">
       <div>
@@ -21,7 +21,7 @@
       </div>
     </div>
 
-    <div class="auth-panel">
+    <div [class.auth-panel]="true" [class.admin]="adminMode">
       <div class="auth-panel-inner">
         <div class="text-center mb-4">
           <div class="brand-mark mb-3 brand-mark-lg" aria-hidden="true">

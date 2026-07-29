@@ -1,4 +1,4 @@
-<div class="auth-page">
+<div [class.auth-page]="true" [class.admin]="role === 'admin' || registerAsAdmin">
   <div class="auth-shell auth-shell-register">
     <div class="auth-hero">
       <div>
