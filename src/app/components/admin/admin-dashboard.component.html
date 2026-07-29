@@ -1,13 +1,13 @@
 <div class="container p-3 admin-dashboard-shell">
   <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-4">
     <div>
-      <h1 class="mb-1">Admin Dashboard</h1>
+      <h1 class="mb-1"><i class="bi bi-speedometer2 me-2"></i>Admin Dashboard</h1>
       <p class="text-muted mb-0">Manage platform users, partner approvals, and audit activity from one secure console.</p>
     </div>
     <div class="btn-group" role="group" aria-label="Admin tabs">
-      <button class="btn btn-outline-light" [class.btn-primary]="tab==='pending'" (click)="setTab('pending')">Pending Partners</button>
-      <button class="btn btn-outline-light" [class.btn-primary]="tab==='users'" (click)="setTab('users')">Users</button>
-      <button class="btn btn-outline-light" [class.btn-primary]="tab==='audit'" (click)="setTab('audit')">Audit Logs</button>
+      <button class="btn btn-outline-light" [class.btn-primary]="tab==='pending'" (click)="setTab('pending')"><i class="bi bi-person-check me-1"></i>Pending Partners</button>
+      <button class="btn btn-outline-light" [class.btn-primary]="tab==='users'" (click)="setTab('users')"><i class="bi bi-people me-1"></i>Users</button>
+      <button class="btn btn-outline-light" [class.btn-primary]="tab==='audit'" (click)="setTab('audit')"><i class="bi bi-clock-history me-1"></i>Audit Logs</button>
     </div>
   </div>
 
@@ -17,27 +17,27 @@
     <section class="card p-4 mb-4 bg-dark text-light rounded-4 border border-secondary">
       <div class="d-flex justify-content-between align-items-start mb-3">
         <div>
-          <h2 class="h5 mb-1">Pending Partners</h2>
+          <h2 class="h5 mb-1"><i class="bi bi-person-badge me-2"></i>Pending Partners</h2>
           <p class="text-muted small mb-0">Review partner onboarding requests and approve or reject them with notes.</p>
         </div>
-        <span class="badge bg-info text-dark">{{ pending.length }} pending</span>
+        <span class="badge bg-info text-dark"><i class="bi bi-hourglass-split me-1"></i>{{ pending.length }} pending</span>
       </div>
       <div *ngIf="!loading && pending.length === 0" class="text-muted">No pending partners.</div>
       <ul *ngIf="pending.length" class="list-group list-group-flush">
         <li *ngFor="let p of pending" class="list-group-item bg-secondary bg-opacity-10 border-secondary rounded-4 mb-3">
           <div class="d-flex flex-column flex-md-row align-items-start justify-content-between gap-3">
             <div>
-              <div class="h6 mb-1">{{p.name}}</div>
-              <div class="text-muted small">{{p.email}} • {{p.truckType || 'N/A'}} • Phone: {{p.phone || '—'}}</div>
+              <div class="h6 mb-1"><i class="bi bi-person-circle me-2"></i>{{p.name}}</div>
+              <div class="text-muted small"><i class="bi bi-envelope me-1"></i>{{p.email}} • <i class="bi bi-truck me-1"></i>{{p.truckType || 'N/A'}} • <i class="bi bi-telephone me-1"></i>{{p.phone || '—'}}</div>
               <div class="mt-2 d-flex gap-2 flex-wrap">
-                <span class="badge bg-info text-dark">{{p.status || 'Pending'}}</span>
-                <span class="badge bg-light text-dark">{{p.licensePlate || 'No plate'}}</span>
+                <span class="badge bg-info text-dark"><i class="bi bi-info-circle me-1"></i>{{p.status || 'Pending'}}</span>
+                <span class="badge bg-light text-dark"><i class="bi bi-card-text me-1"></i>{{p.licensePlate || 'No plate'}}</span>
               </div>
             </div>
             <div class="d-flex gap-2 flex-wrap">
-              <button (click)="approve(p.id)" class="btn btn-sm btn-success">Approve</button>
-              <button (click)="reject(p.id)" class="btn btn-sm btn-danger">Reject</button>
-              <button (click)="notify(p.id)" class="btn btn-sm btn-outline-light">Notify</button>
+              <button (click)="approve(p.id)" class="btn btn-sm btn-success"><i class="bi bi-check-circle me-1"></i>Approve</button>
+              <button (click)="reject(p.id)" class="btn btn-sm btn-danger"><i class="bi bi-x-circle me-1"></i>Reject</button>
+              <button (click)="notify(p.id)" class="btn btn-sm btn-outline-light"><i class="bi bi-bell me-1"></i>Notify</button>
             </div>
           </div>
           <div class="mt-3 d-flex gap-3 flex-wrap">
@@ -53,12 +53,12 @@
     <section class="card p-4 mb-4 bg-dark text-light rounded-4 border border-secondary">
       <div class="d-flex flex-column flex-md-row gap-3 align-items-center justify-content-between mb-3">
         <div>
-          <h2 class="h5 mb-1">User Management</h2>
+          <h2 class="h5 mb-1"><i class="bi bi-people-fill me-2"></i>User Management</h2>
           <p class="text-muted small mb-0">Filter users, sort results, and export records for review.</p>
         </div>
         <div class="d-flex gap-2 flex-wrap">
-          <button class="btn btn-outline-light" (click)="usersPage=1; loadUsers()">Search</button>
-          <button class="btn btn-outline-secondary" (click)="exportUsersCsv()">Export CSV</button>
+          <button class="btn btn-outline-light" (click)="usersPage=1; loadUsers()"><i class="bi bi-search me-1"></i>Search</button>
+          <button class="btn btn-outline-secondary" (click)="exportUsersCsv()"><i class="bi bi-file-earmark-spreadsheet me-1"></i>Export CSV</button>
         </div>
       </div>
       <div class="mb-3 row gx-2 gy-2">
@@ -99,11 +99,11 @@
           </thead>
           <tbody>
             <tr *ngFor="let u of users">
-              <td>{{u.name}}</td>
-              <td>{{u.email}}</td>
-              <td>{{u.role}}</td>
-              <td>{{u.isVerified ? 'Yes' : 'No'}}</td>
-              <td class="text-end"><button class="btn btn-sm btn-outline-light" (click)="viewUser(u.id)">View</button></td>
+              <td><i class="bi bi-person-badge me-1"></i>{{u.name}}</td>
+              <td><i class="bi bi-envelope me-1"></i>{{u.email}}</td>
+              <td><i class="bi bi-shield-lock me-1"></i>{{u.role}}</td>
+              <td><i class="bi" [ngClass]="u.isVerified ? 'bi-check-circle text-success' : 'bi-x-circle text-danger'"></i> {{u.isVerified ? 'Yes' : 'No'}}</td>
+              <td class="text-end"><button class="btn btn-sm btn-outline-light" (click)="viewUser(u.id)"><i class="bi bi-eye me-1"></i>View</button></td>
             </tr>
           </tbody>
         </table>
@@ -121,11 +121,11 @@
     <section class="card p-4 mb-4 bg-dark text-light rounded-4 border border-secondary">
       <div class="d-flex flex-column flex-md-row gap-3 align-items-center justify-content-between mb-3">
         <div>
-          <h2 class="h5 mb-1">Audit Logs</h2>
+          <h2 class="h5 mb-1"><i class="bi bi-journal-text me-2"></i>Audit Logs</h2>
           <p class="text-muted small mb-0">Filter and review recent admin activity across the platform.</p>
         </div>
         <div class="d-flex gap-2 flex-wrap">
-          <button class="btn btn-outline-light" (click)="loadAudit()">Reset</button>
+          <button class="btn btn-outline-light" (click)="loadAudit()"><i class="bi bi-arrow-clockwise me-1"></i>Reset</button>
         </div>
       </div>
       <div class="row gx-2 gy-2 mb-3">
