@@ -1,3 +1,27 @@
-.auth-panel.admin { background: linear-gradient(180deg,#071029 0%,#071226 100%); color:#eaf6ff }
-.auth-panel.admin .form-control { background: rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); color:#e6eef8 }
-.auth-panel.admin .btn-outline-primary { color:#cfe9ff; border-color: rgba(255,255,255,0.06) }
+.auth-page.admin {
+  background: radial-gradient(circle at top, rgba(59,130,246,0.14), transparent 35%),
+    linear-gradient(180deg,#041022 0%,#081a36 100%);
+}
+.auth-panel.admin {
+  background: rgba(8,20,44,0.92);
+  border: 1px solid rgba(96,165,250,0.18);
+  box-shadow: 0 20px 70px rgba(0,0,0,0.34);
+  backdrop-filter: blur(18px);
+}
+.auth-panel.admin .form-control,
+.auth-panel.admin .form-select {
+  background: rgba(15,23,42,0.88);
+  border: 1px solid rgba(96,165,250,0.16);
+  color: #e2e8f0;
+}
+.auth-panel.admin .btn-outline-primary {
+  color: #bfdbfe;
+  border-color: rgba(59,130,246,0.2);
+}
+.auth-panel.admin .btn-primary {
+  background: linear-gradient(90deg,#3b82f6,#0ea5e9);
+}
+.auth-panel.admin .brand-mark svg {
+  filter: drop-shadow(0 12px 24px rgba(14,165,233,0.35));
+}
+.auth-panel.admin .text-muted { color: #94a3b8; }
