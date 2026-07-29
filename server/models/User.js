@@ -18,6 +18,7 @@ const User = sequelize.define('User', {
   avgRating: { type: DataTypes.FLOAT, defaultValue: 0 },
   totalRatings: { type: DataTypes.INTEGER, defaultValue: 0 },
   totalEarnings: { type: DataTypes.FLOAT, defaultValue: 0 },
+  isAdmin: { type: DataTypes.BOOLEAN, defaultValue: false },
 }, { timestamps: true });
 
 module.exports = User;

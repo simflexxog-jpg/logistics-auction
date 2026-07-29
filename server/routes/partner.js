@@ -1,10 +1,10 @@
 const router = require('express').Router();
-const { auth, requireRole } = require('../middleware/auth');
+const { auth, requireRole, requireVerifiedPartner } = require('../middleware/auth');
 const { User, Listing, Bid, Payment, Rating } = require('../models');
 const { Op } = require('sequelize');
 
-// Dashboard stats
-router.get('/dashboard', auth, requireRole('partner'), async (req, res) => {
+// Dashboard stats (partners must be verified)
+router.get('/dashboard', auth, requireVerifiedPartner, async (req, res) => {
   try {
     const partner = await User.findByPk(req.user.id, { attributes: { exclude: ['password'] } });
     const myBids = await Bid.count({ where: { partnerId: req.user.id } });

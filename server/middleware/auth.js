@@ -25,4 +25,15 @@ const requireRole = (role) => (req, res, next) => {
   next();
 };
 
-module.exports = { auth, requireRole };
+const requireAdmin = (req, res, next) => {
+  if (!req.user || !req.user.isAdmin) return res.status(403).json({ error: 'Admin access required' });
+  next();
+};
+
+const requireVerifiedPartner = (req, res, next) => {
+  if (!req.user || req.user.role !== 'partner') return res.status(403).json({ error: 'Partner access required' });
+  if (!req.user.isVerified) return res.status(403).json({ error: 'Partner account not verified' });
+  next();
+};
+
+module.exports = { auth, requireRole, requireAdmin, requireVerifiedPartner };

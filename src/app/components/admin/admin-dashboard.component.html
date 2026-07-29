@@ -1,0 +1,14 @@
+<div class="container p-3">
+  <h3>Pending Partners</h3>
+  <div *ngIf="loading">Loading...</div>
+  <div *ngIf="!loading && pending.length === 0">No pending partners.</div>
+  <ul *ngIf="pending.length">
+    <li *ngFor="let p of pending" class="mb-2">
+      <strong>{{p.name}}</strong> — {{p.email}} — {{p.truckType || 'N/A'}}
+      <div class="mt-1">
+        <button (click)="approve(p.id)" class="btn btn-sm btn-success me-2">Approve</button>
+        <button (click)="reject(p.id)" class="btn btn-sm btn-danger">Reject</button>
+      </div>
+    </li>
+  </ul>
+</div>

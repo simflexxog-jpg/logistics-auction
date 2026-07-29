@@ -43,7 +43,7 @@ export class AuthService {
         localStorage.setItem('token', token);
         localStorage.setItem('refreshToken', res.refreshToken);
         localStorage.setItem('user', JSON.stringify(res.user));
-        this.currentUser.set(res.user);
+        this.currentUser.set({ ...res.user } as any);
       })
     );
   }
@@ -55,7 +55,7 @@ export class AuthService {
         localStorage.setItem('token', token);
         localStorage.setItem('refreshToken', res.refreshToken);
         localStorage.setItem('user', JSON.stringify(res.user));
-        this.currentUser.set(res.user);
+        this.currentUser.set({ ...res.user } as any);
       })
     );
   }

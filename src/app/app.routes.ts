@@ -79,3 +79,10 @@ export const routes: Routes = [
 
   { path: '**', redirectTo: '/login' }
 ];
+
+// Admin route
+routes.splice(routes.length - 1, 0, {
+  path: 'admin',
+  canActivate: [() => import('./guards/admin.guard').then(m => m.adminGuard)],
+  loadComponent: () => import('./components/admin/admin-dashboard.component').then(m => m.AdminDashboardComponent)
+});

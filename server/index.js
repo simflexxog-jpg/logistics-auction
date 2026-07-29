@@ -36,6 +36,7 @@ app.use('/api/ai', require('./routes/ai'));
 app.use('/api/ratings', require('./routes/ratings'));
 app.use('/api/addons', require('./routes/addons'));
 app.use('/api/partner', require('./routes/partner'));
+app.use('/api/admin', require('./routes/admin'));
 
 // Health check
 app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date() }));
