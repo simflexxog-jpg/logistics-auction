@@ -1,93 +1,168 @@
-<div class="container p-3">
-  <div class="d-flex gap-2 mb-3">
-    <button class="btn" [class.btn-primary]="tab==='pending'" (click)="setTab('pending')">Pending Partners</button>
-    <button class="btn" [class.btn-primary]="tab==='users'" (click)="setTab('users')">Users</button>
-    <button class="btn" [class.btn-primary]="tab==='audit'" (click)="setTab('audit')">Audit Logs</button>
+<div class="container p-3 admin-dashboard-shell">
+  <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-4">
+    <div>
+      <h1 class="mb-1">Admin Dashboard</h1>
+      <p class="text-muted mb-0">Manage platform users, partner approvals, and audit activity from one secure console.</p>
+    </div>
+    <div class="btn-group" role="group" aria-label="Admin tabs">
+      <button class="btn btn-outline-light" [class.btn-primary]="tab==='pending'" (click)="setTab('pending')">Pending Partners</button>
+      <button class="btn btn-outline-light" [class.btn-primary]="tab==='users'" (click)="setTab('users')">Users</button>
+      <button class="btn btn-outline-light" [class.btn-primary]="tab==='audit'" (click)="setTab('audit')">Audit Logs</button>
+    </div>
   </div>
 
   <div *ngIf="loading">Loading...</div>
 
   <ng-container *ngIf="tab === 'pending'">
-    <h3>Pending Partners</h3>
-    <div *ngIf="!loading && pending.length === 0">No pending partners.</div>
-    <ul *ngIf="pending.length">
-      <li *ngFor="let p of pending" class="mb-3 border p-2 rounded">
-        <div class="d-flex align-items-center justify-content-between">
-          <div>
-            <strong>{{p.name}}</strong> — {{p.email}} — {{p.truckType || 'N/A'}}
-            <div class="text-muted small">Phone: {{p.phone || '—'}}</div>
-          </div>
-          <div>
-            <button (click)="approve(p.id)" class="btn btn-sm btn-success me-2">Approve</button>
-            <button (click)="reject(p.id)" class="btn btn-sm btn-danger me-2">Reject</button>
-            <button (click)="notify(p.id)" class="btn btn-sm btn-secondary">Notify</button>
-          </div>
+    <section class="card p-4 mb-4 bg-dark text-light rounded-4 border border-secondary">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <h2 class="h5 mb-1">Pending Partners</h2>
+          <p class="text-muted small mb-0">Review partner onboarding requests and approve or reject them with notes.</p>
         </div>
-        <div class="mt-2 d-flex gap-2">
-          <div *ngIf="p.truckPhoto"><img [src]="p.truckPhoto" alt="truck" style="height:72px;object-fit:cover;border-radius:6px" /></div>
-          <div *ngIf="p.licenseDoc"><img [src]="p.licenseDoc" alt="license" style="height:72px;object-fit:cover;border-radius:6px" /></div>
-        </div>
-      </li>
-    </ul>
+        <span class="badge bg-info text-dark">{{ pending.length }} pending</span>
+      </div>
+      <div *ngIf="!loading && pending.length === 0" class="text-muted">No pending partners.</div>
+      <ul *ngIf="pending.length" class="list-group list-group-flush">
+        <li *ngFor="let p of pending" class="list-group-item bg-secondary bg-opacity-10 border-secondary rounded-4 mb-3">
+          <div class="d-flex flex-column flex-md-row align-items-start justify-content-between gap-3">
+            <div>
+              <div class="h6 mb-1">{{p.name}}</div>
+              <div class="text-muted small">{{p.email}} • {{p.truckType || 'N/A'}} • Phone: {{p.phone || '—'}}</div>
+              <div class="mt-2 d-flex gap-2 flex-wrap">
+                <span class="badge bg-info text-dark">{{p.status || 'Pending'}}</span>
+                <span class="badge bg-light text-dark">{{p.licensePlate || 'No plate'}}</span>
+              </div>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+              <button (click)="approve(p.id)" class="btn btn-sm btn-success">Approve</button>
+              <button (click)="reject(p.id)" class="btn btn-sm btn-danger">Reject</button>
+              <button (click)="notify(p.id)" class="btn btn-sm btn-outline-light">Notify</button>
+            </div>
+          </div>
+          <div class="mt-3 d-flex gap-3 flex-wrap">
+            <img *ngIf="p.truckPhoto" [src]="p.truckPhoto" alt="truck" class="rounded-3" style="height:80px;object-fit:cover;" />
+            <img *ngIf="p.licenseDoc" [src]="p.licenseDoc" alt="license" class="rounded-3" style="height:80px;object-fit:cover;" />
+          </div>
+        </li>
+      </ul>
+    </section>
   </ng-container>
 
   <ng-container *ngIf="tab === 'users'">
-    <h3>Users</h3>
-    <div class="mb-2 d-flex gap-2 align-items-center">
-      <input class="form-control" placeholder="Search by name or email" [(ngModel)]="searchQ" />
-      <select class="form-select" style="width:160px" [(ngModel)]="usersSort">
-        <option value="createdAt">Created</option>
-        <option value="name">Name</option>
-        <option value="email">Email</option>
-      </select>
-      <select class="form-select" style="width:120px" [(ngModel)]="usersOrder">
-        <option value="desc">Desc</option>
-        <option value="asc">Asc</option>
-      </select>
-      <select class="form-select" style="width:120px" [(ngModel)]="usersLimit">
-        <option [ngValue]="10">10</option>
-        <option [ngValue]="25">25</option>
-        <option [ngValue]="50">50</option>
-      </select>
-      <button class="btn btn-primary" (click)="usersPage=1; loadUsers()">Search</button>
-      <button class="btn btn-outline-secondary" (click)="exportUsersCsv()">Export CSV</button>
-    </div>
-    <table class="table table-sm">
-      <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Verified</th><th></th></tr></thead>
-      <tbody>
-        <tr *ngFor="let u of users">
-          <td>{{u.name}}</td>
-          <td>{{u.email}}</td>
-          <td>{{u.role}}</td>
-          <td>{{u.isVerified ? 'Yes' : 'No'}}</td>
-          <td><button class="btn btn-sm btn-outline-secondary" (click)="viewUser(u.id)">View</button></td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="d-flex gap-2 align-items-center">
-      <button class="btn btn-sm btn-secondary" [disabled]="usersPage<=1" (click)="prevPage()">Prev</button>
-      <div>Page {{usersPage}} / {{ totalPages() }}</div>
-      <button class="btn btn-sm btn-secondary" [disabled]="usersPage>=totalPages()" (click)="nextPage()">Next</button>
-      <div class="ms-auto text-muted">Total: {{usersTotal}}</div>
-    </div>
+    <section class="card p-4 mb-4 bg-dark text-light rounded-4 border border-secondary">
+      <div class="d-flex flex-column flex-md-row gap-3 align-items-center justify-content-between mb-3">
+        <div>
+          <h2 class="h5 mb-1">User Management</h2>
+          <p class="text-muted small mb-0">Filter users, sort results, and export records for review.</p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+          <button class="btn btn-outline-light" (click)="usersPage=1; loadUsers()">Search</button>
+          <button class="btn btn-outline-secondary" (click)="exportUsersCsv()">Export CSV</button>
+        </div>
+      </div>
+      <div class="mb-3 row gx-2 gy-2">
+        <div class="col-12 col-md-4">
+          <input class="form-control" placeholder="Search by name or email" [(ngModel)]="searchQ" />
+        </div>
+        <div class="col-6 col-md-2">
+          <select class="form-select" [(ngModel)]="usersSort">
+            <option value="createdAt">Created</option>
+            <option value="name">Name</option>
+            <option value="email">Email</option>
+          </select>
+        </div>
+        <div class="col-6 col-md-2">
+          <select class="form-select" [(ngModel)]="usersOrder">
+            <option value="desc">Desc</option>
+            <option value="asc">Asc</option>
+          </select>
+        </div>
+        <div class="col-6 col-md-2">
+          <select class="form-select" [(ngModel)]="usersLimit">
+            <option [ngValue]="10">10</option>
+            <option [ngValue]="25">25</option>
+            <option [ngValue]="50">50</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-dark table-striped align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Verified</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let u of users">
+              <td>{{u.name}}</td>
+              <td>{{u.email}}</td>
+              <td>{{u.role}}</td>
+              <td>{{u.isVerified ? 'Yes' : 'No'}}</td>
+              <td class="text-end"><button class="btn btn-sm btn-outline-light" (click)="viewUser(u.id)">View</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="d-flex gap-2 align-items-center mt-3">
+        <button class="btn btn-sm btn-outline-light" [disabled]="usersPage<=1" (click)="prevPage()">Prev</button>
+        <div class="text-muted">Page {{usersPage}} / {{ totalPages() }}</div>
+        <button class="btn btn-sm btn-outline-light" [disabled]="usersPage>=totalPages()" (click)="nextPage()">Next</button>
+        <div class="ms-auto text-muted">Total: {{usersTotal}}</div>
+      </div>
+    </section>
   </ng-container>
 
   <ng-container *ngIf="tab === 'audit'">
-    <h3>Audit Logs</h3>
-    <div class="mb-2 d-flex gap-2 align-items-center">
-      <input class="form-control" placeholder="Action filter" #actionFilter />
-      <input type="date" class="form-control" #fromDate />
-      <input type="date" class="form-control" #toDate />
-      <button class="btn btn-primary" (click)="filterAudit(actionFilter.value, fromDate.value, toDate.value)">Filter</button>
-      <button class="btn btn-outline-secondary" (click)="loadAudit()">Reset</button>
-    </div>
-    <div *ngIf="audit.length === 0" class="text-muted">No audit entries.</div>
-    <ul class="list-group">
-      <li *ngFor="let a of audit" class="list-group-item small">
-        <div class="fw-semibold">{{a.action || a.type || a.event}} <span class="text-muted">by {{a.actorId || a.userId || a.subject}}</span></div>
-        <div class="text-muted">{{a.timestamp || a.time || a.createdAt || ''}}</div>
-        <pre class="mb-0" style="white-space:pre-wrap">{{a | json}}</pre>
-      </li>
-    </ul>
+    <section class="card p-4 mb-4 bg-dark text-light rounded-4 border border-secondary">
+      <div class="d-flex flex-column flex-md-row gap-3 align-items-center justify-content-between mb-3">
+        <div>
+          <h2 class="h5 mb-1">Audit Logs</h2>
+          <p class="text-muted small mb-0">Filter and review recent admin activity across the platform.</p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+          <button class="btn btn-outline-light" (click)="loadAudit()">Reset</button>
+        </div>
+      </div>
+      <div class="row gx-2 gy-2 mb-3">
+        <div class="col-12 col-md-4">
+          <input class="form-control" placeholder="Action filter" #actionFilter />
+        </div>
+        <div class="col-6 col-md-3">
+          <input type="date" class="form-control" #fromDate />
+        </div>
+        <div class="col-6 col-md-3">
+          <input type="date" class="form-control" #toDate />
+        </div>
+        <div class="col-12 col-md-2 d-grid">
+          <button class="btn btn-primary" (click)="filterAudit(actionFilter.value, fromDate.value, toDate.value)">Filter</button>
+        </div>
+      </div>
+      <div *ngIf="audit.length === 0" class="text-muted">No audit entries.</div>
+      <div *ngIf="audit.length > 0" class="table-responsive">
+        <table class="table table-dark table-striped align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Action</th>
+              <th>Actor</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let a of audit">
+              <td>{{a.timestamp || a.time || a.createdAt || ''}}</td>
+              <td>{{a.action || a.type || a.event}}</td>
+              <td>{{a.actorId || a.userId || a.subject}}</td>
+              <td><pre class="mb-0 text-wrap small" style="white-space:pre-wrap; max-width: 420px;">{{a | json}}</pre></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
   </ng-container>
 </div>

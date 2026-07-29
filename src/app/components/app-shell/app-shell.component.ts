@@ -14,9 +14,8 @@ export class AppShellComponent {
 
   constructor(public auth: AuthService, private router: Router) {}
 
-  get role(): 'customer' | 'partner' | 'admin' {
+  get role(): 'customer' | 'partner' {
     const u = this.auth.currentUser();
-    if (u && (u as any).isAdmin) return 'admin';
     return (u?.role as 'customer' | 'partner') || 'customer';
   }
 
