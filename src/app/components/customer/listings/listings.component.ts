@@ -236,4 +236,31 @@ export class CustomerListingsComponent implements OnInit, AfterViewInit {
     };
     return labels[status] || status;
   }
+
+  copyLink(listingId: string) {
+    const url = `${location.origin}/customer/listing/${listingId}`;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(() => {
+        this.success.set('Listing link copied to clipboard');
+        setTimeout(() => this.success.set(''), 2500);
+      }).catch(() => {
+        this.success.set('Could not copy link');
+        setTimeout(() => this.success.set(''), 2500);
+      });
+    } else {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = url;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        this.success.set('Listing link copied to clipboard');
+        setTimeout(() => this.success.set(''), 2500);
+      } catch (e) {
+        this.success.set('Could not copy link');
+        setTimeout(() => this.success.set(''), 2500);
+      }
+    }
+  }
 }

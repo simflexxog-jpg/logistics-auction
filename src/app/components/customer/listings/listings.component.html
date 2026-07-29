@@ -129,12 +129,23 @@
       <div class="row g-3">
         <ng-container *ngFor="let listing of getActiveListings()">
           <div class="col-md-6 col-xl-4">
-            <div class="card h-100 listing-card">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                  <h6 class="fw-bold mb-0">{{ listing.title }}</h6>
-                  <span class="badge bg-{{ statusBadge(listing.status) }}">{{ statusLabel(listing.status) }}</span>
-                </div>
+            <div class="card h-100 listing-card fade-in-up">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h6 class="fw-bold mb-0">{{ listing.title }}</h6>
+                    <div class="d-flex align-items-start gap-2">
+                      <span class="badge bg-{{ statusBadge(listing.status) }}">{{ statusLabel(listing.status) }}</span>
+                      <details class="card-actions" role="menu">
+                        <summary aria-haspopup="true" aria-expanded="false" title="More options">
+                          <span class="material-icons-outlined">more_vert</span>
+                        </summary>
+                        <div class="card-actions-menu">
+                          <a [routerLink]="['/customer/listing', listing.id]" class="dropdown-item">View details</a>
+                          <button class="dropdown-item" type="button" (click)="copyLink(listing.id)">Copy link</button>
+                        </div>
+                      </details>
+                    </div>
+                  </div>
                 <p class="text-muted small mb-2"><span class="material-icons-outlined align-middle me-1">label</span>{{ listing.cargoType }} · {{ listing.weight }}kg</p>
                 <p class="small mb-1"><span class="material-icons-outlined align-middle me-1">place</span>{{ listing.pickupAddress }}</p>
                 <p class="small mb-2"><span class="material-icons-outlined align-middle me-1">flag</span>{{ listing.dropoffAddress }}</p>
