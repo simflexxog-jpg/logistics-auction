@@ -73,4 +73,44 @@ router.post('/partners/:id/notify', auth, requireAdmin, async (req, res) => {
   }
 });
 
+// List all users (with optional search)
+router.get('/users', auth, requireAdmin, async (req, res) => {
+  try {
+    const q = (req.query.q || '').toString();
+    const where = q ? { [require('sequelize').Op.or]: [
+      { name: { [require('sequelize').Op.iLike]: `%${q}%` } },
+      { email: { [require('sequelize').Op.iLike]: `%${q}%` } }
+    ] } : {};
+    const users = await User.findAll({ where, attributes: { exclude: ['password'] }, limit: 500 });
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get single user
+router.get('/users/:id', auth, requireAdmin, async (req, res) => {
+  try {
+    const u = await User.findByPk(req.params.id, { attributes: { exclude: ['password'] } });
+    if (!u) return res.status(404).json({ error: 'User not found' });
+    res.json(u);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Read audit log (tail)
+router.get('/audit', auth, requireAdmin, async (req, res) => {
+  try {
+    const lines = parseInt(req.query.lines || '200', 10) || 200;
+    const logPath = require('path').join(__dirname, '..', 'logs', 'audit.log');
+    if (!require('fs').existsSync(logPath)) return res.json([]);
+    const data = require('fs').readFileSync(logPath, 'utf8').trim().split(/\r?\n/).filter(Boolean);
+    const tail = data.slice(-lines).map(l => { try { return JSON.parse(l); } catch(e){ return { raw: l }; } });
+    res.json(tail);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;

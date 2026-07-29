@@ -1,24 +1,65 @@
 <div class="container p-3">
-  <h3>Pending Partners</h3>
+  <div class="d-flex gap-2 mb-3">
+    <button class="btn" [class.btn-primary]="tab==='pending'" (click)="setTab('pending')">Pending Partners</button>
+    <button class="btn" [class.btn-primary]="tab==='users'" (click)="setTab('users')">Users</button>
+    <button class="btn" [class.btn-primary]="tab==='audit'" (click)="setTab('audit')">Audit Logs</button>
+  </div>
+
   <div *ngIf="loading">Loading...</div>
-  <div *ngIf="!loading && pending.length === 0">No pending partners.</div>
-  <ul *ngIf="pending.length">
-    <li *ngFor="let p of pending" class="mb-3 border p-2 rounded">
-      <div class="d-flex align-items-center justify-content-between">
-        <div>
-          <strong>{{p.name}}</strong> — {{p.email}} — {{p.truckType || 'N/A'}}
-          <div class="text-muted small">Phone: {{p.phone || '—'}}</div>
+
+  <ng-container *ngIf="tab === 'pending'">
+    <h3>Pending Partners</h3>
+    <div *ngIf="!loading && pending.length === 0">No pending partners.</div>
+    <ul *ngIf="pending.length">
+      <li *ngFor="let p of pending" class="mb-3 border p-2 rounded">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <strong>{{p.name}}</strong> — {{p.email}} — {{p.truckType || 'N/A'}}
+            <div class="text-muted small">Phone: {{p.phone || '—'}}</div>
+          </div>
+          <div>
+            <button (click)="approve(p.id)" class="btn btn-sm btn-success me-2">Approve</button>
+            <button (click)="reject(p.id)" class="btn btn-sm btn-danger me-2">Reject</button>
+            <button (click)="notify(p.id)" class="btn btn-sm btn-secondary">Notify</button>
+          </div>
         </div>
-        <div>
-          <button (click)="approve(p.id)" class="btn btn-sm btn-success me-2">Approve</button>
-          <button (click)="reject(p.id)" class="btn btn-sm btn-danger me-2">Reject</button>
-          <button (click)="notify(p.id)" class="btn btn-sm btn-secondary">Notify</button>
+        <div class="mt-2 d-flex gap-2">
+          <div *ngIf="p.truckPhoto"><img [src]="p.truckPhoto" alt="truck" style="height:72px;object-fit:cover;border-radius:6px" /></div>
+          <div *ngIf="p.licenseDoc"><img [src]="p.licenseDoc" alt="license" style="height:72px;object-fit:cover;border-radius:6px" /></div>
         </div>
-      </div>
-      <div class="mt-2 d-flex gap-2">
-        <div *ngIf="p.truckPhoto"><img [src]="p.truckPhoto" alt="truck" style="height:72px;object-fit:cover;border-radius:6px" /></div>
-        <div *ngIf="p.licenseDoc"><img [src]="p.licenseDoc" alt="license" style="height:72px;object-fit:cover;border-radius:6px" /></div>
-      </div>
-    </li>
-  </ul>
+      </li>
+    </ul>
+  </ng-container>
+
+  <ng-container *ngIf="tab === 'users'">
+    <h3>Users</h3>
+    <div class="mb-2 d-flex gap-2 align-items-center">
+      <input class="form-control" placeholder="Search by name or email" [(ngModel)]="searchQ" />
+      <button class="btn btn-primary" (click)="loadUsers()">Search</button>
+    </div>
+    <table class="table table-sm">
+      <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Verified</th><th></th></tr></thead>
+      <tbody>
+        <tr *ngFor="let u of users">
+          <td>{{u.name}}</td>
+          <td>{{u.email}}</td>
+          <td>{{u.role}}</td>
+          <td>{{u.isVerified ? 'Yes' : 'No'}}</td>
+          <td><button class="btn btn-sm btn-outline-secondary" (click)="viewUser(u.id)">View</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </ng-container>
+
+  <ng-container *ngIf="tab === 'audit'">
+    <h3>Audit Logs</h3>
+    <div *ngIf="audit.length === 0" class="text-muted">No audit entries.</div>
+    <ul class="list-group">
+      <li *ngFor="let a of audit" class="list-group-item small">
+        <div class="fw-semibold">{{a.action || a.type || a.event}} <span class="text-muted">by {{a.actorId || a.userId || a.subject}}</span></div>
+        <div class="text-muted">{{a.timestamp || a.time || a.createdAt || ''}}</div>
+        <pre class="mb-0" style="white-space:pre-wrap">{{a | json}}</pre>
+      </li>
+    </ul>
+  </ng-container>
 </div>
