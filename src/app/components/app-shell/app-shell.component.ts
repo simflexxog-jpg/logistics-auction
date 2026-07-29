@@ -14,8 +14,10 @@ export class AppShellComponent {
 
   constructor(public auth: AuthService, private router: Router) {}
 
-  get role(): 'customer' | 'partner' {
-    return (this.auth.currentUser()?.role as 'customer' | 'partner') || 'customer';
+  get role(): 'customer' | 'partner' | 'admin' {
+    const u = this.auth.currentUser();
+    if (u && (u as any).isAdmin) return 'admin';
+    return (u?.role as 'customer' | 'partner') || 'customer';
   }
 
   toggleSidebar() {

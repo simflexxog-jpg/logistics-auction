@@ -16,6 +16,15 @@
     <div class="sidebar-section">
       <div class="sidebar-section-title">Operations</div>
       <ul class="nav nav-pills flex-column gap-1">
+        <!-- Admin section: separate workspace -->
+        <li class="nav-item" *ngIf="role === 'admin'">
+          <a class="nav-link sidebar-nav-link" routerLink="/admin" routerLinkActive="active">
+            <span class="nav-icon"><i class="bi bi-shield-lock"></i></span>
+            <span class="nav-label">Admin Console</span>
+            <span class="nav-hint">Management</span>
+          </a>
+        </li>
+
         <li class="nav-item">
           <a class="nav-link sidebar-nav-link" routerLink="/customer/listings" routerLinkActive="active" *ngIf="role === 'customer'">
             <span class="nav-icon"><i class="bi bi-card-list"></i></span>
@@ -92,7 +101,7 @@
     <div class="topbar">
       <div>
         <div class="text-muted small">Welcome back</div>
-        <h2 class="mb-0 fw-bold">{{ role === 'customer' ? 'Customer Portal' : 'Partner Workspace' }}</h2>
+        <h2 class="mb-0 fw-bold">{{ role === 'admin' ? 'Admin Console' : (role === 'customer' ? 'Customer Portal' : 'Partner Workspace') }}</h2>
       </div>
       <div class="topbar-actions">
         <span class="badge bg-primary text-white">{{ role | titlecase }}</span>
