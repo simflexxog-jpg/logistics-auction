@@ -12,7 +12,7 @@ import { SocketService } from '../../../services/socket.service';
   templateUrl: './register.component.html'
 })
 export class RegisterComponent implements OnInit {
-  role: 'customer' | 'partner' = 'customer';
+  role: 'customer' | 'partner' | 'admin' = 'customer';
   form: any = { name: '', email: '', password: '', phone: '', truckType: '', truckCapacity: '', licensePlate: '', adminCode: '' };
   registerAsAdmin = false;
   error = signal('');
@@ -26,7 +26,11 @@ export class RegisterComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.role = (this.route.snapshot.params['role'] || 'customer') as 'customer' | 'partner';
+    const param = this.route.snapshot.params['role'] || 'customer';
+    this.role = param as 'customer' | 'partner' | 'admin';
+    if (this.role === 'admin') {
+      this.registerAsAdmin = true;
+    }
   }
 
   submit() {
