@@ -22,11 +22,13 @@ export class PartnerJobsComponent implements OnInit, OnDestroy {
   marking = signal(false);
   startingTransit = signal(false);
   private subs: Subscription[] = [];
+  private chatSub: Subscription | null = null;
   private map: L.Map | null = null;
 
   constructor(private api: ApiService, public auth: AuthService, private socket: SocketService) {}
 
   ngOnInit() {
+    this.socket.connect();
     this.api.getMyBids().subscribe({
       next: d => {
         this.bids.set(d.filter((b: any) => b.status === 'accepted'));
@@ -39,14 +41,18 @@ export class PartnerJobsComponent implements OnInit, OnDestroy {
   selectJob(bid: any) {
     this.selectedJob.set(bid);
     this.chatMessages.set([]);
-    if (['accepted', 'paid', 'picked_up', 'in_transit', 'delivered'].includes(bid.Listing?.status)) {
+    this.chatSub?.unsubscribe();
+    this.subs.forEach(s => s.unsubscribe());
+    this.subs = [];
+
+    const hasChat = ['accepted', 'paid', 'picked_up', 'in_transit', 'delivered'].includes(bid.Listing?.status);
+    if (hasChat) {
       this.api.getChatHistory(bid.listingId).subscribe(msgs => this.chatMessages.set(msgs));
       this.socket.joinChat(bid.listingId);
-      this.subs.forEach(s => s.unsubscribe());
+      this.chatSub = this.socket.on<any>('chat:message').subscribe(msg => {
+        if (msg.listingId === bid.listingId) this.chatMessages.update(ms => [...ms, msg]);
+      });
       this.subs = [
-        this.socket.on<any>('chat:message').subscribe(msg => {
-          if (msg.listingId === bid.listingId) this.chatMessages.update(ms => [...ms, msg]);
-        }),
         this.socket.on<any>('listing:updated').subscribe((updated: any) => {
           if (updated.id === bid.Listing.id) {
             this.selectedJob.update(j => ({ ...j, Listing: { ...j.Listing, status: updated.status } }));
@@ -54,6 +60,7 @@ export class PartnerJobsComponent implements OnInit, OnDestroy {
         })
       ];
     }
+
     setTimeout(() => this.initMap(bid.Listing), 150);
   }
 
@@ -148,6 +155,7 @@ export class PartnerJobsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.chatSub?.unsubscribe();
     this.subs.forEach(s => s.unsubscribe());
     if (this.map) { this.map.remove(); this.map = null; }
   }

@@ -29,6 +29,7 @@ export class ListingDetailComponent implements OnInit, OnDestroy, AfterViewInit 
   timer: any;
   timeLeft = signal('');
   private subs: Subscription[] = [];
+  private chatSub: Subscription | null = null;
   map: L.Map | null = null;
   activeTab = signal<'bids' | 'chat' | 'ai' | 'payment' | 'rate'>('bids');
   paymentMethod = 'card';
@@ -43,6 +44,7 @@ export class ListingDetailComponent implements OnInit, OnDestroy, AfterViewInit 
 
   ngOnInit() {
     const id = this.route.snapshot.params['id'];
+    this.socket.connect();
     this.load(id);
     this.socket.joinListing(id);
     this.subs.push(
@@ -57,17 +59,14 @@ export class ListingDetailComponent implements OnInit, OnDestroy, AfterViewInit 
         });
       }),
       this.socket.on<any>('listing:updated').subscribe((updated: any) => {
-        if (updated.id === id) {
-          const prev = this.listing();
+        const currentId = this.listing()?.id;
+        if (updated.id === currentId) {
           this.listing.set(updated);
-          // If listing just moved to paid, switch to chat tab automatically
           if (updated.status === 'paid' && this.activeTab() === 'payment') {
             this.activeTab.set('chat');
           }
-          if (['paid','picked_up', 'in_transit', 'delivered'].includes(updated.status) && this.chatMessages().length === 0) {
-            this.loadChat(id);
-            this.socket.joinChat(id);
-            this.subs.push(this.socket.on<any>('chat:message').subscribe(msg => this.chatMessages.update(msgs => [...msgs, msg])));
+          if (['paid','picked_up', 'in_transit', 'delivered'].includes(updated.status) && !this.chatSub) {
+            this.setupChatForListing(currentId);
           }
         }
       }),
@@ -85,13 +84,7 @@ export class ListingDetailComponent implements OnInit, OnDestroy, AfterViewInit 
         this.startTimer();
         setTimeout(() => this.initMap(), 200);
         if (['paid', 'picked_up', 'in_transit', 'delivered'].includes(data.status)) {
-          this.loadChat(id);
-          this.socket.joinChat(id);
-          this.subs.push(
-            this.socket.on<any>('chat:message').subscribe(msg => {
-              this.chatMessages.update(msgs => [...msgs, msg]);
-            })
-          );
+          this.setupChatForListing(id);
         }
       },
       error: () => this.loading.set(false)
@@ -146,6 +139,19 @@ export class ListingDetailComponent implements OnInit, OnDestroy, AfterViewInit 
 
   loadChat(listingId: string) {
     this.api.getChatHistory(listingId).subscribe(msgs => this.chatMessages.set(msgs));
+  }
+
+  setupChatForListing(listingId: string) {
+    if (!listingId) return;
+    this.chatSub?.unsubscribe();
+    this.chatMessages.set([]);
+    this.socket.joinChat(listingId);
+    this.loadChat(listingId);
+    this.chatSub = this.socket.on<any>('chat:message').subscribe(msg => {
+      if (msg.listingId === listingId) {
+        this.chatMessages.update(msgs => [...msgs, msg]);
+      }
+    });
   }
 
   sendMessage() {
@@ -239,6 +245,7 @@ export class ListingDetailComponent implements OnInit, OnDestroy, AfterViewInit 
 
   ngOnDestroy() {
     clearInterval(this.timer);
+    this.chatSub?.unsubscribe();
     this.subs.forEach(s => s.unsubscribe());
     if (this.map) { this.map.remove(); this.map = null; }
   }
