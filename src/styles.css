@@ -1505,3 +1505,209 @@ textarea.form-control:focus {
     min-width: auto;
   }
 }
+
+.partner-jobs-shell {
+  padding: 1.5rem;
+}
+
+.partner-jobs-shell .hero-badge {
+  color: #0f172a;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+
+.hero-stats {
+  min-width: 220px;
+}
+
+.stat-pill {
+  min-width: 140px;
+  padding: 1rem 1.1rem;
+  border-radius: 1.25rem;
+}
+
+.stat-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.partner-jobs-grid {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1.5fr) 300px;
+  gap: 1.5rem;
+}
+
+.job-list-panel,
+.job-detail-panel,
+.job-actions-panel {
+  background: #ffffff;
+  border-radius: 1.5rem;
+  box-shadow: 0 18px 42px rgba(15,23,42,0.08);
+  border: 1px solid rgba(15,23,42,0.08);
+}
+
+.panel-header,
+.card-header,
+.route-card-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(15,23,42,0.08);
+}
+
+.panel-body,
+.card-body,
+.chat-body {
+  padding: 1.5rem;
+}
+
+.job-list-items {
+  display: flex;
+  flex-direction: column;
+}
+
+.job-list-item {
+  text-align: left;
+  padding: 1.15rem 1.25rem;
+  margin-bottom: 0.75rem;
+  border-radius: 1.25rem;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.job-list-item:hover,
+.job-list-item.active {
+  background: rgba(37, 99, 235, 0.08);
+  border-color: rgba(37, 99, 235, 0.16);
+}
+
+.job-list-item .badge {
+  min-width: 120px;
+}
+
+.job-list-item.btn-transparent {
+  background: transparent;
+}
+
+.placeholder-panel,
+.empty-state,
+.loading-state {
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.route-card {
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+  background: #f8fafc;
+}
+
+.route-card-footer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+.info-card {
+  background: #ffffff;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  border: 1px solid rgba(15,23,42,0.08);
+}
+
+.info-card .card-header {
+  padding: 1rem 1.25rem;
+}
+
+.info-card .card-body {
+  padding: 1.25rem;
+}
+
+.summary-pill {
+  padding: 1rem;
+  border-radius: 1.25rem;
+  background: #f8fafc;
+  text-align: left;
+}
+
+.chat-panel {
+  background: #ffffff;
+  border-radius: 1.5rem;
+  border: 1px solid rgba(15,23,42,0.08);
+  overflow: hidden;
+}
+
+.chat-window {
+  min-height: 240px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.chat-footer {
+  padding: 1rem 1.5rem;
+  background: #f8fafc;
+}
+
+.job-actions-panel {
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+}
+
+.action-card {
+  background: #ffffff;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(15,23,42,0.08);
+  overflow: hidden;
+}
+
+.action-card .card-header {
+  padding: 1rem 1.25rem;
+}
+
+.action-card .card-body {
+  padding: 1.25rem;
+}
+
+.summary-pill span {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 1rem;
+}
+
+.bg-soft-primary {
+  background: rgba(37, 99, 235, 0.12);
+}
+
+.progress-track {
+  min-height: 10px;
+}
+
+@media (max-width: 1199px) {
+  .partner-jobs-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .job-actions-panel {
+    padding: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .partner-jobs-shell {
+    padding: 1rem;
+  }
+
+  .hero-stats,
+  .detail-top {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .action-buttons {
+    justify-content: flex-start;
+  }
+}

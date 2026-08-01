@@ -1,112 +1,177 @@
-    <div class="customer-portal-surface p-0">
-      <div class="portal-hero d-flex align-items-center justify-content-between gap-3 flex-wrap mb-3">
+    <div class="customer-portal-surface p-0 partner-jobs-shell">
+      <div class="portal-hero d-flex align-items-center justify-content-between gap-3 flex-wrap mb-4">
         <div>
-          <div class="hero-badge mb-3">Partner Jobs</div>
-          <h4 class="fw-bold mb-1">Manage active shipments and customer communication</h4>
-          <p>Track every accepted delivery from pickup to final handoff.</p>
+          <div class="hero-badge mb-2">My Jobs</div>
+          <h4 class="fw-bold mb-1">Operations dashboard for active shipments</h4>
+          <p class="mb-0 text-muted">Review your accepted loads, monitor route progress, and chat with customers from one place.</p>
         </div>
-        <span class="badge bg-light text-success fw-semibold">Shipment board</span>
+        <div class="hero-stats d-flex gap-2 flex-wrap align-items-center">
+          <div class="stat-pill bg-white shadow-sm border">
+            <div class="stat-value">{{ bids().length }}</div>
+            <div class="text-muted small">Active shipments</div>
+          </div>
+          <div class="stat-pill bg-white shadow-sm border">
+            <div class="stat-value">{{ bids().filter(b => ['picked_up','in_transit'].includes(b.Listing?.status)).length }}</div>
+            <div class="text-muted small">On route</div>
+          </div>
+          <div class="stat-pill bg-white shadow-sm border">
+            <div class="stat-value">{{ bids().filter(b => b.Listing?.status === 'accepted').length }}</div>
+            <div class="text-muted small">Awaiting pickup</div>
+          </div>
+        </div>
       </div>
 
-      <div class="d-flex min-vh-100 rounded-4 overflow-hidden border border-1 border-light-subtle">
-      <!-- Jobs list -->
-      <div class="border-end sidebar-job-panel bg-white">
-        <div class="p-3 border-bottom bg-white sticky-top">
-          <h5 class="fw-bold mb-0"><span class="material-icons-outlined align-middle me-1">local_shipping</span>My won jobs</h5>
-          <small class="text-muted">Accepted bids and active shipments</small>
-        </div>
-        <ng-container *ngIf="loading()">
-          <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
-        </ng-container>
-        <ng-container *ngIf="!loading() && bids().length === 0">
-          <div class="text-center py-5 text-muted px-3">
-            <div class="hero-icon"><span class="material-icons-outlined icon-large">local_shipping</span></div>
-            <p class="mt-2">No won jobs yet. Win some auctions!</p>
+      <div class="partner-jobs-grid">
+        <section class="job-list-panel">
+          <div class="panel-header d-flex justify-content-between align-items-center">
+            <div>
+              <h5 class="mb-1">Shipment queue</h5>
+              <small class="text-muted">Tap any job for full details</small>
+            </div>
+            <span class="badge bg-light text-primary">{{ bids().length }} jobs</span>
           </div>
-        </ng-container>
-        <ng-container *ngIf="!loading() && bids().length > 0">
-          <ng-container *ngFor="let bid of bids()">
-            <div class="p-3 border-bottom cursor-pointer"
-              [class.bg-light]="selectedJob()?.id === bid.id"
-              (click)="selectJob(bid)">
-              <div class="fw-semibold small mb-1">{{ bid.Listing?.title }}</div>
-              <div class="small text-muted mb-1">{{ bid.Listing?.cargoType }} · {{ bid.Listing?.weight }}kg</div>
-              <div class="d-flex justify-content-between">
-                <span class="fw-bold text-success">₹{{ bid.amount }}</span>
-                <span class="badge"
-                  [class.bg-info]="bid.Listing?.status === 'accepted' || bid.Listing?.status === 'paid'"
-                  [class.bg-primary]="bid.Listing?.status === 'picked_up' || bid.Listing?.status === 'in_transit'"
-                  [class.bg-secondary]="bid.Listing?.status === 'delivered'"
-                  [class.bg-warning]="bid.Listing?.status === 'auction_ended'"
-                  [class.bg-danger]="bid.Listing?.status === 'cancelled'">
-                  {{ bid.Listing?.status === 'paid' ? 'Paid' : bid.Listing?.status === 'picked_up' ? 'Picked up' : (bid.Listing?.status | titlecase) }}
-                </span>
+
+          <div class="panel-body">
+            <ng-container *ngIf="loading()">
+              <div class="loading-state text-center py-5"><div class="spinner-border text-primary"></div></div>
+            </ng-container>
+
+            <ng-container *ngIf="!loading() && bids().length === 0">
+              <div class="empty-state text-center py-5 text-muted">
+                <div class="hero-icon large"><span class="material-icons-outlined icon-large">local_shipping</span></div>
+                <p class="mt-3 mb-0">No active jobs yet. Accept a shipment to get started.</p>
               </div>
+            </ng-container>
+
+            <ng-container *ngIf="!loading() && bids().length > 0">
+              <div class="job-list-items">
+                <ng-container *ngFor="let bid of bids()">
+                  <button type="button" class="job-list-item btn btn-transparent w-100 text-start"
+                    [class.active]="selectedJob()?.id === bid.id"
+                    (click)="selectJob(bid)">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                      <div>
+                        <div class="fw-semibold">{{ bid.Listing?.title }}</div>
+                        <div class="small text-muted">{{ bid.Listing?.cargoType }} · {{ bid.Listing?.weight }}kg</div>
+                      </div>
+                      <div class="text-end">
+                        <div class="fw-bold text-success">₹{{ bid.amount }}</div>
+                        <span class="badge small {{ getStatusClass(bid.Listing?.status) }}">{{ getStatusLabel(bid.Listing?.status) }}</span>
+                      </div>
+                    </div>
+                    <div class="small text-muted">{{ bid.Listing?.pickupAddress }} → {{ bid.Listing?.dropoffAddress }}</div>
+                  </button>
+                </ng-container>
+              </div>
+            </ng-container>
+          </div>
+        </section>
+
+        <section class="job-detail-panel">
+          <ng-container *ngIf="!selectedJob()">
+            <div class="placeholder-panel text-center py-5">
+              <div class="hero-icon large text-primary"><span class="material-icons-outlined icon-large">inventory_2</span></div>
+              <h5 class="mt-3">Select a job to begin</h5>
+              <p class="text-muted">Your active shipments will appear here with route details, progress, and actions.</p>
             </div>
           </ng-container>
-        </ng-container>
-      </div>
 
-      <!-- Job detail -->
-      <div class="flex-grow-1 overflow-auto p-4 bg-light-subtle">
-        <ng-container *ngIf="!selectedJob()">
-          <div class="text-center py-5 text-muted">
-            <div class="hero-icon large"><span class="material-icons-outlined icon-large">local_shipping</span></div>
-            <h5 class="mt-3">Select a job to view details</h5>
-          </div>
-        </ng-container>
-        <ng-container *ngIf="selectedJob()">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="fw-bold mb-0">{{ selectedJob().Listing?.title }}</h4>
-            <div class="d-flex gap-2">
-              <button *ngIf="selectedJob().Listing?.status === 'paid'" class="btn btn-warning text-dark" (click)="markPickup()" [disabled]="startingTransit()">
-                <span *ngIf="startingTransit()" class="spinner-border spinner-border-sm me-2"></span>
-                <span class="material-icons-outlined icon-small align-middle me-1">inventory_2</span>Mark pickup
-              </button>
-              <button *ngIf="selectedJob().Listing?.status === 'picked_up'" class="btn btn-primary" (click)="startTransit()" [disabled]="startingTransit()">
-                <span *ngIf="startingTransit()" class="spinner-border spinner-border-sm me-2"></span>
-                <span class="material-icons-outlined icon-small align-middle me-1">directions_car</span>Start transit
-              </button>
-              <button *ngIf="selectedJob().Listing?.status === 'in_transit'" class="btn btn-success" (click)="markDelivered()" [disabled]="marking()">
-                <span *ngIf="marking()" class="spinner-border spinner-border-sm me-2"></span>
-                <span class="material-icons-outlined icon-small align-middle me-1">check</span>Mark as delivered
-              </button>
-              <span *ngIf="selectedJob().Listing?.status === 'delivered'" class="badge bg-secondary fs-6"><span class="material-icons-outlined icon-small align-middle">check</span>Delivered</span>
-            </div>
-          </div>
-
-          <div class="row g-3 mb-4">
-            <div class="col-lg-7">
-              <div class="card shadow-sm">
-                <div class="card-header fw-semibold"><span class="material-icons-outlined align-middle me-1">map</span>Route</div>
-                <div class="card-body p-0">
-                  <div id="job-map" class="map-panel"></div>
+          <ng-container *ngIf="selectedJob()">
+            <div class="detail-top d-flex flex-column flex-md-row justify-content-between gap-3 mb-4">
+              <div>
+                <div class="small text-uppercase text-muted mb-2">Active shipment</div>
+                <h3 class="fw-bold mb-1">{{ selectedJob().Listing?.title }}</h3>
+                <div class="d-flex flex-wrap gap-2 align-items-center">
+                  <span class="badge {{ getStatusClass(selectedJob().Listing?.status) }}">{{ getStatusLabel(selectedJob().Listing?.status) }}</span>
+                  <span class="text-muted small">{{ selectedJob().Listing?.pickupAddress }} → {{ selectedJob().Listing?.dropoffAddress }}</span>
                 </div>
-                <div class="card-footer small">
-                  <div class="text-success"><span class="material-icons-outlined align-middle me-1">place</span>{{ selectedJob().Listing?.pickupAddress }}</div>
-                  <div class="text-danger"><span class="material-icons-outlined align-middle me-1">flag</span>{{ selectedJob().Listing?.dropoffAddress }}</div>
+              </div>
+              <div class="action-buttons d-flex gap-2 flex-wrap align-items-center">
+                <button *ngIf="selectedJob().Listing?.status === 'paid'" class="btn btn-outline-warning" (click)="markPickup()" [disabled]="startingTransit()">
+                  <span *ngIf="startingTransit()" class="spinner-border spinner-border-sm me-2"></span>
+                  Mark pickup
+                </button>
+                <button *ngIf="selectedJob().Listing?.status === 'picked_up'" class="btn btn-primary" (click)="startTransit()" [disabled]="startingTransit()">
+                  <span *ngIf="startingTransit()" class="spinner-border spinner-border-sm me-2"></span>
+                  Start transit
+                </button>
+                <button *ngIf="selectedJob().Listing?.status === 'in_transit'" class="btn btn-success" (click)="markDelivered()" [disabled]="marking()">
+                  <span *ngIf="marking()" class="spinner-border spinner-border-sm me-2"></span>
+                  Mark delivered
+                </button>
+              </div>
+            </div>
+
+            <div class="route-card mb-4">
+              <div class="route-card-header d-flex justify-content-between align-items-center mb-3">
+                <div>
+                  <div class="small text-muted">Route overview</div>
+                  <div class="fw-semibold">{{ selectedJob().Listing?.pickupAddress }} → {{ selectedJob().Listing?.dropoffAddress }}</div>
+                </div>
+                <div class="small text-muted">Progress {{ progressPercent(selectedJob().Listing?.status) }}%</div>
+              </div>
+              <div id="job-map" class="map-panel"></div>
+              <div class="route-card-footer d-flex flex-wrap justify-content-between gap-3 mt-3">
+                <div>
+                  <div class="text-muted small">Estimated arrival</div>
+                  <div class="fw-semibold">{{ selectedJob().Listing?.eta || 'TBD' }}</div>
+                </div>
+                <div>
+                  <div class="text-muted small">Distance</div>
+                  <div class="fw-semibold">{{ selectedJob().Listing?.distance || '––' }}</div>
+                </div>
+                <div>
+                  <div class="text-muted small">Progress</div>
+                  <div class="progress rounded-pill bg-soft-primary progress-track">
+                    <div class="progress-bar bg-primary rounded-pill" role="progressbar" [attr.aria-valuenow]="progressPercent(selectedJob().Listing?.status)" aria-valuemin="0" aria-valuemax="100" aria-label="Shipment progress" title="Shipment progress: {{ progressPercent(selectedJob().Listing?.status) }}%" [style.width.%]="progressPercent(selectedJob().Listing?.status)"></div>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="col-lg-5">
-              <div class="card shadow-sm h-100">
-                <div class="card-header fw-semibold"><span class="material-icons-outlined align-middle me-1">description</span>Job Details</div>
-                <div class="card-body">
-                  <div class="mb-2"><small class="text-muted d-block">Your Bid</small><span class="fw-bold text-primary fs-5">₹{{ selectedJob().amount }}</span></div>
-                  <div class="mb-2"><small class="text-muted d-block">Cargo</small><span>{{ selectedJob().Listing?.cargoType }} · {{ selectedJob().Listing?.weight }}kg</span></div>
-                  <div *ngIf="selectedJob().Listing?.status === 'accepted'" class="alert alert-warning small mt-3"><span class="material-icons-outlined align-middle me-1">hourglass_top</span>Awaiting customer payment to start shipment.</div>
-                  <div *ngIf="selectedJob().Listing?.status === 'picked_up'" class="alert alert-info small mt-3"><span class="material-icons-outlined align-middle me-1">local_shipping</span>Shipment picked up. Start transit when you leave the pickup location.</div>
-                  <div *ngIf="selectedJob().Listing?.status === 'in_transit'" class="alert alert-success small mt-3"><span class="material-icons-outlined align-middle me-1">local_shipping</span>Shipment in progress. Mark delivered when complete.</div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="info-card">
+                  <div class="card-header fw-semibold">Shipment details</div>
+                  <div class="card-body">
+                    <dl class="row mb-0">
+                      <dt class="col-5 text-muted">Bid amount</dt>
+                      <dd class="col-7 fw-semibold">₹{{ selectedJob().amount }}</dd>
+                      <dt class="col-5 text-muted">Cargo type</dt>
+                      <dd class="col-7">{{ selectedJob().Listing?.cargoType }}</dd>
+                      <dt class="col-5 text-muted">Weight</dt>
+                      <dd class="col-7">{{ selectedJob().Listing?.weight }}kg</dd>
+                      <dt class="col-5 text-muted">Pickup</dt>
+                      <dd class="col-7">{{ selectedJob().Listing?.pickupAddress }}</dd>
+                      <dt class="col-5 text-muted">Delivery</dt>
+                      <dd class="col-7">{{ selectedJob().Listing?.dropoffAddress }}</dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="info-card">
+                  <div class="card-header fw-semibold">Carrier summary</div>
+                  <div class="card-body">
+                    <dl class="row mb-0">
+                      <dt class="col-5 text-muted">Vehicle</dt>
+                      <dd class="col-7">{{ selectedJob().Listing?.vehicle || 'Truck' }}</dd>
+                      <dt class="col-5 text-muted">Equipment</dt>
+                      <dd class="col-7">4 × 40 HC</dd>
+                      <dt class="col-5 text-muted">Status</dt>
+                      <dd class="col-7">{{ getStatusLabel(selectedJob().Listing?.status) }}</dd>
+                      <dt class="col-5 text-muted">Customer</dt>
+                      <dd class="col-7">{{ selectedJob().Listing?.customerName || selectedJob().Listing?.Customer?.name || 'Customer' }}</dd>
+                    </dl>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <ng-container *ngIf="['picked_up', 'in_transit', 'delivered'].includes(selectedJob().Listing?.status)">
-            <div class="card shadow-sm">
-              <div class="card-header fw-semibold"><span class="material-icons-outlined align-middle me-1">chat_bubble_outline</span>Chat with customer</div>
-              <div class="card-body p-0">
-                <div class="p-3 chat-window">
+            <div class="chat-panel mt-4">
+              <div class="card-header fw-semibold">Operations messages</div>
+              <div class="card-body chat-body p-0">
+                <div class="chat-window p-3">
                   <div *ngIf="chatMessages().length === 0" class="text-center text-muted py-4">No messages yet.</div>
                   <ng-container *ngFor="let msg of chatMessages()">
                     <div class="d-flex mb-3" [class.justify-content-end]="msg.senderId === auth.currentUser()?.id">
@@ -114,23 +179,52 @@
                         [class.bg-success]="msg.senderId === auth.currentUser()?.id"
                         [class.text-white]="msg.senderId === auth.currentUser()?.id"
                         [class.bg-white]="msg.senderId !== auth.currentUser()?.id">
-                        <div class="small fw-bold mb-1 opacity-75">{{ msg.senderName }}</div>
+                        <div class="small fw-semibold mb-1 opacity-75">{{ msg.senderName }}</div>
                         <div>{{ msg.message }}</div>
-                        <div class="small opacity-50 mt-1 text-end">{{ msg.createdAt | date:'h:mm a' }}</div>
+                        <div class="small opacity-50 mt-2 text-end">{{ msg.createdAt | date:'h:mm a' }}</div>
                       </div>
                     </div>
                   </ng-container>
                 </div>
               </div>
-              <div *ngIf="['paid', 'picked_up', 'in_transit', 'delivered'].includes(selectedJob().Listing?.status)" class="card-footer">
+              <div class="card-footer chat-footer">
                 <div class="input-group">
-                  <input class="form-control" [(ngModel)]="chatInput" placeholder="Type a message..." (keyup.enter)="sendMessage()">
-                  <button class="btn btn-success" (click)="sendMessage()">Send</button>
+                  <input class="form-control" [(ngModel)]="chatInput" placeholder="Write a message..." (keyup.enter)="sendMessage()">
+                  <button class="btn btn-primary" (click)="sendMessage()">Send</button>
                 </div>
               </div>
             </div>
           </ng-container>
-        </ng-container>
+        </section>
+
+        <aside class="job-actions-panel">
+          <div class="action-card mb-3">
+            <div class="card-header fw-semibold">Shipment summary</div>
+            <div class="card-body">
+              <div class="mb-3"><span class="d-block text-muted small">Route</span><span class="fw-semibold">{{ selectedJob()?.Listing?.pickupAddress }} → {{ selectedJob()?.Listing?.dropoffAddress }}</span></div>
+              <div class="row g-2">
+                <div class="col-6"><div class="summary-pill">ETA<br><span class="fw-semibold">{{ selectedJob()?.Listing?.eta || 'TBD' }}</span></div></div>
+                <div class="col-6"><div class="summary-pill">Status<br><span class="fw-semibold">{{ getStatusLabel(selectedJob()?.Listing?.status) }}</span></div></div>
+                <div class="col-6"><div class="summary-pill">Load<br><span class="fw-semibold">{{ selectedJob()?.Listing?.cargoType }}</span></div></div>
+                <div class="col-6"><div class="summary-pill">Bid<br><span class="fw-semibold">₹{{ selectedJob()?.amount }}</span></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="action-card">
+            <div class="card-header fw-semibold">Customer notes</div>
+            <div class="card-body">
+              <p class="text-muted small mb-3">Keep communication updated if the route changes or the load is delayed.</p>
+              <div class="d-flex align-items-center gap-2 mb-3">
+                <span class="material-icons-outlined text-primary">account_circle</span>
+                <div>
+                  <div class="fw-semibold">{{ selectedJob()?.Listing?.customerName || selectedJob()?.Listing?.Customer?.name || 'Customer Name' }}</div>
+                  <div class="small text-muted">{{ selectedJob()?.Listing?.customerPhone || 'No phone available' }}</div>
+                </div>
+              </div>
+              <div class="small text-muted">Cargo: {{ selectedJob()?.Listing?.cargoType }} • {{ selectedJob()?.Listing?.weight }}kg</div>
+            </div>
+          </div>
+        </aside>
       </div>
-    </div>
     </div>

@@ -28,7 +28,10 @@ export class PartnerJobsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.api.getMyBids().subscribe({
-      next: d => { this.bids.set(d.filter((b: any) => b.status === 'accepted')); this.loading.set(false); },
+      next: d => {
+        this.bids.set(d.filter((b: any) => b.status === 'accepted'));
+        this.loading.set(false);
+      },
       error: () => this.loading.set(false)
     });
   }
@@ -109,6 +112,39 @@ export class PartnerJobsComponent implements OnInit, OnDestroy {
     if (!this.chatInput.trim() || !this.selectedJob()) return;
     this.socket.joinChat(this.selectedJob().listingId);
     this.api.sendMessage(this.selectedJob().listingId, this.chatInput).subscribe(() => this.chatInput = '');
+  }
+
+  getStatusLabel(status: string | null) {
+    switch (status) {
+      case 'accepted': return 'Awaiting payment';
+      case 'paid': return 'Confirmed payment';
+      case 'picked_up': return 'Pickup completed';
+      case 'in_transit': return 'In transit';
+      case 'delivered': return 'Delivered';
+      default: return 'Pending';
+    }
+  }
+
+  getStatusClass(status: string | null) {
+    switch (status) {
+      case 'accepted': return 'bg-warning text-dark';
+      case 'paid': return 'bg-info text-dark';
+      case 'picked_up': return 'bg-primary text-white';
+      case 'in_transit': return 'bg-success text-white';
+      case 'delivered': return 'bg-secondary text-white';
+      default: return 'bg-light text-dark';
+    }
+  }
+
+  progressPercent(status: string | null) {
+    switch (status) {
+      case 'accepted': return 18;
+      case 'paid': return 36;
+      case 'picked_up': return 60;
+      case 'in_transit': return 84;
+      case 'delivered': return 100;
+      default: return 8;
+    }
   }
 
   ngOnDestroy() {
