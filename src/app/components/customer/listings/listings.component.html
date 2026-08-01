@@ -1,22 +1,25 @@
     <div class="customer-portal-surface">
-      <div class="portal-hero d-flex align-items-center justify-content-between gap-3 flex-wrap">
-        <div>
+      <div class="portal-hero d-flex align-items-center justify-content-between gap-4 flex-wrap">
+        <div class="hero-copy">
           <div class="hero-badge mb-3">Customer Portal</div>
           <h4 class="mb-1">Manage freight requests and auction activity</h4>
           <p>Post cargo, track bids, and keep your shipment flow moving with the same ease as a modern booking app.</p>
         </div>
-        <button class="btn btn-light fw-semibold" (click)="toggleForm()">
+        <button class="btn btn-gradient btn-lg px-4" (click)="toggleForm()">
           {{ showForm() ? 'Cancel' : 'Post New Listing' }}
         </button>
       </div>
 
       <div class="portal-panel">
-        <div class="d-flex align-items-center justify-content-between mb-3">
+        <div class="d-flex align-items-center justify-content-between mb-3 gap-3 flex-wrap">
           <div>
             <h5 class="fw-bold mb-1">My Logistics Listings</h5>
             <p class="text-muted mb-0">Post cargo for reverse auction</p>
           </div>
-          <span class="badge bg-primary-subtle text-primary">Live marketplace</span>
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="badge rounded-pill bg-primary text-white">Live marketplace</span>
+            <span class="text-primary fw-semibold small">Visit marketplace →</span>
+          </div>
         </div>
 
     <div *ngIf="success()" class="alert alert-success alert-dismissible rounded-pill">{{ success() }} <button class="btn-close" title="Close notification" aria-label="Close notification" (click)="success.set('')"></button></div>

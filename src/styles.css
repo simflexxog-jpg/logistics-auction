@@ -311,45 +311,67 @@ select {
 
 .customer-portal-surface {
   display: grid;
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
 .portal-hero {
-  background: linear-gradient(135deg, #071328 0%, #14396d 42%, #2563eb 100%);
+  background: linear-gradient(135deg, #0f3c78 0%, #164f94 42%, #2563eb 100%);
   color: #fff;
-  border-radius: 1.5rem;
-  padding: 1.5rem;
-  box-shadow: 0 20px 45px rgba(10, 24, 49, 0.15);
+  border-radius: 1.75rem;
+  padding: 2rem;
+  box-shadow: 0 24px 60px rgba(10, 24, 49, 0.18);
+}
+
+.portal-hero .hero-copy {
+  max-width: 640px;
 }
 
 .portal-hero h4 {
-  margin-bottom: 0.35rem;
-  font-weight: 700;
+  margin-bottom: 0.5rem;
+  font-weight: 800;
+  font-size: clamp(1.75rem, 2.8vw, 2.4rem);
 }
 
 .portal-hero p {
   margin: 0;
-  color: rgba(255,255,255,0.86);
+  color: rgba(255,255,255,0.88);
+  max-width: 36rem;
+}
+
+.btn-gradient {
+  background: linear-gradient(90deg, #35c2ff 0%, #2067ff 100%);
+  color: #fff;
+  border: none;
+  box-shadow: 0 18px 40px rgba(21, 101, 255, 0.24);
 }
 
 .portal-panel {
-  background: rgba(255,255,255,0.92);
-  border: 1px solid rgba(15,23,42,0.06);
-  border-radius: 1.25rem;
-  box-shadow: var(--shadow-card);
-  padding: 1.25rem;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+  padding: 1.5rem;
+}
+
+.portal-panel .badge {
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+}
+
+.portal-panel .text-primary {
+  color: #2563eb !important;
 }
 
 .listing-card {
-  border: 1px solid rgba(15,23,42,0.06);
-  border-radius: 1.25rem;
-  box-shadow: 0 14px 30px rgba(15,23,42,0.06);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: none;
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 42px rgba(15, 23, 42, 0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .listing-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 18px 36px rgba(15,23,42,0.1);
+  transform: translateY(-4px);
+  box-shadow: 0 24px 48px rgba(15,23,42,0.14);
 }
 
 /* Fade-in animation for cards */
