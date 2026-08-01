@@ -364,14 +364,52 @@ select {
 
 .listing-card {
   border: none;
-  border-radius: 1.5rem;
-  box-shadow: 0 20px 42px rgba(15, 23, 42, 0.08);
+  border-radius: 1.75rem;
+  box-shadow: 0 24px 42px rgba(15, 23, 42, 0.12);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
+  overflow: hidden;
 }
 
 .listing-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 24px 48px rgba(15,23,42,0.14);
+  transform: translateY(-5px);
+  box-shadow: 0 28px 56px rgba(15, 23, 42, 0.16);
+}
+
+.listing-card .card-body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.listing-meta {
+  color: #64748b;
+}
+
+.status-badge {
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.75rem;
+}
+
+.listing-status-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.bg-success-light {
+  background: rgba(16, 185, 129, 0.12);
+  color: #0f766e;
+}
+
+.btn-outline-secondary {
+  border-radius: 14px;
+}
+
+.btn-primary {
+  border-radius: 14px;
 }
 
 /* Fade-in animation for cards */
