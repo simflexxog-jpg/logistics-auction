@@ -65,16 +65,19 @@ app.use((req, res, next) => {
   next();
 });
 
-// Enforce numeric IDs for params that look like ids (id, listingId, userId, etc.)
+// Enforce valid IDs for params that look like ids (id, listingId, userId, etc.)
 app.use((req, res, next) => {
   for (const key of Object.keys(req.params || {})) {
     if (/id$/i.test(key)) {
       const val = req.params[key];
-      if (!/^[0-9]+$/.test(val)) {
+      if (/^[0-9]+$/.test(val)) {
+        // coerce numeric IDs to number for downstream handlers
+        req.params[key] = parseInt(val, 10);
+      } else if (/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(val)) {
+        // Allow UUIDs as valid identifier strings
+      } else {
         return res.status(400).json({ error: 'Invalid identifier in URL path' });
       }
-      // coerce to number for downstream handlers
-      req.params[key] = parseInt(val, 10);
     }
   }
   next();

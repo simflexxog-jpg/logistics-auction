@@ -36,7 +36,7 @@ export class PartnerJobsComponent implements OnInit, OnDestroy {
   selectJob(bid: any) {
     this.selectedJob.set(bid);
     this.chatMessages.set([]);
-    if (['picked_up', 'in_transit', 'delivered'].includes(bid.Listing?.status)) {
+    if (['accepted', 'paid', 'picked_up', 'in_transit', 'delivered'].includes(bid.Listing?.status)) {
       this.api.getChatHistory(bid.listingId).subscribe(msgs => this.chatMessages.set(msgs));
       this.socket.joinChat(bid.listingId);
       this.subs.forEach(s => s.unsubscribe());
