@@ -1,4 +1,142 @@
-.auth-page { font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
+.auth-page {
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-image: url('/truck-driving-through-city-night-with-map-trailer_813661-14433.jpg'), url('/login-background.svg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #020817;
+}
 .auth-panel-inner { padding: 24px; }
-.hero-badge { color: #06b6d4; font-weight:600 }
+.hero-badge {
+  color: #22c55e;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  background: rgba(255,255,255,0.1);
+  padding: 0.55rem 0.95rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.auth-shell {
+  min-height: 85vh;
+}
+
+.auth-hero {
+  padding: 3rem 3.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.8rem;
+}
+
+.auth-hero h1 {
+  font-size: clamp(2.4rem, 3vw, 3.4rem);
+  line-height: 1.05;
+  margin-top: 1rem;
+}
+
+.hero-card {
+  padding: 1.35rem 1.5rem;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 1.5rem;
+  backdrop-filter: blur(14px);
+}
+
+.hero-route {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 0.85rem;
+}
+
+.hero-stats span {
+  padding: 0.45rem 0.85rem;
+  background: rgba(255,255,255,0.16);
+  border-radius: 999px;
+  font-size: 0.82rem;
+}
+
+.auth-panel {
+  padding: 3rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+}
+
+.auth-panel-inner {
+  width: 100%;
+  max-width: 430px;
+}
+
+.auth-panel .brand-mark-lg {
+  width: 84px !important;
+  height: 84px !important;
+  margin: 0 auto 1.25rem;
+}
+
+.auth-panel h2 {
+  margin-bottom: 0.25rem;
+  font-size: 2rem;
+}
+
+.auth-panel p {
+  color: #64748b;
+}
+
+.auth-panel form {
+  margin-top: 1rem;
+}
+
+.auth-panel .form-label {
+  font-weight: 600;
+}
+
+.auth-panel .form-control {
+  min-height: 3.3rem;
+}
+
+.auth-panel .btn-primary {
+  border-radius: 14px;
+  padding: 0.95rem 1rem;
+}
+
+.google-signin {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  color: #0f172a;
+  background: #ffffff;
+}
+
+.auth-panel .btn-outline-secondary {
+  border-color: rgba(15,23,42,0.12);
+  color: #0f172a;
+}
+
+.bottom-actions {
+  gap: 1rem;
+}
+
+.admin-link {
+  color: #475569;
+  font-weight: 600;
+}
+
+@media (max-width: 980px) {
+  .auth-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-hero {
+    min-height: auto;
+  }
+}
+
 .brand-mark { display:inline-block }
