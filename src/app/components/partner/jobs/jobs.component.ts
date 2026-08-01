@@ -49,6 +49,7 @@ export class PartnerJobsComponent implements OnInit, OnDestroy {
     if (hasChat) {
       this.api.getChatHistory(bid.listingId).subscribe(msgs => this.chatMessages.set(msgs));
       this.socket.joinChat(bid.listingId);
+      this.socket.joinListing(bid.listingId);
       this.chatSub = this.socket.on<any>('chat:message').subscribe(msg => {
         if (msg.listingId === bid.listingId) this.chatMessages.update(ms => [...ms, msg]);
       });
