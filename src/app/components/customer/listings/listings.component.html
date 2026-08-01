@@ -1,168 +1,167 @@
     <div class="customer-portal-surface">
-      <div class="portal-hero d-flex align-items-center justify-content-between gap-4 flex-wrap">
-        <div class="hero-copy">
-          <div class="hero-badge mb-3">Customer Portal</div>
-          <h4 class="mb-1">Manage freight requests and auction activity</h4>
-          <p>Post cargo, track bids, and keep your shipment flow moving with the same ease as a modern booking app.</p>
+      <div class="new-listing-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div>
+          <h2 class="page-title mb-1">Logistics Listings</h2>
+          <p class="text-muted mb-0">Post cargo for reverse auction</p>
         </div>
-        <button class="btn btn-gradient btn-lg px-4" (click)="toggleForm()">
-          {{ showForm() ? 'Cancel' : 'Post New Listing' }}
-        </button>
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+          <button class="btn btn-primary btn-sm">Live Marketplace</button>
+          <button class="btn btn-outline-secondary btn-sm">Visit Marketplace</button>
+          <button class="btn btn-gradient btn-sm" *ngIf="!showForm()" (click)="toggleForm()">Post New Listing</button>
+          <button class="btn btn-outline-secondary btn-sm" *ngIf="showForm()" (click)="toggleForm()">Cancel</button>
+        </div>
       </div>
 
       <div class="portal-panel">
-        <div class="d-flex align-items-center justify-content-between mb-3 gap-3 flex-wrap">
-          <div>
-            <h5 class="fw-bold mb-1">My Logistics Listings</h5>
-            <p class="text-muted mb-0">Post cargo for reverse auction</p>
-          </div>
-          <div class="d-flex align-items-center gap-2 flex-wrap">
-            <span class="badge rounded-pill bg-primary text-white">Live marketplace</span>
-            <span class="text-primary fw-semibold small">Visit marketplace →</span>
-          </div>
-        </div>
+        <div *ngIf="success()" class="alert alert-success alert-dismissible rounded-pill">{{ success() }} <button class="btn-close" title="Close notification" aria-label="Close notification" (click)="success.set('')"></button></div>
+        <div *ngIf="error()" class="alert alert-danger alert-dismissible rounded-pill">{{ error() }} <button class="btn-close" title="Close notification" aria-label="Close notification" (click)="error.set('')"></button></div>
 
-    <div *ngIf="success()" class="alert alert-success alert-dismissible rounded-pill">{{ success() }} <button class="btn-close" title="Close notification" aria-label="Close notification" (click)="success.set('')"></button></div>
-    <div *ngIf="error()" class="alert alert-danger alert-dismissible rounded-pill">{{ error() }} <button class="btn-close" title="Close notification" aria-label="Close notification" (click)="error.set('')"></button></div>
-
-    <!-- Create Listing Form -->
-    <ng-container *ngIf="showForm()">
-      <div class="card shadow-sm mb-4 border-0">
-        <div class="card-header bg-primary text-white fw-semibold"><span class="material-icons-outlined align-middle me-1">inventory_2</span>New logistics listing</div>
-        <div class="card-body">
-          <form (ngSubmit)="submit()">
-            <div class="row g-3">
-              <div class="col-md-8">
-                <label class="form-label fw-semibold">Title</label>
-                <input class="form-control" [(ngModel)]="form.title" name="title" required placeholder="e.g. 5 tons of rice, Mumbai to Delhi">
-              </div>
-              <div class="col-md-4">
-                <label class="form-label fw-semibold" for="cargoType">Cargo Type</label>
-                <select id="cargoType" title="Cargo type" aria-label="Cargo type" class="form-select" [(ngModel)]="form.cargoType" name="cargoType" required>
-                  <option value="">Select type</option>
-                  <option>📦 General Goods</option>
-                  <option>❄️ Perishable</option>
-                  <option>💻 Electronics</option>
-                  <option>🪑 Furniture</option>
-                  <option>🏭 Industrial</option>
-                  <option>🌾 Agricultural</option>
-                  <option>🧪 Fragile</option>
-                </select>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label fw-semibold" for="pickupAddress">Pickup Address</label>
-                <input id="pickupAddress" class="form-control" [ngModel]="form.pickupAddress" (ngModelChange)="onPickupAddressInput($event)" name="pickupAddress" required placeholder="Street, City or click map">
-              </div>
-              <div class="col-md-6">
-                <label class="form-label fw-semibold" for="dropoffAddress">Dropoff Address</label>
-                <input id="dropoffAddress" class="form-control" [ngModel]="form.dropoffAddress" (ngModelChange)="onDropoffAddressInput($event)" name="dropoffAddress" required placeholder="Street, City or click map">
-              </div>
-              <div class="col-md-4">
-                <label class="form-label fw-semibold">Weight (kg)</label>
-                <input type="number" class="form-control" [(ngModel)]="form.weight" name="weight" required placeholder="1000">
-              </div>
-              <div class="col-md-4">
-                <label class="form-label fw-semibold">Dimensions (optional)</label>
-                <input class="form-control" [(ngModel)]="form.dimensions" name="dimensions" placeholder="L x W x H cm">
-              </div>
-              <div class="col-md-4">
-                <label class="form-label fw-semibold" for="auctionDuration">Auction duration (hours)</label>
-                <input id="auctionDuration" type="number" class="form-control" [(ngModel)]="form.auctionDuration" name="auctionDuration" required min="1" max="2160" step="1" placeholder="24">
-                <div class="form-text">Enter any duration in hours. Shipments under 100kg will be posted as add-ons automatically.</div>
-              </div>
-              <div class="col-12">
-                <label class="form-label fw-semibold">Description</label>
-                <textarea class="form-control" [(ngModel)]="form.description" name="description" rows="2" placeholder="Any special handling requirements..."></textarea>
-              </div>
-
-              <!-- Map Section -->
-              <div class="col-12">
-                <label class="form-label fw-semibold">Route (click on map to set points)</label>
-                <div class="d-flex gap-2 mb-2">
-                  <button type="button" class="btn btn-sm" [class.btn-success]="selectingFor === 'pickup'" [class.btn-outline-success]="selectingFor !== 'pickup'" (click)="selectPoint('pickup')">
-                    <span class="material-icons-outlined align-middle me-1">place</span>Set pickup
-                    <span *ngIf="form.pickupLat" class="material-icons-outlined align-middle ms-1 icon-small">check</span>
-                  </button>
-                  <button type="button" class="btn btn-sm" [class.btn-danger]="selectingFor === 'dropoff'" [class.btn-outline-danger]="selectingFor !== 'dropoff'" (click)="selectPoint('dropoff')">
-                    <span class="material-icons-outlined align-middle me-1">flag</span>Set dropoff
-                    <span *ngIf="form.dropoffLat" class="material-icons-outlined align-middle ms-1 icon-small">check</span>
-                  </button>
-                  <span *ngIf="selectingFor" class="badge bg-warning text-dark align-self-center">Click on map to place {{ selectingFor }} point</span>
-                </div>
-                <div id="listing-map" class="map-box"></div>
-                <small *ngIf="form.pickupAddress" class="text-success"><span class="material-icons-outlined align-middle me-1">place</span>Pickup: {{ form.pickupAddress }}</small>
-                <br *ngIf="form.dropoffAddress"><small *ngIf="form.dropoffAddress" class="text-danger"><span class="material-icons-outlined align-middle me-1">flag</span>Dropoff: {{ form.dropoffAddress }}</small>
-              </div>
-
-              <div class="col-12">
-                <div class="form-check">
-                  <input type="checkbox" class="form-check-input" id="addon" [(ngModel)]="form.isAddOnEligible" name="isAddOnEligible">
-                  <label class="form-check-label" for="addon">Allow add-on shipments on this route</label>
-                </div>
-              </div>
-              <div *ngIf="form.isAddOnEligible" class="col-md-4">
-                <label class="form-label fw-semibold" for="maxAddOnWeight">Max add-on weight (kg)</label>
-                <input id="maxAddOnWeight" type="number" class="form-control" [(ngModel)]="form.maxAddOnWeight" name="maxAddOnWeight" placeholder="e.g. 200">
-              </div>
-
-              <div class="col-12">
-                <button type="submit" class="btn btn-primary" [disabled]="submitting()">
-                  <span *ngIf="submitting()" class="spinner-border spinner-border-sm me-2"></span>
-                  Post Listing & Start Auction
-                </button>
+        <ng-container *ngIf="showForm(); else listingGrid">
+          <div class="form-panel-header mb-4">
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+              <span class="form-panel-icon"><i class="bi bi-box-seam"></i></span>
+              <div>
+                <div class="text-uppercase text-primary fw-semibold small mb-1">New Logistics Listing</div>
+                <h5 class="mb-0">Create shipment and launch auction</h5>
+                <p class="text-muted mb-0">Fill the details below to start your reverse auction.</p>
               </div>
             </div>
-          </form>
-        </div>
-      </div>
-    </ng-container>
+          </div>
 
-    <!-- Listings Grid -->
-    <ng-container *ngIf="!showForm()">
-      <ng-container *ngIf="loading()">
-        <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
-      </ng-container>
-      <ng-container *ngIf="!loading() && getActiveListings().length === 0">
-        <div class="text-center py-5">
-          <div class="hero-icon large"><span class="material-icons-outlined icon-large">inventory_2</span></div>
-          <h5 class="text-muted">No listings yet</h5>
-          <p class="text-muted">Post your first logistics listing to start receiving bids</p>
-        </div>
-      </ng-container>
-      <ng-container *ngIf="!loading() && getActiveListings().length > 0">
-        <div class="row g-3">
-          <ng-container *ngFor="let listing of getActiveListings()">
-            <div class="col-md-6 col-xl-4">
-              <div class="card h-100 listing-card fade-in-up">
-                <div class="card-body d-flex flex-column">
-                  <div class="d-flex justify-content-between align-items-start mb-3 gap-2">
-                    <div>
-                      <h6 class="fw-bold mb-1">{{ listing.title }}</h6>
-                      <p class="listing-meta small mb-0"><i class="bi bi-box-seam me-1"></i>{{ listing.cargoType }} · {{ listing.weight }}kg</p>
+          <div class="card new-listing-card shadow-sm mb-4 border-0">
+            <div class="card-body p-4">
+              <form (ngSubmit)="submit()">
+                <div class="row g-3">
+                  <div class="col-md-8">
+                    <label class="form-label fw-semibold">Title</label>
+                    <input class="form-control" [(ngModel)]="form.title" name="title" required placeholder="e.g. 5 tons of rice, Mumbai to Delhi">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label fw-semibold" for="cargoType">Cargo Type</label>
+                    <select id="cargoType" title="Cargo type" aria-label="Cargo type" class="form-select" [(ngModel)]="form.cargoType" name="cargoType" required>
+                      <option value="">Select type</option>
+                      <option>📦 General Goods</option>
+                      <option>❄️ Perishable</option>
+                      <option>💻 Electronics</option>
+                      <option>🪑 Furniture</option>
+                      <option>🏭 Industrial</option>
+                      <option>🌾 Agricultural</option>
+                      <option>🧪 Fragile</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-semibold" for="pickupAddress">Pickup Address</label>
+                    <input id="pickupAddress" class="form-control" [ngModel]="form.pickupAddress" (ngModelChange)="onPickupAddressInput($event)" name="pickupAddress" required placeholder="Street, City or click map">
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-semibold" for="dropoffAddress">Dropoff Address</label>
+                    <input id="dropoffAddress" class="form-control" [ngModel]="form.dropoffAddress" (ngModelChange)="onDropoffAddressInput($event)" name="dropoffAddress" required placeholder="Street, City or click map">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label fw-semibold">Weight (kg)</label>
+                    <input type="number" class="form-control" [(ngModel)]="form.weight" name="weight" required placeholder="1000">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label fw-semibold">Dimensions (optional)</label>
+                    <input class="form-control" [(ngModel)]="form.dimensions" name="dimensions" placeholder="L x W x H cm">
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label fw-semibold" for="auctionDuration">Auction duration (hours)</label>
+                    <input id="auctionDuration" type="number" class="form-control" [(ngModel)]="form.auctionDuration" name="auctionDuration" required min="1" max="2160" step="1" placeholder="24">
+                    <div class="form-text">Enter duration in hours. Shipments under 100kg will be posted as add-ons automatically.</div>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label fw-semibold">Description</label>
+                    <textarea class="form-control" [(ngModel)]="form.description" name="description" rows="2" placeholder="Any special handling requirements..."></textarea>
+                  </div>
+
+                  <div class="col-12">
+                    <label class="form-label fw-semibold">Route (click on map to set points)</label>
+                    <div class="route-buttons mb-3">
+                      <button type="button" class="btn route-btn" [class.btn-success]="selectingFor === 'pickup'" [class.btn-outline-success]="selectingFor !== 'pickup'" (click)="selectPoint('pickup')">
+                        <span class="material-icons-outlined align-middle me-1">place</span>Set pickup<span *ngIf="form.pickupLat" class="material-icons-outlined align-middle ms-1 icon-small">check</span>
+                      </button>
+                      <button type="button" class="btn route-btn" [class.btn-danger]="selectingFor === 'dropoff'" [class.btn-outline-danger]="selectingFor !== 'dropoff'" (click)="selectPoint('dropoff')">
+                        <span class="material-icons-outlined align-middle me-1">flag</span>Set dropoff<span *ngIf="form.dropoffLat" class="material-icons-outlined align-middle ms-1 icon-small">check</span>
+                      </button>
+                      <div *ngIf="selectingFor" class="align-self-center"><span class="badge bg-warning text-dark">Click on map to place {{ selectingFor }} point</span></div>
                     </div>
-                    <span class="badge status-badge bg-{{ statusBadge(listing.status) }}">{{ statusLabel(listing.status) }}</span>
+                    <div id="listing-map" class="map-box"></div>
+                    <div class="mt-3">
+                      <small *ngIf="form.pickupAddress" class="text-success d-block"><span class="material-icons-outlined align-middle me-1">place</span>Pickup: {{ form.pickupAddress }}</small>
+                      <small *ngIf="form.dropoffAddress" class="text-danger d-block"><span class="material-icons-outlined align-middle me-1">flag</span>Dropoff: {{ form.dropoffAddress }}</small>
+                    </div>
                   </div>
 
-                  <div class="mb-3">
-                    <p class="small text-muted mb-2"><i class="bi bi-geo-alt me-1"></i>{{ listing.pickupAddress }}</p>
-                    <p class="small text-muted mb-0"><i class="bi bi-flag-fill me-1"></i>{{ listing.dropoffAddress }}</p>
+                  <div class="col-12">
+                    <div class="form-check">
+                      <input type="checkbox" class="form-check-input" id="addon" [(ngModel)]="form.isAddOnEligible" name="isAddOnEligible">
+                      <label class="form-check-label" for="addon">Allow add-on shipments on this route</label>
+                    </div>
+                  </div>
+                  <div *ngIf="form.isAddOnEligible" class="col-md-4">
+                    <label class="form-label fw-semibold" for="maxAddOnWeight">Max add-on weight (kg)</label>
+                    <input id="maxAddOnWeight" type="number" class="form-control" [(ngModel)]="form.maxAddOnWeight" name="maxAddOnWeight" placeholder="e.g. 200">
                   </div>
 
-                  <div class="mb-3">
-                    <div *ngIf="listing.status === 'open'" class="listing-status-row"><span class="badge rounded-pill bg-success-light text-success">Auction ends in {{ getTimeLeft(listing.auctionEndsAt) }}</span> <small class="text-muted">· {{ listing.bids?.length || 0 }} bid(s)</small></div>
-                    <div *ngIf="listing.winningBid" class="listing-status-row"><span class="text-success fw-semibold">Lowest bid ₹{{ listing.winningBid }}</span></div>
-                  </div>
-
-                  <div class="mt-auto d-flex justify-content-between align-items-center gap-2">
-                    <a [routerLink]="['/customer/listing', listing.id]" class="btn btn-sm btn-primary flex-grow-1">View details & bids <i class="bi bi-arrow-right-short ms-1"></i></a>
-                    <button class="btn btn-sm btn-outline-secondary" type="button" (click)="copyLink(listing.id)">Copy</button>
+                  <div class="col-12 pt-2">
+                    <button type="submit" class="btn btn-primary px-4" [disabled]="submitting()">
+                      <span *ngIf="submitting()" class="spinner-border spinner-border-sm me-2"></span>
+                      Post Listing & Start Auction
+                    </button>
                   </div>
                 </div>
-              </div>
+              </form>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-template #listingGrid>
+          <ng-container *ngIf="loading()">
+            <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
+          </ng-container>
+          <ng-container *ngIf="!loading() && getActiveListings().length === 0">
+            <div class="text-center py-5">
+              <div class="hero-icon large"><span class="material-icons-outlined icon-large">inventory_2</span></div>
+              <h5 class="text-muted">No listings yet</h5>
+              <p class="text-muted">Post your first logistics listing to start receiving bids</p>
             </div>
           </ng-container>
-        </div>
-      </ng-container>
-    </ng-container>
+          <ng-container *ngIf="!loading() && getActiveListings().length > 0">
+            <div class="row g-3">
+              <ng-container *ngFor="let listing of getActiveListings()">
+                <div class="col-md-6 col-xl-4">
+                  <div class="card h-100 listing-card fade-in-up">
+                    <div class="card-body d-flex flex-column">
+                      <div class="d-flex justify-content-between align-items-start mb-3 gap-2">
+                        <div>
+                          <h6 class="fw-bold mb-1">{{ listing.title }}</h6>
+                          <p class="listing-meta small mb-0"><i class="bi bi-box-seam me-1"></i>{{ listing.cargoType }} · {{ listing.weight }}kg</p>
+                        </div>
+                        <span class="badge status-badge bg-{{ statusBadge(listing.status) }}">{{ statusLabel(listing.status) }}</span>
+                      </div>
+
+                      <div class="mb-3">
+                        <p class="small text-muted mb-2"><i class="bi bi-geo-alt me-1"></i>{{ listing.pickupAddress }}</p>
+                        <p class="small text-muted mb-0"><i class="bi bi-flag-fill me-1"></i>{{ listing.dropoffAddress }}</p>
+                      </div>
+
+                      <div class="mb-3">
+                        <div *ngIf="listing.status === 'open'" class="listing-status-row"><span class="badge rounded-pill bg-success-light text-success">Auction ends in {{ getTimeLeft(listing.auctionEndsAt) }}</span> <small class="text-muted">· {{ listing.bids?.length || 0 }} bid(s)</small></div>
+                        <div *ngIf="listing.winningBid" class="listing-status-row"><span class="text-success fw-semibold">Lowest bid ₹{{ listing.winningBid }}</span></div>
+                      </div>
+
+                      <div class="mt-auto d-flex justify-content-between align-items-center gap-2">
+                        <a [routerLink]="['/customer/listing', listing.id]" class="btn btn-sm btn-primary flex-grow-1">View details & bids <i class="bi bi-arrow-right-short ms-1"></i></a>
+                        <button class="btn btn-sm btn-outline-secondary" type="button" (click)="copyLink(listing.id)">Copy</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </ng-container>
+        </ng-template>
       </div>
     </div>
+

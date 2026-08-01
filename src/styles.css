@@ -314,12 +314,141 @@ select {
   gap: 1.5rem;
 }
 
-.portal-hero {
-  background: linear-gradient(135deg, #0f3c78 0%, #164f94 42%, #2563eb 100%);
-  color: #fff;
-  border-radius: 1.75rem;
+.new-listing-header {
+  align-items: flex-end;
+  background: #ffffff;
+  border-radius: 1.5rem;
+  padding: 1.35rem 1.5rem;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 20px 35px rgba(15, 23, 42, 0.06);
+}
+
+.new-listing-header .page-title {
+  margin-bottom: 0.25rem;
+  font-size: clamp(1.75rem, 2.5vw, 2.1rem);
+}
+
+.new-listing-header .btn {
+  min-width: 142px;
+}
+
+.new-listing-card {
+  border-radius: 1.5rem;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.new-listing-card .card-body {
   padding: 2rem;
-  box-shadow: 0 24px 60px rgba(10, 24, 49, 0.18);
+}
+
+.new-listing-card .form-label {
+  font-weight: 600;
+}
+
+.route-btn {
+  min-height: 52px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.route-btn i,
+.route-btn .material-icons-outlined {
+  font-size: 1.05rem;
+}
+
+#listing-map,
+.map-box {
+  min-height: 340px;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: #eef4fd;
+}
+
+.form-text {
+  color: #67788f;
+}
+
+.btn.btn-primary {
+  border-radius: 14px;
+}
+
+.btn-outline-secondary {
+  border-radius: 14px;
+}
+
+@media (max-width: 900px) {
+  .new-listing-header {
+    padding: 1rem 1.2rem;
+  }
+
+  .new-listing-header .page-title {
+    font-size: 1.65rem;
+  }
+}
+
+.portal-panel {
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+  padding: 1.5rem;
+}
+
+.form-panel-header {
+  padding: 1.25rem 1.35rem;
+  border-radius: 1.25rem;
+  background: rgba(37, 99, 235, 0.08);
+  border: 1px solid rgba(37, 99, 235, 0.14);
+}
+
+.form-panel-icon {
+  display: inline-flex;
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  align-items: center;
+  justify-content: center;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 1.35rem;
+}
+
+.btn-gradient {
+  background: linear-gradient(90deg, #35c2ff 0%, #2067ff 100%);
+  color: #fff;
+  border: none;
+  box-shadow: 0 18px 40px rgba(21, 101, 255, 0.24);
+}
+
+.map-box {
+  min-height: 320px;
+}
+
+#listing-map {
+  min-height: 320px;
+}
+
+.route-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.route-buttons .btn {
+  min-height: 46px;
+}
+
+@media (max-width: 900px) {
+  .new-listing-header {
+    padding: 1rem 1.2rem;
+  }
+
+  .new-listing-header .page-title {
+    font-size: 1.65rem;
+  }
 }
 
 .portal-hero .hero-copy {
