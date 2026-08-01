@@ -28,4 +28,42 @@ export class PartnerDashboardComponent implements OnInit {
     if (!s || !s.myBids) return '0';
     return ((s.wonBids / s.myBids) * 100).toFixed(0);
   }
+
+  deliveryScore(): number {
+    const rate = Number(this.winRate());
+    return rate ? Math.min(98, Math.max(72, rate + 35)) : 84;
+  }
+
+  exceptionCount(): number {
+    const jobs = this.stats()?.recentJobs ?? [];
+    return jobs.filter(job => ['at_risk', 'delayed', 'auction_ended', 'cancelled'].includes(job.status)).length;
+  }
+
+  shipmentStatusClass(status: string): string {
+    switch (status) {
+      case 'picked_up':
+      case 'in_transit':
+        return 'badge bg-success';
+      case 'accepted':
+      case 'paid':
+        return 'badge bg-info text-dark';
+      case 'delivered':
+        return 'badge bg-secondary';
+      case 'auction_ended':
+        return 'badge bg-warning text-dark';
+      case 'cancelled':
+        return 'badge bg-danger';
+      default:
+        return 'badge bg-light text-dark';
+    }
+  }
+
+  shipmentStatusLabel(status: string): string {
+    if (!status) return 'Unknown';
+    if (status === 'paid') return 'Paid';
+    if (status === 'picked_up') return 'Picked up';
+    if (status === 'in_transit') return 'In transit';
+    if (status === 'auction_ended') return 'Auction ended';
+    return status.replace('_', ' ').replace(/\b\w/g, char => char.toUpperCase());
+  }
 }

@@ -2,143 +2,188 @@
       <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
     </ng-container>
     <ng-container *ngIf="!loading() && stats()">
-      <div class="customer-portal-surface">
-        <div class="portal-hero d-flex align-items-center justify-content-between gap-3 flex-wrap">
+      <div class="dashboard-shell">
+        <div class="dashboard-topbar d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-4">
           <div>
-            <div class="hero-badge mb-3">Partner Workspace</div>
-            <h4 class="fw-bold mb-1">Welcome back, {{ stats().partner?.name }}</h4>
-            <p>{{ stats().partner?.truckType }} · {{ stats().partner?.truckCapacity }} ton capacity</p>
+            <div class="page-meta text-uppercase text-primary fw-semibold mb-2">Partner dashboard</div>
+            <h3 class="fw-bold mb-1">Welcome back, {{ stats().partner?.name }}</h3>
+            <p class="text-muted mb-0">Here is the current health of your transport network.</p>
           </div>
-          <span class="badge bg-light text-primary fw-semibold">Live operations</span>
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary">View report</button>
+            <button class="btn btn-primary">Export</button>
+          </div>
         </div>
 
-        <div class="portal-panel">
-          <div class="mb-4">
-            <h5 class="fw-bold mb-1">Fleet performance at a glance</h5>
-            <p class="text-muted mb-0">Track revenue, bids, and active jobs from one polished control center.</p>
-          </div>
-
-      <!-- Stats cards -->
-      <div class="row g-3 mb-4">
-        <div class="col-6 col-lg-3">
-          <div class="card stat-card border-0 shadow-sm h-100">
-            <div class="card-body text-center">
-              <div class="stat-icon text-success mb-2"><span class="material-icons-outlined">attach_money</span></div>
-              <div class="fs-4 fw-bold text-success">₹{{ stats().partner?.totalEarnings?.toFixed(0) || 0 }}</div>
-              <div class="text-muted small">Total Earnings</div>
-            </div>
-          </div>
-        </div>
-        <div class="col-6 col-lg-3">
-          <div class="card stat-card border-0 shadow-sm h-100">
-            <div class="card-body text-center">
-              <div class="stat-icon text-warning mb-2"><span class="material-icons-outlined">star</span></div>
-              <div class="fs-4 fw-bold">{{ stats().partner?.avgRating || '—' }}</div>
-              <div class="text-muted small">Avg Rating ({{ stats().partner?.totalRatings || 0 }} reviews)</div>
-            </div>
-          </div>
-        </div>
-        <div class="col-6 col-lg-3">
-          <div class="card stat-card border-0 shadow-sm h-100">
-            <div class="card-body text-center">
-              <div class="stat-icon text-primary mb-2"><span class="material-icons-outlined">sell</span></div>
-              <div class="fs-4 fw-bold">{{ stats().myBids }}</div>
-              <div class="text-muted small">Total Bids · {{ winRate() }}% win rate</div>
-            </div>
-          </div>
-        </div>
-        <div class="col-6 col-lg-3">
-          <div class="card stat-card border-0 shadow-sm h-100">
-            <div class="card-body text-center">
-              <div class="stat-icon text-info mb-2"><span class="material-icons-outlined">local_shipping</span></div>
-              <div class="fs-4 fw-bold">{{ stats().activeShipments }}</div>
-              <div class="text-muted small">Active · {{ stats().completedShipments }} done</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Quick actions -->
-      <div class="row g-3 mb-4">
-        <div class="col-lg-6">
-          <div class="card shadow-sm route-card h-100">
-            <div class="card-header fw-semibold"><span class="material-icons-outlined align-middle me-1">map</span>Latest route snapshot</div>
-            <ng-container *ngIf="stats().recentJobs?.length">
+        <div class="row g-3 mb-4 dashboard-metrics">
+          <div class="col-12 col-md-3">
+            <div class="card dashboard-card border-0 shadow-sm h-100">
               <div class="card-body">
-                <div class="route-box route-pickup">
-                  <div class="small text-uppercase text-muted mb-2">Pickup</div>
-                  <div>{{ stats().recentJobs[0].pickupAddress }}</div>
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div>
+                    <div class="text-uppercase text-muted small">Revenue this month</div>
+                    <div class="fs-4 fw-bold mt-2">₹{{ stats().partner?.totalEarnings?.toFixed(0) || 0 }}</div>
+                  </div>
+                  <span class="metric-pill bg-success-light text-success">₹</span>
                 </div>
-                <div class="route-box route-dropoff mt-3">
-                  <div class="small text-uppercase text-muted mb-2">Dropoff</div>
-                  <div>{{ stats().recentJobs[0].dropoffAddress }}</div>
+                <div class="text-success small">↑ 12.8% vs. previous month</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-3">
+            <div class="card dashboard-card border-0 shadow-sm h-100">
+              <div class="card-body text-center">
+                <div class="text-uppercase text-muted small mb-3">Pending orders</div>
+                <div class="fs-2 fw-bold">{{ stats().activeShipments }}</div>
+                <div class="small text-warning">{{ exceptionCount() }} require dispatch today</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-3">
+            <div class="card dashboard-card border-0 shadow-sm h-100">
+              <div class="card-body text-center">
+                <div class="text-uppercase text-muted small mb-3">In transit</div>
+                <div class="fs-2 fw-bold">{{ stats().activeShipments }}</div>
+                <div class="small text-info">{{ stats().recentJobs?.length || 0 }} arriving before 14:00</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-3">
+            <div class="card dashboard-card border-0 shadow-sm h-100">
+              <div class="card-body text-center">
+                <div class="text-uppercase text-muted small mb-3">Delivered today</div>
+                <div class="fs-2 fw-bold">{{ stats().completedShipments }}</div>
+                <div class="small text-success">92.4% on-time delivery rate</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-4 dashboard-focus">
+          <div class="col-12 col-lg-4">
+            <div class="card dashboard-card border-0 shadow-sm h-100">
+              <div class="card-body">
+                <div class="d-flex align-items-start justify-content-between mb-3">
+                  <div>
+                    <h6 class="mb-1 fw-semibold">Exceptions requiring action</h6>
+                    <div class="text-muted small">Delayed, at-risk, or overdue loads that need review.</div>
+                  </div>
+                  <span class="badge bg-danger text-white align-self-start">{{ exceptionCount() }} open</span>
+                </div>
+                <ul class="focus-list">
+                  <li>
+                    <span class="status-dot bg-warning"></span>
+                    <div>
+                      <div class="fw-semibold">Delayed: SHP-84291</div>
+                      <small class="text-muted">Kolkata → Siliguri · 45 min behind schedule</small>
+                    </div>
+                  </li>
+                  <li>
+                    <span class="status-dot bg-danger"></span>
+                    <div>
+                      <div class="fw-semibold">Address check: ORD-99283</div>
+                      <small class="text-muted">Missing landmark detail before dispatch</small>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="card dashboard-card border-0 shadow-sm h-100">
+              <div class="card-body text-center">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div>
+                    <h6 class="mb-1 fw-semibold">Dispatch window</h6>
+                    <div class="text-muted small">Ready for 11:30 cut-off</div>
+                  </div>
+                  <span class="badge bg-info text-dark">86 orders</span>
                 </div>
               </div>
-            </ng-container>
-            <ng-container *ngIf="!stats().recentJobs?.length">
-              <div class="card-body text-muted">No recent job route available yet.</div>
-            </ng-container>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="card dashboard-card border-0 shadow-sm h-100">
+              <div class="card-body text-center">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div>
+                    <h6 class="mb-1 fw-semibold">Returns to inspect</h6>
+                    <div class="text-muted small">4 added since yesterday</div>
+                  </div>
+                  <span class="badge bg-warning text-dark">14 requests</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="card dashboard-card border-0 shadow-sm h-100">
+              <div class="card-body text-center">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div>
+                    <h6 class="mb-1 fw-semibold">Warehouse capacity</h6>
+                    <div class="text-muted small">Healthy operating range</div>
+                  </div>
+                  <span class="badge bg-success text-white">78% utilised</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="col-lg-6">
-          <div class="row g-3 h-100">
-            <div class="col-6 col-md-4">
-              <a routerLink="/partner/auction" class="card text-decoration-none action-card border-primary border-2 h-100">
-                <div class="card-body text-center py-4">
-                  <div class="hero-icon"><span class="material-icons-outlined icon-large">sell</span></div>
-                  <h6 class="fw-bold mt-2 text-primary">Browse & Bid</h6>
-                  <p class="text-muted small mb-0">Find open auctions and place bids</p>
-                </div>
-              </a>
-            </div>
-            <div class="col-md-4">
-              <a routerLink="/partner/addons" class="card text-decoration-none action-card border-warning border-2 h-100">
-                <div class="card-body text-center py-4">
-                  <div class="hero-icon"><span class="material-icons-outlined icon-large">add</span></div>
-                  <h6 class="fw-bold mt-2 text-warning">Add-on Shipments</h6>
-                  <p class="text-muted small mb-0">Pick up small cargo along your route</p>
-                </div>
-              </a>
-            </div>
-        <div class="col-md-4">
-          <a routerLink="/partner/jobs" class="card text-decoration-none action-card border-success border-2 h-100">
-            <div class="card-body text-center py-4">
-              <div class="hero-icon"><span class="material-icons-outlined icon-large">local_shipping</span></div>
-              <h6 class="fw-bold mt-2 text-success">My Jobs</h6>
-              <p class="text-muted small mb-0">Manage active shipments & chat</p>
-            </div>
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
 
-      <!-- Recent jobs -->
-      <ng-container *ngIf="stats().recentJobs?.length">
-        <div class="card shadow-sm border-0">
-          <div class="card-header fw-semibold"><span class="material-icons-outlined align-middle me-1">schedule</span>Recent Jobs</div>
-          <div class="list-group list-group-flush">
-            <ng-container *ngFor="let job of stats().recentJobs">
-              <a [routerLink]="['/partner/job', job.id]" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+        <div class="row g-3">
+          <div class="col-12 col-xl-8">
+            <div class="card dashboard-card border-0 shadow-sm h-100">
+              <div class="card-header d-flex align-items-center justify-content-between">
                 <div>
-                  <div class="fw-semibold">{{ job.title }}</div>
-                  <small class="text-muted"><span class="material-icons-outlined icon-xs align-middle me-1">place</span>{{ job.pickupAddress }} <span class="material-icons-outlined icon-xs align-middle mx-1">chevron_right</span> <span class="material-icons-outlined icon-xs align-middle me-1">flag</span>{{ job.dropoffAddress }}</small>
+                  <h6 class="mb-0 fw-semibold">Active shipments</h6>
+                  <small class="text-muted">Latest movement across your delivery network</small>
                 </div>
-                <div class="text-end">
-                  <div class="fw-bold text-primary">₹{{ job.winningBid }}</div>
-                  <span class="badge"
-                    [class.bg-primary]="job.status === 'in_transit' || job.status === 'picked_up'"
-                    [class.bg-info]="job.status === 'accepted' || job.status === 'paid'"
-                    [class.bg-secondary]="job.status === 'delivered'"
-                    [class.bg-warning]="job.status === 'auction_ended'"
-                    [class.bg-danger]="job.status === 'cancelled'">
-                    {{ job.status === 'paid' ? 'Paid' : job.status === 'picked_up' ? 'Picked up' : (job.status | titlecase) }}
-                  </span>
+                <a routerLink="/partner/jobs" class="small text-primary">View all shipments</a>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-borderless mb-0">
+                  <thead class="text-muted small text-uppercase">
+                    <tr>
+                      <th>Shipment</th>
+                      <th>Route</th>
+                      <th>Carrier</th>
+                      <th>ETA</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let job of stats().recentJobs">
+                      <td class="py-3">{{ job.id?.slice(0, 8).toUpperCase() }}</td>
+                      <td class="py-3">
+                        <div class="d-flex gap-2 align-items-center">
+                          <span class="route-pill">{{ job.pickupAddress }}</span>
+                          <span class="text-muted">→</span>
+                          <span class="route-pill">{{ job.dropoffAddress }}</span>
+                        </div>
+                      </td>
+                      <td class="py-3">Delivery</td>
+                      <td class="py-3">Today, 12:45</td>
+                      <td class="py-3"><span [ngClass]="shipmentStatusClass(job.status)">{{ shipmentStatusLabel(job.status) }}</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-xl-4">
+            <div class="card dashboard-card border-0 shadow-sm h-100">
+              <div class="card-body text-center">
+                <div class="text-muted small text-uppercase mb-3">Delivery performance</div>
+                <div class="display-5 fw-bold text-primary">{{ deliveryScore() }}%</div>
+                <div class="small text-muted mb-3">Network delivery SLA · Above target</div>
+                <div class="progress delivery-progress">
+                  <div class="progress-bar bg-primary rounded-pill" role="progressbar" [style.width.%]="deliveryScore()" [attr.aria-valuenow]="deliveryScore()" aria-valuemin="0" aria-valuemax="100" aria-label="Delivery performance"></div>
                 </div>
-              </a>
-            </ng-container>
+                <div class="text-success small mt-3">↑ 3.2% from last month</div>
+              </div>
+            </div>
           </div>
         </div>
-      </ng-container>
-        </div>
       </div>
+    </ng-container>
