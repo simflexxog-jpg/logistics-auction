@@ -27,7 +27,9 @@ app.set('io', io);
 
 // Middleware
 // Security middlewares
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false,
+}));
 
 // Basic rate limiting
 const limiter = rateLimit({
