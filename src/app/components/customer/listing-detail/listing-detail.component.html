@@ -21,37 +21,24 @@
               <h5 class="fw-bold mb-1">Live shipment progress</h5>
               <p class="text-muted mb-0">Track your cargo in real time with carrier, driver, and IoT data.</p>
             </div>
-            <button class="btn btn-primary btn-sm">Start new auction</button>
           </div>
 
-          <div class="tracking-stepper mb-4">
-            <div class="step" [class.active]="['accepted','paid','picked_up','in_transit','delivered'].indexOf(listing().status) >= 0" [class.completed]="['paid','picked_up','in_transit','delivered'].indexOf(listing().status) >= 0">
-              <div class="step-badge"><span class="material-icons-outlined">check</span></div>
+          <div class="status-progress-panel mb-4">
+            <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
               <div>
-                <div class="step-title">Received & accepted</div>
-                <div class="step-text">Order confirmed by carrier</div>
+                <div class="text-uppercase text-primary fw-semibold small mb-1">Shipment status</div>
+                <div class="h5 mb-0">{{ progressStageText() }}</div>
               </div>
+              <span class="badge bg-{{ statusBadge(listing().status) }}">{{ statusLabel(listing().status) }}</span>
             </div>
-            <div class="step" [class.active]="['picked_up','in_transit','delivered'].indexOf(listing().status) >= 0" [class.completed]="['in_transit','delivered'].indexOf(listing().status) >= 0">
-              <div class="step-badge"><span class="material-icons-outlined">local_shipping</span></div>
-              <div>
-                <div class="step-title">Picked up</div>
-                <div class="step-text">Driver has collected the cargo</div>
-              </div>
+            <div class="progress status-progress" role="progressbar" aria-label="Shipment progress" [attr.aria-valuenow]="progressPercent()" aria-valuemin="0" aria-valuemax="100">
+              <div class="progress-bar bg-primary" [style.width.%]="progressPercent()"></div>
             </div>
-            <div class="step" [class.active]="['in_transit','delivered'].indexOf(listing().status) >= 0" [class.completed]="listing().status === 'delivered'">
-              <div class="step-badge"><span class="material-icons-outlined">directions_car</span></div>
-              <div>
-                <div class="step-title">In transit</div>
-                <div class="step-text">On the way to destination</div>
-              </div>
-            </div>
-            <div class="step" [class.active]="listing().status === 'delivered'" [class.completed]="listing().status === 'delivered'">
-              <div class="step-badge"><span class="material-icons-outlined">home</span></div>
-              <div>
-                <div class="step-title">Delivered</div>
-                <div class="step-text">Shipment completed</div>
-              </div>
+            <div class="status-progress-labels d-flex justify-content-between small text-muted mt-2">
+              <span>Accepted</span>
+              <span>Picked up</span>
+              <span>In transit</span>
+              <span>Delivered</span>
             </div>
           </div>
 
@@ -103,7 +90,6 @@
                     <th>Bidder</th>
                     <th>Rating</th>
                     <th>Bid Amount</th>
-                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -119,11 +105,10 @@
                         </ng-container>
                       </td>
                       <td class="fw-semibold text-success">₹{{ bid.amount }}</td>
-                      <td><button class="btn btn-sm btn-outline-secondary">...</button></td>
                     </tr>
                   </ng-container>
                   <tr *ngIf="sortedBids().length === 0">
-                    <td colspan="5" class="text-center text-muted py-4">No bids yet</td>
+                    <td colspan="4" class="text-center text-muted py-4">No bids yet</td>
                   </tr>
                 </tbody>
               </table>

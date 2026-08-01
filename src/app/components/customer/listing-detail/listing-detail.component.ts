@@ -204,6 +204,29 @@ export class ListingDetailComponent implements OnInit, OnDestroy, AfterViewInit 
     return labels[status] || status;
   }
 
+  progressStageText(): string {
+    const status = this.listing()?.status;
+    if (!status) return 'Status unknown';
+    const map: any = {
+      accepted: 'Received & accepted',
+      paid: 'Payment confirmed',
+      picked_up: 'Picked up by driver',
+      in_transit: 'In transit',
+      delivered: 'Delivered'
+    };
+    return map[status] || 'Status pending';
+  }
+
+  progressPercent(): number {
+    const status = this.listing()?.status;
+    if (!status) return 0;
+    if (['accepted', 'paid', 'auction_ended'].includes(status)) return 25;
+    if (status === 'picked_up') return 50;
+    if (status === 'in_transit') return 75;
+    if (status === 'delivered') return 100;
+    return 0;
+  }
+
   ratePartner(stars: number, comment: string) {
     this.api.submitRating({ listingId: this.listing().id, stars, comment }).subscribe({
       next: () => this.load(this.listing().id),
