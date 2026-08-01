@@ -122,7 +122,7 @@
                   </ng-container>
                 </div>
               </div>
-              <div *ngIf="selectedJob().Listing?.status === 'in_transit'" class="card-footer">
+              <div *ngIf="['paid', 'picked_up', 'in_transit', 'delivered'].includes(selectedJob().Listing?.status)" class="card-footer">
                 <div class="input-group">
                   <input class="form-control" [(ngModel)]="chatInput" placeholder="Type a message..." (keyup.enter)="sendMessage()">
                   <button class="btn btn-success" (click)="sendMessage()">Send</button>

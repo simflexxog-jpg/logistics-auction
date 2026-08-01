@@ -84,7 +84,7 @@ export class ListingDetailComponent implements OnInit, OnDestroy, AfterViewInit 
         this.loading.set(false);
         this.startTimer();
         setTimeout(() => this.initMap(), 200);
-        if (['picked_up', 'in_transit', 'delivered'].includes(data.status)) {
+        if (['paid', 'picked_up', 'in_transit', 'delivered'].includes(data.status)) {
           this.loadChat(id);
           this.socket.joinChat(id);
           this.subs.push(
@@ -150,7 +150,10 @@ export class ListingDetailComponent implements OnInit, OnDestroy, AfterViewInit 
 
   sendMessage() {
     if (!this.chatInput.trim()) return;
-    this.api.sendMessage(this.listing().id, this.chatInput).subscribe(() => this.chatInput = '');
+    const listingId = this.listing()?.id;
+    if (!listingId) return;
+    this.socket.joinChat(listingId);
+    this.api.sendMessage(listingId, this.chatInput).subscribe(() => this.chatInput = '');
   }
 
   private createAIMessage(role: 'user' | 'assistant', text: string) {

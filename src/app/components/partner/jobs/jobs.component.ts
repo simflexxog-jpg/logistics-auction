@@ -106,7 +106,8 @@ export class PartnerJobsComponent implements OnInit, OnDestroy {
   }
 
   sendMessage() {
-    if (!this.chatInput.trim()) return;
+    if (!this.chatInput.trim() || !this.selectedJob()) return;
+    this.socket.joinChat(this.selectedJob().listingId);
     this.api.sendMessage(this.selectedJob().listingId, this.chatInput).subscribe(() => this.chatInput = '');
   }
 
