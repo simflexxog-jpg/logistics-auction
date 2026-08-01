@@ -47,7 +47,7 @@ app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 // Lightweight request inspector to catch obvious SQL injection patterns in strings.
 // This is not a substitute for prepared statements/ORM protections but helps reject common attack payloads early.
 app.use((req, res, next) => {
-  const injectorPattern = /(--|;\s*--|;\s*DROP\b|UNION\s+SELECT|\bOR\b\s+1=1|\/*|\*\/)/i;
+  const injectorPattern = /(--|;\s*--|;\s*DROP\b|UNION\s+SELECT|\bOR\b\s+1=1|\/\*|\*\/)/i;
   function checkObj(obj) {
     for (const k in obj) {
       const v = obj[k];
