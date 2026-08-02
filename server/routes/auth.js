@@ -6,11 +6,12 @@ const { User } = require('../models');
 const { auth } = require('../middleware/auth');
 const { audit } = require('../utils/audit');
 const { getEffectivePermissions } = require('../utils/permissions');
+const { getTenantId } = require('../utils/tenant');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'logistics_secret_key';
 
 function createToken(user) {
-  return jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
+  return jwt.sign({ id: user.id, role: user.role, tenantId: getTenantId(user) }, JWT_SECRET, { expiresIn: '7d' });
 }
 
 function generateMfaCode(secret, userId) {
@@ -20,7 +21,7 @@ function generateMfaCode(secret, userId) {
 // Register
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, role, phone, truckType, truckCapacity, licensePlate, adminCode } = req.body;
+    const { name, email, password, role, phone, truckType, truckCapacity, licensePlate, adminCode, tenantId, organizationId, companyId } = req.body;
     // Default role to customer if not provided
     const finalRole = role === 'partner' ? 'partner' : 'customer';
     if (!name || !email || !password) return res.status(400).json({ error: 'Missing required fields' });
@@ -36,6 +37,9 @@ router.post('/register', async (req, res) => {
       password: hashed,
       role: finalRole,
       phone,
+      tenantId: tenantId || organizationId || companyId || 'default',
+      organizationId,
+      companyId,
       isAdmin: !!isAdmin,
       permissions: isAdmin ? ['manage_users', 'approve_partners', 'view_audit_logs', 'manage_authentication'] : [],
       ...(finalRole === 'partner' ? { truckType, truckCapacity, licensePlate, isVerified: false } : {})
@@ -78,7 +82,7 @@ router.post('/login', async (req, res) => {
     audit(user.id, 'login_success', { role: user.role });
     const token = createToken(user);
     const permissions = getEffectivePermissions({ role: user.role, permissions: user.permissions || [] });
-    res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role, avgRating: user.avgRating, isAdmin: user.isAdmin, permissions } });
+    res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role, avgRating: user.avgRating, isAdmin: user.isAdmin, tenantId: getTenantId(user), permissions } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -133,7 +137,7 @@ router.get('/me', async (req, res) => {
     const user = await User.findByPk(payload.id);
     if (!user) return res.status(404).json({ error: 'User not found' });
     const permissions = getEffectivePermissions({ role: user.role, permissions: user.permissions || [] });
-    res.json({ id: user.id, name: user.name, email: user.email, role: user.role, avgRating: user.avgRating, isAdmin: user.isAdmin, permissions, mfaEnabled: !!user.mfaEnabled });
+    res.json({ id: user.id, name: user.name, email: user.email, role: user.role, avgRating: user.avgRating, isAdmin: user.isAdmin, tenantId: getTenantId(user), permissions, mfaEnabled: !!user.mfaEnabled });
   } catch (err) {
     res.status(401).json({ error: 'Invalid token' });
   }

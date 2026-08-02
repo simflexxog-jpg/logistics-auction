@@ -2,6 +2,7 @@ const router = require('express').Router();
 const { Op } = require('sequelize');
 const { auth, requireRole } = require('../middleware/auth');
 const { AddOn, Listing } = require('../models');
+const { applyTenantFilter, getTenantId } = require('../utils/tenant');
 
 // Haversine distance in km
 function haversine(lat1, lon1, lat2, lon2) {
@@ -29,7 +30,7 @@ router.get('/', auth, async (req, res) => {
     const where = req.user.role === 'customer'
       ? { ...baseWhere, customerId: req.user.id }
       : { ...baseWhere, status: 'open' };
-    const addons = await AddOn.findAll({ where, order: [['createdAt', 'DESC']] });
+    const addons = await AddOn.findAll({ where: applyTenantFilter(AddOn, req.user, where), order: [['createdAt', 'DESC']] });
     res.json(addons);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -44,7 +45,7 @@ router.post('/', auth, requireRole('customer'), async (req, res) => {
       return res.status(400).json({ error: 'Add-on shipments must be less than 100kg.' });
     }
 
-    const addon = await AddOn.create({ ...req.body, weight, customerId: req.user.id });
+    const addon = await AddOn.create({ ...req.body, weight, customerId: req.user.id, tenantId: getTenantId(req.user) });
     res.status(201).json(addon);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -54,11 +55,11 @@ router.post('/', auth, requireRole('customer'), async (req, res) => {
 // Claim an add-on (partner) — validates 2km route deviation
 router.post('/:id/claim', auth, requireRole('partner'), async (req, res) => {
   try {
-    const addon = await AddOn.findByPk(req.params.id);
+    const addon = await AddOn.findOne({ where: applyTenantFilter(AddOn, req.user, { id: req.params.id }) });
     if (!addon || addon.status !== 'open') return res.status(400).json({ error: 'Not available' });
 
     const { listingId } = req.body;
-    const listing = await Listing.findByPk(listingId);
+    const listing = await Listing.findOne({ where: applyTenantFilter(Listing, req.user, { id: listingId }) });
     if (!listing || listing.winnerId !== req.user.id) return res.status(403).json({ error: 'Not your shipment' });
 
     // Check 2km deviation

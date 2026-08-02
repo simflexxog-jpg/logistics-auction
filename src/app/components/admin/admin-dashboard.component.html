@@ -18,6 +18,125 @@
     </div>
   </div>
 
+  <section *ngIf="analytics" class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card h-100 border-0 bg-primary bg-opacity-10 text-light rounded-4">
+        <div class="card-body">
+          <div class="small text-uppercase text-muted">Active users</div>
+          <div class="h3 mb-0 mt-2">{{ analytics.totalUsers }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card h-100 border-0 bg-secondary bg-opacity-10 text-light rounded-4">
+        <div class="card-body">
+          <div class="small text-uppercase text-muted">Listings</div>
+          <div class="h3 mb-0 mt-2">{{ analytics.totalListings }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card h-100 border-0 bg-warning bg-opacity-10 text-light rounded-4">
+        <div class="card-body">
+          <div class="small text-uppercase text-muted">Revenue</div>
+          <div class="h3 mb-0 mt-2">{{ analytics.totalRevenue | currency:'USD':'symbol':'1.0-0' }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card h-100 border-0 bg-info bg-opacity-10 text-light rounded-4">
+        <div class="card-body">
+          <div class="small text-uppercase text-muted">Approval rate</div>
+          <div class="h3 mb-0 mt-2">{{ analytics.approvalRate }}%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <div class="card border-0 bg-dark text-light rounded-4 border border-secondary">
+        <div class="card-body">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <div>
+              <div class="h6 mb-1">Executive overview</div>
+              <div class="small text-muted">Current queue pressure across onboarding, listings, and payments.</div>
+            </div>
+            <div class="badge bg-success-subtle text-success-emphasis px-3 py-2">
+              <i class="bi bi-heart-pulse me-1"></i>{{ health?.status || 'Checking...' }}
+            </div>
+          </div>
+          <div class="row g-3">
+            <div class="col-12 col-md-3">
+              <div class="rounded-4 p-3 bg-secondary bg-opacity-10 border border-secondary">
+                <div class="small text-muted">Partner onboarding</div>
+                <div class="h4 mb-0 mt-2">{{ pending.length }}</div>
+              </div>
+            </div>
+            <div class="col-12 col-md-3">
+              <div class="rounded-4 p-3 bg-secondary bg-opacity-10 border border-secondary">
+                <div class="small text-muted">Pending listings</div>
+                <div class="h4 mb-0 mt-2">{{ analytics.pendingListings }}</div>
+              </div>
+            </div>
+            <div class="col-12 col-md-3">
+              <div class="rounded-4 p-3 bg-secondary bg-opacity-10 border border-secondary">
+                <div class="small text-muted">Pending payments</div>
+                <div class="h4 mb-0 mt-2">{{ analytics.pendingPayments }}</div>
+              </div>
+            </div>
+            <div class="col-12 col-md-3">
+              <div class="rounded-4 p-3 bg-secondary bg-opacity-10 border border-secondary">
+                <div class="small text-muted">Approved throughput</div>
+                <div class="h4 mb-0 mt-2">{{ analytics.approvedListings + analytics.approvedPayments }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-3 mt-1">
+            <div class="col-12 col-lg-4">
+              <div class="small text-muted mb-2">Approval health</div>
+              <div class="progress" role="progressbar" aria-label="Approval health">
+                <div class="progress-bar bg-success" [style.width.%]="analytics.approvalRate">{{ analytics.approvalRate }}%</div>
+              </div>
+            </div>
+            <div class="col-12 col-lg-4">
+              <div class="small text-muted mb-2">Queue pressure</div>
+              <div class="progress" role="progressbar" aria-label="Queue pressure">
+                <div class="progress-bar bg-warning" [style.width.%]="getQueuePressurePercent()">{{ getQueuePressurePercent() }}%</div>
+              </div>
+            </div>
+            <div class="col-12 col-lg-4">
+              <div class="small text-muted mb-2">Revenue confidence</div>
+              <div class="progress" role="progressbar" aria-label="Revenue confidence">
+                <div class="progress-bar bg-info" [style.width.%]="getRevenueConfidencePercent()">{{ getRevenueConfidencePercent() }}%</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-3 mt-2">
+            <div class="col-12 col-md-4">
+              <div class="rounded-4 p-3 bg-success bg-opacity-10 border border-success-subtle">
+                <div class="small text-muted">Operational readiness</div>
+                <div class="h5 mb-0 mt-2">{{ health?.status || 'Checking...' }}</div>
+              </div>
+            </div>
+            <div class="col-12 col-md-4">
+              <div class="rounded-4 p-3 bg-warning bg-opacity-10 border border-warning-subtle">
+                <div class="small text-muted">Open reviews</div>
+                <div class="h5 mb-0 mt-2">{{ pending.length + analytics.pendingListings + analytics.pendingPayments }}</div>
+              </div>
+            </div>
+            <div class="col-12 col-md-4">
+              <div class="rounded-4 p-3 bg-info bg-opacity-10 border border-info-subtle">
+                <div class="small text-muted">Approval throughput</div>
+                <div class="h5 mb-0 mt-2">{{ analytics.approvedListings + analytics.approvedPayments }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <div *ngIf="loading">Loading...</div>
 
   <ng-container *ngIf="tab === 'pending'">
@@ -59,7 +178,13 @@
       </div>
 
       <div *ngIf="pendingListings.length" class="mb-4">
-        <h3 class="h6 mb-3"><i class="bi bi-box-seam me-2"></i>Pending listings</h3>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="h6 mb-0"><i class="bi bi-box-seam me-2"></i>Pending listings</h3>
+          <div class="d-flex gap-2 flex-wrap">
+            <button (click)="approveAllListings()" class="btn btn-sm btn-success"><i class="bi bi-check2-all me-1"></i>Approve all</button>
+            <button (click)="rejectAllListings()" class="btn btn-sm btn-danger"><i class="bi bi-x-octagon me-1"></i>Reject all</button>
+          </div>
+        </div>
         <ul class="list-group list-group-flush">
           <li *ngFor="let item of pendingListings" class="list-group-item bg-secondary bg-opacity-10 border-secondary rounded-4 mb-3">
             <div class="d-flex flex-column flex-md-row align-items-start justify-content-between gap-3">
@@ -78,7 +203,13 @@
       </div>
 
       <div *ngIf="pendingPayments.length">
-        <h3 class="h6 mb-3"><i class="bi bi-credit-card me-2"></i>Pending payments</h3>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="h6 mb-0"><i class="bi bi-credit-card me-2"></i>Pending payments</h3>
+          <div class="d-flex gap-2 flex-wrap">
+            <button (click)="approveAllPayments()" class="btn btn-sm btn-success"><i class="bi bi-check2-all me-1"></i>Approve all</button>
+            <button (click)="rejectAllPayments()" class="btn btn-sm btn-danger"><i class="bi bi-x-octagon me-1"></i>Reject all</button>
+          </div>
+        </div>
         <ul class="list-group list-group-flush">
           <li *ngFor="let item of pendingPayments" class="list-group-item bg-secondary bg-opacity-10 border-secondary rounded-4 mb-3">
             <div class="d-flex flex-column flex-md-row align-items-start justify-content-between gap-3">
@@ -108,6 +239,7 @@
         <div class="d-flex gap-2 flex-wrap">
           <button class="btn btn-outline-light" (click)="usersPage=1; loadUsers()"><i class="bi bi-search me-1"></i>Search</button>
           <button class="btn btn-outline-secondary" (click)="exportUsersCsv()"><i class="bi bi-file-earmark-spreadsheet me-1"></i>Export CSV</button>
+          <button class="btn btn-outline-secondary" (click)="importUsersCsv()"><i class="bi bi-cloud-arrow-up me-1"></i>Import CSV</button>
         </div>
       </div>
       <div class="mb-3 row gx-2 gy-2">

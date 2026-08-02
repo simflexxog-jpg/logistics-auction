@@ -3,6 +3,7 @@ const sequelize = require('../config/database');
 
 const Bid = sequelize.define('Bid', {
   id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
+  tenantId: { type: DataTypes.STRING, defaultValue: 'default' },
   listingId: { type: DataTypes.UUID, allowNull: false },
   partnerId: { type: DataTypes.UUID, allowNull: false },
   amount: { type: DataTypes.FLOAT, allowNull: false },

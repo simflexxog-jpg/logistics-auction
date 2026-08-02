@@ -3,6 +3,7 @@ const sequelize = require('../config/database');
 
 const AddOn = sequelize.define('AddOn', {
   id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
+  tenantId: { type: DataTypes.STRING, defaultValue: 'default' },
   customerId: { type: DataTypes.UUID, allowNull: false },
   mainListingId: { type: DataTypes.UUID }, // claimed to this listing
   partnerId: { type: DataTypes.UUID },

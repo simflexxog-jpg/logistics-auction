@@ -24,6 +24,7 @@ const Listing = sequelize.define('Listing', {
   winningBid: { type: DataTypes.FLOAT },
   isAddOnEligible: { type: DataTypes.BOOLEAN, defaultValue: false },
   maxAddOnWeight: { type: DataTypes.FLOAT, defaultValue: 100 },
+  tenantId: { type: DataTypes.STRING, defaultValue: 'default' },
   approvalStatus: { type: DataTypes.STRING, defaultValue: 'pending' },
   reviewedBy: { type: DataTypes.UUID },
   reviewedAt: { type: DataTypes.DATE },

@@ -17,10 +17,18 @@ export class LoginComponent {
   email = '';
   password = '';
   mfaCode = '';
+  tenantId = 'default';
   error = signal('');
   loading = signal(false);
   oauthUrl = environment.apiUrl + '/auth/google';
   requiresMfa = signal(false);
+
+  tenantOptions = [
+    { value: 'default', label: 'Default Organization' },
+    { value: 'acme', label: 'Acme Logistics' },
+    { value: 'northstar', label: 'NorthStar Freight' },
+    { value: 'bluepeak', label: 'BluePeak Transport' }
+  ];
 
   adminMode = false;
 
@@ -34,7 +42,7 @@ export class LoginComponent {
   submit() {
     this.error.set('');
     this.loading.set(true);
-    this.auth.login(this.email, this.password, this.mfaCode || undefined).subscribe({
+    this.auth.login(this.email, this.password, this.mfaCode || undefined, this.tenantId).subscribe({
       next: (res) => {
         this.socket.connect(res.token);
         const user = res.user;

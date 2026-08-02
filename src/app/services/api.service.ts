@@ -77,6 +77,8 @@ export class ApiService {
   approvePartner(partnerId: string) { return this.http.post<any>(`${this.base}/admin/partners/${partnerId}/approve`, {}, this.headers()); }
   rejectPartner(partnerId: string, reason?: string) { return this.http.post<any>(`${this.base}/admin/partners/${partnerId}/reject`, { reason }, this.headers()); }
   notifyPartner(partnerId: string, message: string) { return this.http.post<any>(`${this.base}/admin/partners/${partnerId}/notify`, { message }, this.headers()); }
+  exportUsersCsv() { return this.http.get<any>(`${this.base}/admin/export/users`, this.headers()); }
+  importUsersCsv(filePath: string) { return this.http.post<any>(`${this.base}/admin/import/users`, { filePath }, this.headers()); }
   getUsers(q?: string, page = 1, limit = 50, sort = 'createdAt', order: 'asc'|'desc' = 'desc') {
     const params = new URLSearchParams();
     if (q) params.set('q', q);
@@ -93,13 +95,26 @@ export class ApiService {
   rejectListing(listingId: string, reason?: string) {
     return this.http.post<any>(`${this.base}/listings/${listingId}/approve`, { action: 'reject', reason }, this.headers());
   }
+  approveAllListings(reason?: string) {
+    return this.http.post<any>(`${this.base}/listings/bulk/approve`, { action: 'approve', reason }, this.headers());
+  }
+  rejectAllListings(reason?: string) {
+    return this.http.post<any>(`${this.base}/listings/bulk/approve`, { action: 'reject', reason }, this.headers());
+  }
   approvePayment(paymentId: string, reason?: string) {
     return this.http.post<any>(`${this.base}/payments/${paymentId}/approve`, { action: 'approve', reason }, this.headers());
   }
   rejectPayment(paymentId: string, reason?: string) {
     return this.http.post<any>(`${this.base}/payments/${paymentId}/approve`, { action: 'reject', reason }, this.headers());
   }
+  approveAllPayments(reason?: string) {
+    return this.http.post<any>(`${this.base}/payments/bulk/approve`, { action: 'approve', reason }, this.headers());
+  }
+  rejectAllPayments(reason?: string) {
+    return this.http.post<any>(`${this.base}/payments/bulk/approve`, { action: 'reject', reason }, this.headers());
+  }
   getHealth() { return this.http.get<any>(`${this.base}/health`); }
+  getAnalytics() { return this.http.get<any>(`${this.base}/admin/analytics`, this.headers()); }
   createBackup() { return this.http.post<any>(`${this.base}/admin/backup`, {}, this.headers()); }
   getAuditLogs(lines = 200, action?: string, from?: string, to?: string) {
     const params = new URLSearchParams();

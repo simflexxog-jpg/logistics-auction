@@ -13,12 +13,21 @@ export interface User {
   avgRating?: number;
   mfaEnabled?: boolean;
   permissions?: string[];
+  tenantId?: string;
+  organizationId?: string;
+  companyId?: string;
 }
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private apiUrl = environment.apiUrl;
   currentUser = signal<User | null>(this.loadUser());
+  tenantOptions = [
+    { value: 'default', label: 'Default Organization' },
+    { value: 'acme', label: 'Acme Logistics' },
+    { value: 'northstar', label: 'NorthStar Freight' },
+    { value: 'bluepeak', label: 'BluePeak Transport' }
+  ];
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -39,26 +48,63 @@ export class AuthService {
     return this.currentUser()?.role ?? null;
   }
 
-  login(email: string, password: string, mfaCode?: string) {
-    return this.http.post<any>(`${this.apiUrl}/auth/login`, { email, password, mfaCode }).pipe(
+  getSelectedTenantId(): string {
+    return localStorage.getItem('selectedTenantId') || this.currentUser()?.tenantId || 'default';
+  }
+
+  setSelectedTenantId(tenantId: string) {
+    const normalized = tenantId || 'default';
+    localStorage.setItem('selectedTenantId', normalized);
+    const user = this.currentUser();
+    if (user) {
+      const nextUser = { ...user, tenantId: normalized, organizationId: normalized, companyId: normalized };
+      localStorage.setItem('user', JSON.stringify(nextUser));
+      this.currentUser.set(nextUser);
+    }
+  }
+
+  private persistSession(token: string, refreshToken: string, user: any, tenantId: string) {
+    const normalizedTenant = tenantId || 'default';
+    localStorage.setItem('token', token);
+    localStorage.setItem('refreshToken', refreshToken);
+    localStorage.setItem('selectedTenantId', normalizedTenant);
+    const sessionUser = {
+      ...(user || {}),
+      tenantId: normalizedTenant,
+      organizationId: normalizedTenant,
+      companyId: normalizedTenant
+    };
+    localStorage.setItem('user', JSON.stringify(sessionUser));
+    this.currentUser.set({ ...sessionUser } as any);
+  }
+
+  login(email: string, password: string, mfaCode?: string, tenantId = 'default') {
+    return this.http.post<any>(`${this.apiUrl}/auth/login`, {
+      email,
+      password,
+      mfaCode,
+      tenantId,
+      organizationId: tenantId,
+      companyId: tenantId
+    }).pipe(
       tap(res => {
         const token = res.accessToken || res.token;
-        localStorage.setItem('token', token);
-        localStorage.setItem('refreshToken', res.refreshToken);
-        localStorage.setItem('user', JSON.stringify(res.user));
-        this.currentUser.set({ ...res.user } as any);
+        this.persistSession(token, res.refreshToken, res.user, tenantId);
       })
     );
   }
 
   register(data: any) {
-    return this.http.post<any>(`${this.apiUrl}/auth/register`, data).pipe(
+    return this.http.post<any>(`${this.apiUrl}/auth/register`, {
+      ...data,
+      tenantId: data?.tenantId || 'default',
+      organizationId: data?.organizationId || data?.tenantId || 'default',
+      companyId: data?.companyId || data?.tenantId || 'default'
+    }).pipe(
       tap(res => {
         const token = res.accessToken || res.token;
-        localStorage.setItem('token', token);
-        localStorage.setItem('refreshToken', res.refreshToken);
-        localStorage.setItem('user', JSON.stringify(res.user));
-        this.currentUser.set({ ...res.user } as any);
+        const tenantId = data?.tenantId || data?.organizationId || data?.companyId || 'default';
+        this.persistSession(token, res.refreshToken, res.user, tenantId);
       })
     );
   }
