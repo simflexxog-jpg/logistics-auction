@@ -15,7 +15,6 @@ import { SocketService } from '../../../services/socket.service';
 export class RegisterComponent implements OnInit {
   role: 'customer' | 'partner' | 'admin' = 'customer';
   form: any = { name: '', email: '', password: '', phone: '', truckType: '', truckCapacity: '', licensePlate: '', adminCode: '', tenantId: 'default' };
-  registerAsAdmin = false;
   error = signal('');
   loading = signal(false);
   tenantOptions = [
@@ -35,16 +34,13 @@ export class RegisterComponent implements OnInit {
   ngOnInit() {
     const param = this.route.snapshot.params['role'] || 'customer';
     this.role = param as 'customer' | 'partner' | 'admin';
-    if (this.role === 'admin') {
-      this.registerAsAdmin = true;
-    }
   }
 
   submit() {
     this.error.set('');
     this.loading.set(true);
     const payload = { ...this.form, role: this.role } as any;
-    if (this.registerAsAdmin) payload.adminCode = this.form.adminCode;
+    if (this.role === 'admin') payload.adminCode = this.form.adminCode;
 
     this.auth.register(payload).subscribe({
       next: (res) => {

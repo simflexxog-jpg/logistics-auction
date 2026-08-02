@@ -1,4 +1,4 @@
-<div [class.auth-page]="true" [class.admin]="role === 'admin' || registerAsAdmin">
+<div [class.auth-page]="true" [class.admin]="role === 'admin'">
   <div class="auth-shell auth-shell-register">
     <div class="auth-hero">
       <div>
@@ -88,15 +88,9 @@
               </div>
             </ng-container>
 
-            <div class="mt-3">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="registerAdmin" [(ngModel)]="registerAsAdmin" name="registerAsAdmin">
-                <label class="form-check-label" for="registerAdmin">Register as admin</label>
-              </div>
-              <div *ngIf="registerAsAdmin" class="mt-2">
-                <label class="form-label fw-semibold">Admin code</label>
-                <input class="form-control" [(ngModel)]="form.adminCode" name="adminCode" placeholder="Enter admin secret">
-              </div>
+            <div *ngIf="role === 'admin'" class="mt-3">
+              <label class="form-label fw-semibold">Admin code</label>
+              <input class="form-control" [(ngModel)]="form.adminCode" name="adminCode" placeholder="Enter admin secret">
             </div>
           </div>
 
