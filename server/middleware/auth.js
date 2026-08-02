@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
+const { hasPermission } = require('../utils/permissions');
 
 const auth = async (req, res, next) => {
   try {
@@ -36,4 +37,12 @@ const requireVerifiedPartner = (req, res, next) => {
   next();
 };
 
-module.exports = { auth, requireRole, requireAdmin, requireVerifiedPartner };
+const requirePermission = (permission) => (req, res, next) => {
+  if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
+  if (req.user.isAdmin || hasPermission(req.user, permission)) {
+    return next();
+  }
+  return res.status(403).json({ error: 'Permission denied' });
+};
+
+module.exports = { auth, requireRole, requireAdmin, requirePermission, requireVerifiedPartner };
