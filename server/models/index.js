@@ -18,6 +18,8 @@ Bid.belongsTo(User, { foreignKey: 'partnerId', as: 'partner' });
 Listing.hasMany(ChatMessage, { foreignKey: 'listingId', as: 'messages' });
 Listing.hasOne(Payment, { foreignKey: 'listingId', as: 'payment' });
 Listing.hasOne(Rating, { foreignKey: 'listingId', as: 'rating' });
+Payment.belongsTo(User, { foreignKey: 'customerId', as: 'customer' });
+Payment.belongsTo(User, { foreignKey: 'partnerId', as: 'partner' });
 
 const syncDB = async () => {
   try {

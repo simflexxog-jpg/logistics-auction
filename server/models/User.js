@@ -19,6 +19,9 @@ const User = sequelize.define('User', {
   totalRatings: { type: DataTypes.INTEGER, defaultValue: 0 },
   totalEarnings: { type: DataTypes.FLOAT, defaultValue: 0 },
   isAdmin: { type: DataTypes.BOOLEAN, defaultValue: false },
+  mfaEnabled: { type: DataTypes.BOOLEAN, defaultValue: false },
+  mfaSecret: { type: DataTypes.STRING },
+  permissions: { type: DataTypes.JSON, defaultValue: [] },
 }, { timestamps: true });
 
 module.exports = User;

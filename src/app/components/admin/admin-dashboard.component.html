@@ -22,8 +22,11 @@
         </div>
         <span class="badge bg-info text-dark"><i class="bi bi-hourglass-split me-1"></i>{{ pending.length }} pending</span>
       </div>
-      <div *ngIf="!loading && pending.length === 0" class="text-muted">No pending partners.</div>
-      <ul *ngIf="pending.length" class="list-group list-group-flush">
+      <div *ngIf="!loading && pending.length === 0 && pendingListings.length === 0 && pendingPayments.length === 0" class="text-muted">No pending partner or approval requests.</div>
+
+      <div *ngIf="pending.length" class="mb-4">
+        <h3 class="h6 mb-3"><i class="bi bi-person-badge me-2"></i>Partner onboarding</h3>
+        <ul class="list-group list-group-flush">
         <li *ngFor="let p of pending" class="list-group-item bg-secondary bg-opacity-10 border-secondary rounded-4 mb-3">
           <div class="d-flex flex-column flex-md-row align-items-start justify-content-between gap-3">
             <div>
@@ -45,7 +48,46 @@
             <img *ngIf="p.licenseDoc" [src]="p.licenseDoc" alt="license" class="rounded-3" style="height:80px;object-fit:cover;" />
           </div>
         </li>
-      </ul>
+        </ul>
+      </div>
+
+      <div *ngIf="pendingListings.length" class="mb-4">
+        <h3 class="h6 mb-3"><i class="bi bi-box-seam me-2"></i>Pending listings</h3>
+        <ul class="list-group list-group-flush">
+          <li *ngFor="let item of pendingListings" class="list-group-item bg-secondary bg-opacity-10 border-secondary rounded-4 mb-3">
+            <div class="d-flex flex-column flex-md-row align-items-start justify-content-between gap-3">
+              <div>
+                <div class="h6 mb-1">{{ item.title || 'Untitled listing' }}</div>
+                <div class="text-muted small">Customer: {{ item.customer?.name || 'Unknown' }} • Status: {{ item.status }}</div>
+                <div class="text-muted small">Pickup: {{ item.pickupAddress || '—' }} • Dropoff: {{ item.dropoffAddress || '—' }}</div>
+              </div>
+              <div class="d-flex gap-2 flex-wrap">
+                <button (click)="approveListing(item.id)" class="btn btn-sm btn-success"><i class="bi bi-check-circle me-1"></i>Approve</button>
+                <button (click)="rejectListing(item.id)" class="btn btn-sm btn-danger"><i class="bi bi-x-circle me-1"></i>Reject</button>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div *ngIf="pendingPayments.length">
+        <h3 class="h6 mb-3"><i class="bi bi-credit-card me-2"></i>Pending payments</h3>
+        <ul class="list-group list-group-flush">
+          <li *ngFor="let item of pendingPayments" class="list-group-item bg-secondary bg-opacity-10 border-secondary rounded-4 mb-3">
+            <div class="d-flex flex-column flex-md-row align-items-start justify-content-between gap-3">
+              <div>
+                <div class="h6 mb-1">Payment {{ item.id?.slice(0, 8) || '—' }}</div>
+                <div class="text-muted small">Customer: {{ item.customer?.name || 'Unknown' }} • Partner: {{ item.partner?.name || 'Unknown' }}</div>
+                <div class="text-muted small">Amount: {{ item.amount | currency:'USD':'symbol':'1.2-2' }}</div>
+              </div>
+              <div class="d-flex gap-2 flex-wrap">
+                <button (click)="approvePayment(item.id)" class="btn btn-sm btn-success"><i class="bi bi-check-circle me-1"></i>Approve</button>
+                <button (click)="rejectPayment(item.id)" class="btn btn-sm btn-danger"><i class="bi bi-x-circle me-1"></i>Reject</button>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
     </section>
   </ng-container>
 

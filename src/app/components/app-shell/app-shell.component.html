@@ -81,6 +81,10 @@
         <div class="user-meta">
           <div class="fw-semibold">{{ auth.currentUser()?.name || 'User' }}</div>
           <div class="small text-capitalize">{{ role }} workspace</div>
+          <div class="small text-muted">
+            <i class="bi" [class.bi-shield-lock-fill]="auth.currentUser()?.mfaEnabled" [class.bi-shield-lock]="!auth.currentUser()?.mfaEnabled"></i>
+            {{ auth.currentUser()?.mfaEnabled ? 'MFA enabled' : 'MFA pending' }}
+          </div>
         </div>
         <span class="sidebar-status-pill">Online</span>
       </div>

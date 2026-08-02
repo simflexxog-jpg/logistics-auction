@@ -16,9 +16,11 @@ import { SocketService } from '../../../services/socket.service';
 export class LoginComponent {
   email = '';
   password = '';
+  mfaCode = '';
   error = signal('');
   loading = signal(false);
   oauthUrl = environment.apiUrl + '/auth/google';
+  requiresMfa = signal(false);
 
   adminMode = false;
 
@@ -32,7 +34,7 @@ export class LoginComponent {
   submit() {
     this.error.set('');
     this.loading.set(true);
-    this.auth.login(this.email, this.password).subscribe({
+    this.auth.login(this.email, this.password, this.mfaCode || undefined).subscribe({
       next: (res) => {
         this.socket.connect(res.token);
         const user = res.user;
@@ -44,6 +46,9 @@ export class LoginComponent {
         }
       },
       error: (err) => {
+        if (err.error?.error === 'MFA code required') {
+          this.requiresMfa.set(true);
+        }
         this.error.set(err.error?.error || 'Login failed');
         this.loading.set(false);
       }

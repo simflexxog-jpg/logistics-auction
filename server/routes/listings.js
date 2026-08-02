@@ -1,7 +1,10 @@
 const router = require('express').Router();
-const { auth, requireRole } = require('../middleware/auth');
+const { auth, requireRole, requirePermission } = require('../middleware/auth');
 const { Listing, Bid, User, Payment, AddOn } = require('../models');
 const { Op } = require('sequelize');
+const { audit } = require('../utils/audit');
+const { buildApprovalUpdate, getApprovalStatus } = require('../utils/approval');
+const { sanitizeUserPayload } = require('../utils/sanitize');
 
 // Get all open listings (partner can see all, customer sees their own)
 router.get('/', auth, async (req, res) => {
@@ -9,6 +12,9 @@ router.get('/', auth, async (req, res) => {
     const where = req.user.role === 'customer'
       ? { customerId: req.user.id }
       : { status: { [Op.in]: ['open', 'auction_ended'] } };
+    if (req.user.role !== 'customer' && !req.user.isAdmin) {
+      where.approvalStatus = 'approved';
+    }
     const listings = await Listing.findAll({
       where,
       include: [
@@ -17,7 +23,15 @@ router.get('/', auth, async (req, res) => {
       ],
       order: [['createdAt', 'DESC']]
     });
-    res.json(listings);
+    const sanitized = listings.map((listing) => {
+      const item = listing.toJSON();
+      if (item.customer) item.customer = sanitizeUserPayload(item.customer);
+      if (Array.isArray(item.bids)) {
+        item.bids = item.bids.map((bid) => ({ ...bid, partner: bid.partner ? sanitizeUserPayload(bid.partner) : null }));
+      }
+      return item;
+    });
+    res.json(sanitized);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -34,7 +48,12 @@ router.get('/:id', auth, async (req, res) => {
       ]
     });
     if (!listing) return res.status(404).json({ error: 'Not found' });
-    res.json(listing);
+    const payload = listing.toJSON();
+    if (payload.customer) payload.customer = sanitizeUserPayload(payload.customer);
+    if (Array.isArray(payload.bids)) {
+      payload.bids = payload.bids.map((bid) => ({ ...bid, partner: bid.partner ? sanitizeUserPayload(bid.partner) : null }));
+    }
+    res.json(payload);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -77,8 +96,10 @@ router.post('/', auth, requireRole('customer'), async (req, res) => {
     const listing = await Listing.create({
       customerId: req.user.id, title, description, cargoType, weight, dimensions,
       pickupAddress, pickupLat, pickupLng, dropoffAddress, dropoffLat, dropoffLng,
-      auctionEndsAt: computedAuctionEndsAt, isAddOnEligible, maxAddOnWeight
+      auctionEndsAt: computedAuctionEndsAt, isAddOnEligible, maxAddOnWeight,
+      approvalStatus: 'pending'
     });
+    audit(req.user.id, 'listing_created', { listingId: listing.id, approvalStatus: 'pending' });
     res.status(201).json(listing);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -152,6 +173,22 @@ router.post('/:id/deliver', auth, requireRole('partner'), async (req, res) => {
     const io = req.app.get('io');
     io?.to(`listing:${listing.id}`).emit('listing:updated', listing);
     res.json(listing);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Approve or reject a listing
+router.post('/:id/approve', auth, requirePermission('approve_partners'), async (req, res) => {
+  try {
+    const listing = await Listing.findByPk(req.params.id);
+    if (!listing) return res.status(404).json({ error: 'Not found' });
+
+    const action = (req.body.action || 'approve').toString().toLowerCase();
+    const update = buildApprovalUpdate(action, req.user.id, req.body.reason);
+    await listing.update(update);
+    audit(req.user.id, action === 'approve' ? 'listing_approved' : 'listing_rejected', { listingId: listing.id, reason: req.body.reason });
+    res.json({ listing: { ...listing.toJSON(), approvalStatus: getApprovalStatus(listing.toJSON()) } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

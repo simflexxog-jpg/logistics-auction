@@ -73,6 +73,7 @@ export class ApiService {
 
   // Admin
   getPendingPartners() { return this.http.get<any[]>(`${this.base}/admin/partners/pending`, this.headers()); }
+  getPendingApprovals() { return this.http.get<any>(`${this.base}/admin/approvals/pending`, this.headers()); }
   approvePartner(partnerId: string) { return this.http.post<any>(`${this.base}/admin/partners/${partnerId}/approve`, {}, this.headers()); }
   rejectPartner(partnerId: string, reason?: string) { return this.http.post<any>(`${this.base}/admin/partners/${partnerId}/reject`, { reason }, this.headers()); }
   notifyPartner(partnerId: string, message: string) { return this.http.post<any>(`${this.base}/admin/partners/${partnerId}/notify`, { message }, this.headers()); }
@@ -86,6 +87,18 @@ export class ApiService {
     return this.http.get<any>(`${this.base}/admin/users?${params.toString()}`, this.headers());
   }
   getUser(userId: string) { return this.http.get<any>(`${this.base}/admin/users/${userId}`, this.headers()); }
+  approveListing(listingId: string, reason?: string) {
+    return this.http.post<any>(`${this.base}/listings/${listingId}/approve`, { action: 'approve', reason }, this.headers());
+  }
+  rejectListing(listingId: string, reason?: string) {
+    return this.http.post<any>(`${this.base}/listings/${listingId}/approve`, { action: 'reject', reason }, this.headers());
+  }
+  approvePayment(paymentId: string, reason?: string) {
+    return this.http.post<any>(`${this.base}/payments/${paymentId}/approve`, { action: 'approve', reason }, this.headers());
+  }
+  rejectPayment(paymentId: string, reason?: string) {
+    return this.http.post<any>(`${this.base}/payments/${paymentId}/approve`, { action: 'reject', reason }, this.headers());
+  }
   getAuditLogs(lines = 200, action?: string, from?: string, to?: string) {
     const params = new URLSearchParams();
     params.set('lines', String(lines));

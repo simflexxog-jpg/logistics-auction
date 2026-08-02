@@ -24,6 +24,10 @@ const Listing = sequelize.define('Listing', {
   winningBid: { type: DataTypes.FLOAT },
   isAddOnEligible: { type: DataTypes.BOOLEAN, defaultValue: false },
   maxAddOnWeight: { type: DataTypes.FLOAT, defaultValue: 100 },
+  approvalStatus: { type: DataTypes.STRING, defaultValue: 'pending' },
+  reviewedBy: { type: DataTypes.UUID },
+  reviewedAt: { type: DataTypes.DATE },
+  rejectionReason: { type: DataTypes.TEXT },
 }, { timestamps: true });
 
 module.exports = Listing;

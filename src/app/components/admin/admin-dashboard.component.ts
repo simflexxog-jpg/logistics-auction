@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Component } from '@angular/core';
+import { forkJoin } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 
 @Component({
@@ -12,6 +13,8 @@ import { ApiService } from '../../services/api.service';
 export class AdminDashboardComponent {
   tab: 'pending' | 'users' | 'audit' = 'pending';
   pending: any[] = [];
+  pendingListings: any[] = [];
+  pendingPayments: any[] = [];
   users: any[] = [];
   audit: any[] = [];
   loading = false;
@@ -27,11 +30,26 @@ export class AdminDashboardComponent {
 
   load() {
     this.loading = true;
-    this.api.getPendingPartners().subscribe(res => { this.pending = res; this.loading = false; }, () => this.loading = false);
+    forkJoin({
+      partners: this.api.getPendingPartners(),
+      approvals: this.api.getPendingApprovals()
+    }).subscribe({
+      next: ({ partners, approvals }) => {
+        this.pending = Array.isArray(partners) ? partners : [];
+        this.pendingListings = approvals?.listings || [];
+        this.pendingPayments = approvals?.payments || [];
+        this.loading = false;
+      },
+      error: () => this.loading = false
+    });
   }
 
   approve(id: string) { this.api.approvePartner(id).subscribe(() => this.load()); }
   reject(id: string) { const reason = prompt('Reason for rejection (optional)') || ''; this.api.rejectPartner(id, reason).subscribe(() => this.load()); }
+  approveListing(id: string) { const reason = prompt('Approval note (optional)') || ''; this.api.approveListing(id, reason).subscribe(() => this.load()); }
+  rejectListing(id: string) { const reason = prompt('Reason for rejection (optional)') || ''; this.api.rejectListing(id, reason).subscribe(() => this.load()); }
+  approvePayment(id: string) { const reason = prompt('Approval note (optional)') || ''; this.api.approvePayment(id, reason).subscribe(() => this.load()); }
+  rejectPayment(id: string) { const reason = prompt('Reason for rejection (optional)') || ''; this.api.rejectPayment(id, reason).subscribe(() => this.load()); }
   notify(id: string) {
     const message = prompt('Notification message to partner') || 'Please complete verification documents.';
     this.api.notifyPartner(id, message).subscribe(() => alert('Notification sent'));

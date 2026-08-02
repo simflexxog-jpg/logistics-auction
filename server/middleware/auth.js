@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
+const { getEffectivePermissions, hasPermission } = require('../utils/permissions');
+const { audit } = require('../utils/audit');
 
 const auth = async (req, res, next) => {
   try {
@@ -8,7 +10,14 @@ const auth = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'logistics_secret_key');
     const user = await User.findByPk(decoded.id);
     if (!user) return res.status(401).json({ error: 'User not found' });
+
+    const permissions = getEffectivePermissions({
+      role: user.role,
+      permissions: user.permissions || []
+    });
+
     req.user = user;
+    req.user.permissions = permissions;
     next();
   } catch (err) {
     console.error('Auth middleware error:', err && err.message ? err.message : err);
@@ -26,7 +35,17 @@ const requireRole = (role) => (req, res, next) => {
 };
 
 const requireAdmin = (req, res, next) => {
-  if (!req.user || !req.user.isAdmin) return res.status(403).json({ error: 'Admin access required' });
+  if (!req.user || (!req.user.isAdmin && !hasPermission(req.user, 'manage_users'))) {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+  next();
+};
+
+const requirePermission = (permission) => (req, res, next) => {
+  if (!req.user || !hasPermission(req.user, permission)) {
+    audit(req.user?.id || null, 'permission_denied', { permission, path: req.path });
+    return res.status(403).json({ error: 'Insufficient permissions' });
+  }
   next();
 };
 
@@ -36,4 +55,4 @@ const requireVerifiedPartner = (req, res, next) => {
   next();
 };
 
-module.exports = { auth, requireRole, requireAdmin, requireVerifiedPartner };
+module.exports = { auth, requireRole, requireAdmin, requirePermission, requireVerifiedPartner };

@@ -11,6 +11,8 @@ export interface User {
   role: 'customer' | 'partner' | 'admin' | null;
   isAdmin?: boolean;
   avgRating?: number;
+  mfaEnabled?: boolean;
+  permissions?: string[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -37,8 +39,8 @@ export class AuthService {
     return this.currentUser()?.role ?? null;
   }
 
-  login(email: string, password: string) {
-    return this.http.post<any>(`${this.apiUrl}/auth/login`, { email, password }).pipe(
+  login(email: string, password: string, mfaCode?: string) {
+    return this.http.post<any>(`${this.apiUrl}/auth/login`, { email, password, mfaCode }).pipe(
       tap(res => {
         const token = res.accessToken || res.token;
         localStorage.setItem('token', token);
@@ -65,6 +67,18 @@ export class AuthService {
     localStorage.clear();
     this.currentUser.set(null);
     this.router.navigate(['/login']);
+  }
+
+  setupMfa() {
+    return this.http.post<{ secret: string; code: string }>(`${this.apiUrl}/auth/mfa/setup`, {}, { headers: this.authHeaders() });
+  }
+
+  verifyMfa(code: string) {
+    return this.http.post<any>(`${this.apiUrl}/auth/mfa/verify`, { code }, { headers: this.authHeaders() });
+  }
+
+  private authHeaders() {
+    return { Authorization: `Bearer ${this.token}` };
   }
 
   // Accept a token (from OAuth redirect), store it and load the user

@@ -10,6 +10,10 @@ const Payment = sequelize.define('Payment', {
   status: { type: DataTypes.ENUM('pending', 'completed', 'refunded'), defaultValue: 'pending' },
   transactionId: { type: DataTypes.STRING },
   method: { type: DataTypes.STRING, defaultValue: 'card' },
+  approvalStatus: { type: DataTypes.STRING, defaultValue: 'pending' },
+  reviewedBy: { type: DataTypes.UUID },
+  reviewedAt: { type: DataTypes.DATE },
+  rejectionReason: { type: DataTypes.TEXT },
 }, { timestamps: true });
 
 module.exports = Payment;
