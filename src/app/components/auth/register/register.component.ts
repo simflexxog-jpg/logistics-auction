@@ -13,8 +13,8 @@ import { SocketService } from '../../../services/socket.service';
   templateUrl: './register.component.html'
 })
 export class RegisterComponent implements OnInit {
-  role: 'customer' | 'partner' | 'admin' = 'customer';
-  form: any = { name: '', email: '', password: '', phone: '', truckType: '', truckCapacity: '', licensePlate: '', adminCode: '', tenantId: 'default' };
+  role: 'customer' | 'partner' = 'customer';
+  form: any = { name: '', email: '', password: '', phone: '', truckType: '', truckCapacity: '', licensePlate: '', tenantId: 'default' };
   error = signal('');
   loading = signal(false);
   tenantOptions = [
@@ -32,15 +32,14 @@ export class RegisterComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    const param = this.route.snapshot.params['role'] || 'customer';
-    this.role = param as 'customer' | 'partner' | 'admin';
+    const param = this.route.snapshot.params['role'];
+    this.role = param === 'partner' ? 'partner' : 'customer';
   }
 
   submit() {
     this.error.set('');
     this.loading.set(true);
     const payload = { ...this.form, role: this.role } as any;
-    if (this.role === 'admin') payload.adminCode = this.form.adminCode;
 
     this.auth.register(payload).subscribe({
       next: (res) => {
