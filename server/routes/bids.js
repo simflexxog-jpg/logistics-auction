@@ -1,19 +1,18 @@
 const router = require('express').Router();
 const { auth, requireRole } = require('../middleware/auth');
 const { Bid, Listing, User, Payment } = require('../models');
-const { applyTenantFilter, getTenantId } = require('../utils/tenant');
 
 // Place a bid (partner only)
 router.post('/', auth, requireRole('partner'), async (req, res) => {
   try {
     const { listingId, amount, note } = req.body;
-    const listing = await Listing.findOne({ where: applyTenantFilter(Listing, req.user, { id: listingId }) });
+    const listing = await Listing.findOne({ where: { id: listingId } });
     if (!listing) return res.status(404).json({ error: 'Listing not found' });
     if (listing.status !== 'open') return res.status(400).json({ error: 'Auction is closed' });
     if (new Date(listing.auctionEndsAt) < new Date()) return res.status(400).json({ error: 'Auction has ended' });
 
     // Check for existing bid
-    const existing = await Bid.findOne({ where: applyTenantFilter(Bid, req.user, { listingId, partnerId: req.user.id }) });
+    const existing = await Bid.findOne({ where: { listingId, partnerId: req.user.id } });
     if (existing) {
       await existing.update({ amount, note });
       const updated = await existing.reload({ include: [{ model: User, as: 'partner', attributes: ['id', 'name', 'avgRating', 'truckType'] }] });
@@ -22,7 +21,7 @@ router.post('/', auth, requireRole('partner'), async (req, res) => {
       return res.json(updated);
     }
 
-    const bid = await Bid.create({ listingId, partnerId: req.user.id, tenantId: getTenantId(req.user), amount, note });
+    const bid = await Bid.create({ listingId, partnerId: req.user.id, amount, note });
     const full = await bid.reload({ include: [{ model: User, as: 'partner', attributes: ['id', 'name', 'avgRating', 'truckType'] }] });
 
     req.app.get('io')?.to(`listing:${listingId}`).emit('bid:new', full);
@@ -36,7 +35,7 @@ router.post('/', auth, requireRole('partner'), async (req, res) => {
 router.get('/my', auth, requireRole('partner'), async (req, res) => {
   try {
     const bids = await Bid.findAll({
-      where: applyTenantFilter(Bid, req.user, { partnerId: req.user.id }),
+      where: { partnerId: req.user.id },
       include: [{ model: Listing, include: [{ model: Payment, as: 'payment' }] }],
       order: [['createdAt', 'DESC']]
     });

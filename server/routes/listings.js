@@ -5,7 +5,6 @@ const { Op } = require('sequelize');
 const { audit } = require('../utils/audit');
 const { buildApprovalUpdate, getApprovalStatus } = require('../utils/approval');
 const { sanitizeUserPayload } = require('../utils/sanitize');
-const { applyTenantFilter, getTenantId } = require('../utils/tenant');
 
 // Get all open listings (partner can see all, customer sees their own)
 router.get('/', auth, async (req, res) => {
@@ -16,7 +15,7 @@ router.get('/', auth, async (req, res) => {
     if (req.user.role !== 'customer' && !req.user.isAdmin) {
       baseWhere.approvalStatus = 'approved';
     }
-    const where = applyTenantFilter(Listing, req.user, baseWhere);
+    const where = baseWhere;
     const listings = await Listing.findAll({
       where,
       include: [
@@ -43,7 +42,7 @@ router.get('/', auth, async (req, res) => {
 router.get('/:id', auth, async (req, res) => {
   try {
     const listing = await Listing.findOne({
-      where: applyTenantFilter(Listing, req.user, { id: req.params.id }),
+      where: { id: req.params.id },
       include: [
         { model: User, as: 'customer', attributes: ['id', 'name', 'phone'] },
         { model: Bid, as: 'bids', include: [{ model: User, as: 'partner', attributes: ['id', 'name', 'avgRating', 'truckType'] }], order: [['amount', 'ASC']] },
@@ -97,7 +96,7 @@ router.post('/', auth, requireRole('customer'), async (req, res) => {
     }
 
     const listing = await Listing.create({
-      customerId: req.user.id, tenantId: getTenantId(req.user), title, description, cargoType, weight, dimensions,
+      customerId: req.user.id, title, description, cargoType, weight, dimensions,
       pickupAddress, pickupLat, pickupLng, dropoffAddress, dropoffLat, dropoffLng,
       auctionEndsAt: computedAuctionEndsAt, isAddOnEligible, maxAddOnWeight,
       approvalStatus: 'pending'
@@ -112,7 +111,7 @@ router.post('/', auth, requireRole('customer'), async (req, res) => {
 // Accept a bid (customer only) — after auction ends
 router.post('/:id/accept-bid', auth, requireRole('customer'), async (req, res) => {
   try {
-    const listing = await Listing.findOne({ where: applyTenantFilter(Listing, req.user, { id: req.params.id }) });
+    const listing = await Listing.findOne({ where: { id: req.params.id } });
     if (!listing) return res.status(404).json({ error: 'Not found' });
     if (listing.customerId !== req.user.id) return res.status(403).json({ error: 'Not your listing' });
     if (listing.status !== 'auction_ended') return res.status(400).json({ error: 'Auction still open' });
@@ -134,7 +133,7 @@ router.post('/:id/accept-bid', auth, requireRole('customer'), async (req, res) =
 // Mark pickup (partner)
 router.post('/:id/pickup', auth, requireRole('partner'), async (req, res) => {
   try {
-    const listing = await Listing.findOne({ where: applyTenantFilter(Listing, req.user, { id: req.params.id }) });
+    const listing = await Listing.findOne({ where: { id: req.params.id } });
     if (!listing || listing.winnerId !== req.user.id) return res.status(403).json({ error: 'Not authorized' });
     if (listing.status !== 'paid') return res.status(400).json({ error: 'Shipment must be paid before pickup' });
 
@@ -151,7 +150,7 @@ router.post('/:id/pickup', auth, requireRole('partner'), async (req, res) => {
 // Start transit (partner)
 router.post('/:id/start-transit', auth, requireRole('partner'), async (req, res) => {
   try {
-    const listing = await Listing.findOne({ where: applyTenantFilter(Listing, req.user, { id: req.params.id }) });
+    const listing = await Listing.findOne({ where: { id: req.params.id } });
     if (!listing || listing.winnerId !== req.user.id) return res.status(403).json({ error: 'Not authorized' });
     if (listing.status !== 'picked_up') return res.status(400).json({ error: 'Shipment must be picked up before transit' });
 
@@ -168,7 +167,7 @@ router.post('/:id/start-transit', auth, requireRole('partner'), async (req, res)
 // Mark delivered (partner)
 router.post('/:id/deliver', auth, requireRole('partner'), async (req, res) => {
   try {
-    const listing = await Listing.findOne({ where: applyTenantFilter(Listing, req.user, { id: req.params.id }) });
+    const listing = await Listing.findOne({ where: { id: req.params.id } });
     if (!listing || listing.winnerId !== req.user.id) return res.status(403).json({ error: 'Not authorized' });
     if (listing.status !== 'in_transit') return res.status(400).json({ error: 'Shipment must be in transit to complete delivery' });
     await listing.update({ status: 'delivered' });
@@ -185,7 +184,7 @@ router.post('/:id/deliver', auth, requireRole('partner'), async (req, res) => {
 router.post('/bulk/approve', auth, requirePermission('approve_partners'), async (req, res) => {
   try {
     const action = (req.body.action || 'approve').toString().toLowerCase();
-    const listings = await Listing.findAll({ where: applyTenantFilter(Listing, req.user, { approvalStatus: 'pending' }) });
+    const listings = await Listing.findAll({ where: { approvalStatus: 'pending' } });
     const update = buildApprovalUpdate(action, req.user.id, req.body.reason);
     await Promise.all(listings.map((listing) => listing.update(update)));
     await Promise.all(listings.map((listing) => audit(req.user.id, action === 'approve' ? 'listing_approved' : 'listing_rejected', { listingId: listing.id, reason: req.body.reason })));
@@ -198,7 +197,7 @@ router.post('/bulk/approve', auth, requirePermission('approve_partners'), async 
 // Approve or reject a listing
 router.post('/:id/approve', auth, requirePermission('approve_partners'), async (req, res) => {
   try {
-    const listing = await Listing.findOne({ where: applyTenantFilter(Listing, req.user, { id: req.params.id }) });
+    const listing = await Listing.findOne({ where: { id: req.params.id } });
     if (!listing) return res.status(404).json({ error: 'Not found' });
 
     const action = (req.body.action || 'approve').toString().toLowerCase();

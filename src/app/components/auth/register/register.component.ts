@@ -14,15 +14,9 @@ import { SocketService } from '../../../services/socket.service';
 })
 export class RegisterComponent implements OnInit {
   role: 'customer' | 'partner' = 'customer';
-  form: any = { name: '', email: '', password: '', phone: '', truckType: '', truckCapacity: '', licensePlate: '', tenantId: 'default' };
+  form: any = { name: '', email: '', password: '', phone: '', truckType: '', truckCapacity: '', licensePlate: '' };
   error = signal('');
   loading = signal(false);
-  tenantOptions = [
-    { value: 'default', label: 'Default Organization' },
-    { value: 'acme', label: 'Acme Logistics' },
-    { value: 'northstar', label: 'NorthStar Freight' },
-    { value: 'bluepeak', label: 'BluePeak Transport' }
-  ];
 
   constructor(
     private auth: AuthService,

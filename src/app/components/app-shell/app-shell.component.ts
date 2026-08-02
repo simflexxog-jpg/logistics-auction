@@ -12,12 +12,6 @@ import { AuthService } from '../../services/auth.service';
 })
 export class AppShellComponent {
   sidebarCollapsed = false;
-  tenantOptions = [
-    { value: 'default', label: 'Default Organization' },
-    { value: 'acme', label: 'Acme Logistics' },
-    { value: 'northstar', label: 'NorthStar Freight' },
-    { value: 'bluepeak', label: 'BluePeak Transport' }
-  ];
 
   constructor(public auth: AuthService, private router: Router) {}
 
@@ -28,14 +22,6 @@ export class AppShellComponent {
 
   toggleSidebar() {
     this.sidebarCollapsed = !this.sidebarCollapsed;
-  }
-
-  get selectedTenantId(): string {
-    return this.auth.getSelectedTenantId();
-  }
-
-  updateSelectedTenant(tenantId: string) {
-    this.auth.setSelectedTenantId(tenantId);
   }
 
   logout() {

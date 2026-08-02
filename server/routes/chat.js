@@ -1,19 +1,18 @@
 const router = require('express').Router();
 const { auth } = require('../middleware/auth');
 const { ChatMessage, Listing } = require('../models');
-const { applyTenantFilter, getTenantId } = require('../utils/tenant');
 
 // Get chat history for a listing
 router.get('/:listingId', auth, async (req, res) => {
   try {
-    const listing = await Listing.findOne({ where: applyTenantFilter(Listing, req.user, { id: req.params.listingId }) });
+    const listing = await Listing.findOne({ where: { id: req.params.listingId } });
     if (!listing) return res.status(404).json({ error: 'Not found' });
     // Only customer or winning partner can access chat
     if (req.user.id !== listing.customerId && req.user.id !== listing.winnerId) {
       return res.status(403).json({ error: 'Access denied' });
     }
     const messages = await ChatMessage.findAll({
-      where: applyTenantFilter(ChatMessage, req.user, { listingId: req.params.listingId }),
+      where: { listingId: req.params.listingId },
       order: [['createdAt', 'ASC']]
     });
     res.json(messages);
@@ -25,7 +24,7 @@ router.get('/:listingId', auth, async (req, res) => {
 // Send message
 router.post('/:listingId', auth, async (req, res) => {
   try {
-    const listing = await Listing.findOne({ where: applyTenantFilter(Listing, req.user, { id: req.params.listingId }) });
+    const listing = await Listing.findOne({ where: { id: req.params.listingId } });
     if (!listing) return res.status(404).json({ error: 'Not found' });
     if (req.user.id !== listing.customerId && req.user.id !== listing.winnerId) {
       return res.status(403).json({ error: 'Access denied' });
@@ -33,7 +32,6 @@ router.post('/:listingId', auth, async (req, res) => {
 
     const msg = await ChatMessage.create({
       listingId: req.params.listingId,
-      tenantId: getTenantId(req.user),
       senderId: req.user.id,
       senderName: req.user.name,
       senderRole: req.user.role,

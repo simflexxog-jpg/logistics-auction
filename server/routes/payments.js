@@ -4,13 +4,12 @@ const { Payment, Listing, User, Bid } = require('../models');
 const { audit } = require('../utils/audit');
 const { buildApprovalUpdate, getApprovalStatus } = require('../utils/approval');
 const { sanitizeUserPayload } = require('../utils/sanitize');
-const { applyTenantFilter, getTenantId } = require('../utils/tenant');
 
 // Process payment (customer only)
 router.post('/', auth, requireRole('customer'), async (req, res) => {
   try {
     const { listingId, method = 'card' } = req.body;
-    const listing = await Listing.findOne({ where: applyTenantFilter(Listing, req.user, { id: listingId }) });
+    const listing = await Listing.findOne({ where: { id: listingId } });
 
     if (!listing) return res.status(404).json({ error: 'Listing not found' });
 
@@ -24,7 +23,6 @@ router.post('/', auth, requireRole('customer'), async (req, res) => {
     const payment = await Payment.create({
       listingId,
       customerId: req.user.id,
-      tenantId: listing.tenantId || getTenantId(req.user),
       partnerId,
       amount: winningAmount,
       status: 'completed',
@@ -50,7 +48,7 @@ router.post('/', auth, requireRole('customer'), async (req, res) => {
 // Get payment for listing
 router.get('/listing/:listingId', auth, async (req, res) => {
   try {
-    const payment = await Payment.findOne({ where: applyTenantFilter(Payment, req.user, { listingId: req.params.listingId }) });
+    const payment = await Payment.findOne({ where: { listingId: req.params.listingId } });
     if (!payment) return res.json(null);
     const payload = payment.toJSON();
     if (payload.customerId) payload.customerId = sanitizeUserPayload({ id: payload.customerId }).id;
@@ -65,7 +63,7 @@ router.get('/listing/:listingId', auth, async (req, res) => {
 router.post('/bulk/approve', auth, requirePermission('approve_partners'), async (req, res) => {
   try {
     const action = (req.body.action || 'approve').toString().toLowerCase();
-    const payments = await Payment.findAll({ where: applyTenantFilter(Payment, req.user, { approvalStatus: 'pending' }) });
+    const payments = await Payment.findAll({ where: { approvalStatus: 'pending' } });
     const update = buildApprovalUpdate(action, req.user.id, req.body.reason);
     await Promise.all(payments.map((payment) => payment.update(update)));
     await Promise.all(payments.map((payment) => audit(req.user.id, action === 'approve' ? 'payment_approved' : 'payment_rejected', { paymentId: payment.id, reason: req.body.reason })));
@@ -78,7 +76,7 @@ router.post('/bulk/approve', auth, requirePermission('approve_partners'), async 
 // Approve or reject a payment
 router.post('/:id/approve', auth, requirePermission('approve_partners'), async (req, res) => {
   try {
-    const payment = await Payment.findOne({ where: applyTenantFilter(Payment, req.user, { id: req.params.id }) });
+    const payment = await Payment.findOne({ where: { id: req.params.id } });
     if (!payment) return res.status(404).json({ error: 'Payment not found' });
 
     const action = (req.body.action || 'approve').toString().toLowerCase();

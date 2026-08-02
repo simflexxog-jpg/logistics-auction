@@ -55,13 +55,6 @@
               <label class="form-label fw-semibold">Password</label>
               <input type="password" class="form-control" [(ngModel)]="form.password" name="password" required placeholder="Min 8 characters">
             </div>
-            <div class="col-12">
-              <label class="form-label fw-semibold">Organization</label>
-              <select class="form-select" [(ngModel)]="form.tenantId" name="tenantId" aria-label="Choose organization">
-                <option *ngFor="let option of tenantOptions" [value]="option.value">{{ option.label }}</option>
-              </select>
-            </div>
-
             <ng-container *ngIf="role === 'partner'">
               <div class="col-12">
                 <div class="divider mt-2"></div>
