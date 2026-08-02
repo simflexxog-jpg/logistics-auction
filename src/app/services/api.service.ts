@@ -99,6 +99,8 @@ export class ApiService {
   rejectPayment(paymentId: string, reason?: string) {
     return this.http.post<any>(`${this.base}/payments/${paymentId}/approve`, { action: 'reject', reason }, this.headers());
   }
+  getHealth() { return this.http.get<any>(`${this.base}/health`); }
+  createBackup() { return this.http.post<any>(`${this.base}/admin/backup`, {}, this.headers()); }
   getAuditLogs(lines = 200, action?: string, from?: string, to?: string) {
     const params = new URLSearchParams();
     params.set('lines', String(lines));

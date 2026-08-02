@@ -18,6 +18,8 @@ export class AdminDashboardComponent {
   users: any[] = [];
   audit: any[] = [];
   loading = false;
+  health: any = null;
+  backupMessage = '';
   searchQ = '';
   // pagination
   usersPage = 1;
@@ -29,6 +31,7 @@ export class AdminDashboardComponent {
   constructor(private api: ApiService) { this.load(); }
 
   load() {
+    this.api.getHealth().subscribe(res => this.health = res);
     this.loading = true;
     forkJoin({
       partners: this.api.getPendingPartners(),
@@ -78,6 +81,14 @@ export class AdminDashboardComponent {
     if (t === 'users') this.loadUsers();
     if (t === 'audit') this.loadAudit();
     if (t === 'pending') this.load();
+  }
+
+  createBackup() {
+    this.backupMessage = 'Creating backup...';
+    this.api.createBackup().subscribe({
+      next: (res) => this.backupMessage = res?.success ? `Backup created: ${res.path}` : 'Backup failed',
+      error: () => this.backupMessage = 'Backup failed'
+    });
   }
 
   exportUsersCsv() {

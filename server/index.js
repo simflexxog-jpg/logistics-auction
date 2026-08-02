@@ -13,6 +13,7 @@ const rateLimit = require('express-rate-limit');
 const { syncDB } = require('./models');
 const setupSocket = require('./socket');
 const { startAuctionCron } = require('./cron');
+const { buildHealthPayload, exportBackup } = require('./utils/ops');
 
 const app = express();
 const server = http.createServer(app);
@@ -111,7 +112,17 @@ app.use('/api/admin', require('./routes/admin'));
 app.use('/api/auth', require('./routes/oauth'));
 
 // Health check
-app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date() }));
+app.get('/api/health', (req, res) => res.json(buildHealthPayload()));
+
+// Backup export endpoint
+app.post('/api/admin/backup', (req, res) => {
+  try {
+    const filePath = exportBackup();
+    res.json({ success: true, path: filePath });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // Serve Angular in production
 if (process.env.NODE_ENV === 'production') {
