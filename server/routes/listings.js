@@ -12,9 +12,19 @@ router.get('/', auth, async (req, res) => {
     const baseWhere = req.user.role === 'customer'
       ? { customerId: req.user.id }
       : { status: { [Op.in]: ['open', 'auction_ended'] } };
-    if (req.user.role !== 'customer' && !req.user.isAdmin) {
-      baseWhere.approvalStatus = 'approved';
+
+    if (req.user.role === 'customer') {
+      // Customers should only see their own listings.
+    } else if (!req.user.isAdmin) {
+      const visibleStatuses = ['approved', 'pending'];
+      if (baseWhere.status) {
+        baseWhere[Op.or] = [
+          { approvalStatus: { [Op.in]: visibleStatuses } },
+          { approvalStatus: null }
+        ];
+      }
     }
+
     const where = baseWhere;
     const listings = await Listing.findAll({
       where,
@@ -99,7 +109,8 @@ router.post('/', auth, requireRole('customer'), async (req, res) => {
       customerId: req.user.id, title, description, cargoType, weight, dimensions,
       pickupAddress, pickupLat, pickupLng, dropoffAddress, dropoffLat, dropoffLng,
       auctionEndsAt: computedAuctionEndsAt, isAddOnEligible, maxAddOnWeight,
-      approvalStatus: 'pending'
+      approvalStatus: 'approved',
+      status: 'open'
     });
     audit(req.user.id, 'listing_created', { listingId: listing.id, approvalStatus: 'pending' });
     res.status(201).json(listing);
