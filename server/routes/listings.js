@@ -123,6 +123,15 @@ router.post('/:id/accept-bid', auth, requireRole('customer'), async (req, res) =
     await listing.update({ status: 'accepted', winnerId: bid.partnerId, winningBid: bid.amount });
     await bid.update({ status: 'accepted' });
     await Bid.update({ status: 'lost' }, { where: { listingId: listing.id, id: { [Op.ne]: bidId } } });
+    await listing.reload();
+
+    const io = req.app.get('io');
+    io?.to(`listing:${listing.id}`).emit('listing:updated', listing);
+    io?.to(`listing:${listing.id}`).emit('auction:ended', {
+      listingId: listing.id,
+      winnerId: bid.partnerId,
+      lowestBid: bid.amount
+    });
 
     res.json({ listing, bid });
   } catch (err) {

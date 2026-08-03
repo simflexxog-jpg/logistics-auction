@@ -43,6 +43,12 @@ export class PartnerAuctionComponent implements OnInit, OnDestroy {
           this.selectedListing.update(l => ({ ...l, status: 'auction_ended' }));
         }
       }),
+      this.socket.on<any>('listing:updated').subscribe(updated => {
+        this.listings.update(ls => ls.map(l => l.id === updated.id ? { ...l, ...updated } : l));
+        if (this.selectedListing()?.id === updated.id) {
+          this.selectedListing.update(l => l ? { ...l, ...updated } : l);
+        }
+      }),
       this.socket.on<any>('bid:new').subscribe(bid => {
         this.listings.update(ls => ls.map(l => l.id === bid.listingId
           ? { ...l, bids: [...(l.bids || []), bid] } : l));
