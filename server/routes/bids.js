@@ -11,12 +11,10 @@ router.post('/', auth, requireRole('partner'), async (req, res) => {
     if (listing.status !== 'open') return res.status(400).json({ error: 'Auction is closed' });
     if (new Date(listing.auctionEndsAt) < new Date()) return res.status(400).json({ error: 'Auction has ended' });
 
-    // Check for existing bid
     const existing = await Bid.findOne({ where: { listingId, partnerId: req.user.id } });
     if (existing) {
       await existing.update({ amount, note });
       const updated = await existing.reload({ include: [{ model: User, as: 'partner', attributes: ['id', 'name', 'avgRating', 'truckType'] }] });
-      // Emit via socket
       req.app.get('io')?.to(`listing:${listingId}`).emit('bid:updated', updated);
       return res.json(updated);
     }
