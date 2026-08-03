@@ -33,11 +33,26 @@ app.use(helmet({
 }));
 
 // Basic rate limiting
+const isProduction = process.env.NODE_ENV === 'production';
+const rateLimitWindowMs = Number(process.env.RATE_LIMIT_WINDOW_MS || 15 * 60 * 1000);
+const rateLimitMax = Number(process.env.RATE_LIMIT_MAX || (isProduction ? 300 : 2000));
+const shouldSkipRateLimit = (req) => {
+  if (!isProduction) {
+    return true;
+  }
+
+  return ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(req.ip);
+};
+
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  windowMs: rateLimitWindowMs,
+  max: rateLimitMax,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: shouldSkipRateLimit,
+  message: {
+    error: 'Too many requests. Please wait a moment and try again.'
+  }
 });
 app.use(limiter);
 
