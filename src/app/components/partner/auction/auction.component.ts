@@ -115,8 +115,22 @@ export class PartnerAuctionComponent implements OnInit, OnDestroy {
     return Math.min(...listing.bids.map((b: any) => b.amount));
   }
 
+  lowestCompeting(listing: any): number | null {
+    if (!listing.bids?.length) return null;
+    const me = this.auth.currentUser()?.id;
+    const others = listing.bids.filter((b: any) => b.partnerId !== me);
+    if (!others.length) return null;
+    return Math.min(...others.map((b: any) => b.amount));
+  }
+
   placeBid() {
     if (!this.bidAmount || +this.bidAmount <= 0) { this.bidError.set('Enter a valid bid amount'); return; }
+    const lowestOther = this.lowestCompeting(this.selectedListing());
+    const myExisting = this.myBid(this.selectedListing());
+    if (lowestOther !== null && +this.bidAmount >= lowestOther && (!myExisting || +this.bidAmount !== myExisting.amount)) {
+      this.bidError.set(`You must bid lower than the current best competing bid (₹${lowestOther})`);
+      return;
+    }
     this.placing.set(true);
     this.bidError.set('');
     this.api.placeBid({ listingId: this.selectedListing().id, amount: +this.bidAmount, note: this.bidNote }).subscribe({

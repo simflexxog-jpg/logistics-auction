@@ -30,7 +30,7 @@ router.get('/', auth, async (req, res) => {
       where,
       include: [
         { model: User, as: 'customer', attributes: ['id', 'name', 'email'] },
-        { model: Bid, as: 'bids', include: [{ model: User, as: 'partner', attributes: ['id', 'name', 'avgRating'] }] }
+        { model: Bid, as: 'bids', include: [{ model: User, as: 'partner', attributes: ['id', 'name', 'avgRating'] }], order: [['amount', 'ASC']] }
       ],
       order: [['createdAt', 'DESC']]
     });

@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const { Op } = require('sequelize');
 const { auth, requireRole } = require('../middleware/auth');
 const { Bid, Listing, User, Payment } = require('../models');
 
@@ -11,15 +12,30 @@ router.post('/', auth, requireRole('partner'), async (req, res) => {
     if (listing.status !== 'open') return res.status(400).json({ error: 'Auction is closed' });
     if (new Date(listing.auctionEndsAt) < new Date()) return res.status(400).json({ error: 'Auction has ended' });
 
+    const amountNumber = Number(amount);
+    if (!amountNumber || amountNumber <= 0) return res.status(400).json({ error: 'Invalid bid amount' });
+
     const existing = await Bid.findOne({ where: { listingId, partnerId: req.user.id } });
+    const lowestOther = await Bid.findOne({
+      where: {
+        listingId,
+        partnerId: { [Op.ne]: req.user.id }
+      },
+      order: [['amount', 'ASC']]
+    });
+
+    if (lowestOther && amountNumber >= lowestOther.amount && (!existing || amountNumber !== existing.amount)) {
+      return res.status(400).json({ error: `You must bid lower than the current best competing bid (${lowestOther.amount})` });
+    }
+
     if (existing) {
-      await existing.update({ amount, note });
+      await existing.update({ amount: amountNumber, note });
       const updated = await existing.reload({ include: [{ model: User, as: 'partner', attributes: ['id', 'name', 'avgRating', 'truckType'] }] });
       req.app.get('io')?.to(`listing:${listingId}`).emit('bid:updated', updated);
       return res.json(updated);
     }
 
-    const bid = await Bid.create({ listingId, partnerId: req.user.id, amount, note });
+    const bid = await Bid.create({ listingId, partnerId: req.user.id, amount: amountNumber, note });
     const full = await bid.reload({ include: [{ model: User, as: 'partner', attributes: ['id', 'name', 'avgRating', 'truckType'] }] });
 
     req.app.get('io')?.to(`listing:${listingId}`).emit('bid:new', full);
