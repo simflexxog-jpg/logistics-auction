@@ -1,5 +1,6 @@
 const { Listing, Bid } = require('./models');
 const { Op } = require('sequelize');
+const logger = require('./config/logger');
 
 // Run every 30 seconds - close expired auctions
 const startAuctionCron = (io) => {
@@ -29,7 +30,7 @@ const startAuctionCron = (io) => {
             winnerId: lowestBid.partnerId,
             lowestBid: lowestBid.amount
           });
-          console.log(`Auction ended for listing ${listing.id}, lowest bid: ${lowestBid.amount}`);
+          logger.info({ listingId: listing.id, lowestBid: lowestBid.amount }, 'Auction ended for listing');
         } else {
           // No bids — mark as ended with no winner
           await listing.update({ status: 'auction_ended' });
@@ -39,14 +40,14 @@ const startAuctionCron = (io) => {
         }
       }
     } catch (err) {
-      console.error('Cron error:', err.message);
+      logger.error({ err }, 'Cron error');
     }
   };
 
   // Run immediately then every 30s
   closeExpiredAuctions();
   setInterval(closeExpiredAuctions, 30000);
-  console.log('Auction cron started');
+  logger.info('Auction cron started');
 };
 
 module.exports = { startAuctionCron };

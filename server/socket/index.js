@@ -1,11 +1,23 @@
 const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET || 'logistics_secret_key';
+const logger = require('../config/logger');
+const redis = require('../config/redis');
+const { createAdapter } = require('@socket.io/redis-adapter');
 
 module.exports = (io) => {
+  try {
+    const pub = redis;
+    const sub = redis.duplicate ? redis.duplicate() : redis;
+    io.adapter(createAdapter(pub, sub));
+    logger.info('Socket.IO Redis adapter initialized');
+  } catch (e) {
+    logger.warn({ err: e }, 'Failed to initialize Socket.IO Redis adapter');
+  }
+
   // Auth middleware for socket
   io.use((socket, next) => {
     try {
-      const token = socket.handshake.auth.token;
+      const token = socket.handshake.auth && socket.handshake.auth.token;
       if (!token) return next(new Error('No token'));
       const decoded = jwt.verify(token, JWT_SECRET);
       socket.userId = decoded.id;
@@ -17,7 +29,7 @@ module.exports = (io) => {
   });
 
   io.on('connection', (socket) => {
-    console.log(`Socket connected: ${socket.userId}`);
+    logger.info({ userId: socket.userId }, 'Socket connected');
 
     // Join a listing room (for auction bids)
     socket.on('join:listing', (listingId) => {
@@ -35,7 +47,7 @@ module.exports = (io) => {
     });
 
     socket.on('disconnect', () => {
-      console.log(`Socket disconnected: ${socket.userId}`);
+      logger.info({ userId: socket.userId }, 'Socket disconnected');
     });
   });
 };

@@ -3,10 +3,11 @@ const { auth, requireAdmin } = require('../middleware/auth');
 const { User } = require('../models');
 const { audit } = require('../utils/audit');
 const nodemailer = require('nodemailer');
+const logger = require('../config/logger');
 
 async function sendEmail(to, subject, text) {
   if (!process.env.SMTP_HOST) {
-    console.log('SMTP not configured, skipping email to', to, 'subject:', subject);
+    logger.warn({ to, subject }, 'SMTP not configured, skipping email');
     return;
   }
   const transporter = nodemailer.createTransport({

@@ -6,6 +6,9 @@ const Payment = require('./Payment');
 const ChatMessage = require('./ChatMessage');
 const Rating = require('./Rating');
 const AddOn = require('./AddOn');
+const RefreshToken = require('./RefreshToken');
+
+const logger = require('../config/logger');
 
 // Associations
 User.hasMany(Listing, { foreignKey: 'customerId', as: 'listings' });
@@ -24,11 +27,10 @@ Payment.belongsTo(User, { foreignKey: 'partnerId', as: 'partner' });
 const syncDB = async () => {
   try {
     await sequelize.sync({ alter: true });
-    console.log('Database synced successfully');
+    logger.info('Database synced successfully');
   } catch (err) {
-    // Log error but don't crash - the server will continue without DB
-    console.error('Database sync error:', err.message);
+    logger.error({ err }, 'Database sync error');
   }
 };
 
-module.exports = { sequelize, syncDB, User, Listing, Bid, Payment, ChatMessage, Rating, AddOn };
+module.exports = { sequelize, syncDB, User, Listing, Bid, Payment, ChatMessage, Rating, AddOn, RefreshToken };
