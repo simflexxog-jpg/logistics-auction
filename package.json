@@ -11,7 +11,6 @@
     "dev:server": "nodemon server/index.js",
     "dev": "concurrently \"npm run dev:server\" \"ng serve\"",
     "test:jwt": "node scripts/test-jwt.js"
-    ,"migrate": "node-pg-migrate up"
   },
   "private": true,
   "packageManager": "npm@10.9.7",
@@ -46,13 +45,6 @@
     "pg-hstore": "^2.3.4",
     "prom-client": "^14.0.1",
     "redis": "^6.1.0",
-    "@socket.io/redis-adapter": "^7.1.0",
-    "bullmq": "^2.14.0",
-    "rate-limit-redis": "^1.7.0",
-    "pino": "^8.22.0",
-    "pino-pretty": "^10.2.0",
-    "zod": "^3.23.2",
-    "uuid": "^9.0.0",
     "rxjs": "~7.8.0",
     "sequelize": "^6.37.3",
     "socket.io": "^4.8.1",
@@ -75,7 +67,6 @@
     "prettier": "^3.8.1",
     "ts-node": "^10.9.2",
     "typescript": "~5.9.2",
-    "node-pg-migrate": "^7.0.0",
     "vitest": "^4.0.8"
   }
 }

@@ -11,11 +11,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 
 const { syncDB } = require('./models');
-const rateLimit = require('express-rate-limit');
-const logger = require('./config/logger');
-const redis = require('./config/redis');
-const { globalLimiter, bidLimiter } = require('./middleware/rateLimiter');
-const { auctionQueue } = require('./queues/auctionQueue');
+const setupSocket = require('./socket');
 const { startAuctionCron } = require('./cron');
 const { buildHealthPayload, exportBackup } = require('./utils/ops');
 
@@ -31,34 +27,15 @@ const io = new Server(server, {
 app.set('io', io);
 
 // Middleware
-app.set('redis', redis);
-app.set('auctionQueue', auctionQueue);
 // Security middlewares
 app.use(helmet({
-  // set stronger content security policy in production
-  contentSecurityPolicy: process.env.NODE_ENV === 'production' ? {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'"],
-      connectSrc: ["'self'", process.env.CORS_ORIGIN || process.env.FRONTEND_URL || 'http://localhost:4200'],
-      imgSrc: ["'self'", 'data:'],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-    }
-  } : false,
+  contentSecurityPolicy: false,
 }));
-
-// Allow only configured frontend origin
-const corsOrigin = process.env.CORS_ORIGIN || process.env.FRONTEND_URL || 'http://localhost:4200';
-app.use(cors({ origin: corsOrigin, credentials: true }));
-
-// Request ID middleware
-const requestId = require('./middleware/requestId');
-app.use(requestId);
 
 // Basic rate limiting
 const isProduction = process.env.NODE_ENV === 'production';
 const rateLimitWindowMs = Number(process.env.RATE_LIMIT_WINDOW_MS || 15 * 60 * 1000);
-app.use(globalLimiter);
+const rateLimitMax = Number(process.env.RATE_LIMIT_MAX || (isProduction ? 300 : 2000));
 const shouldSkipRateLimit = (req) => {
   if (!isProduction) {
     return true;
@@ -98,7 +75,7 @@ app.use((req, res, next) => {
     return false;
   }
   if (checkObj(req.body) || checkObj(req.query) || checkObj(req.params)) {
-    logger.warn({ ip: req.ip, path: req.path }, 'Rejected request with suspicious payload');
+    console.warn('Rejected request with suspicious payload from', req.ip, 'path', req.path);
     return res.status(400).json({ error: 'Invalid request payload' });
   }
   next();
@@ -139,7 +116,7 @@ app.use(passport.initialize());
 // API Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/listings', require('./routes/listings'));
-app.use('/api/bids', bidLimiter, require('./routes/bids'));
+app.use('/api/bids', require('./routes/bids'));
 app.use('/api/payments', require('./routes/payments'));
 app.use('/api/chat', require('./routes/chat'));
 app.use('/api/ai', require('./routes/ai'));
@@ -170,7 +147,7 @@ if (process.env.NODE_ENV === 'production') {
     distPath = browserPath;
   }
   if (fs.existsSync(distPath)) {
-    logger.info({ distPath }, 'Serving static from');
+    console.log('Serving static from', distPath);
     app.use(express.static(distPath));
     app.get('/*splat', (req, res) => {
       if (!req.path.startsWith('/api')) {
@@ -178,7 +155,7 @@ if (process.env.NODE_ENV === 'production') {
       }
     });
   } else {
-    logger.warn({ distPath }, 'Dist folder not found - make sure to run `npm run build` before starting in production.');
+    console.warn('Dist folder not found at', distPath, '- make sure to run `npm run build` before starting in production.');
   }
 }
 
