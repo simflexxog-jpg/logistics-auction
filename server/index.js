@@ -11,7 +11,6 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 
 const { syncDB } = require('./models');
-const rateLimit = require('express-rate-limit');
 const logger = require('./config/logger');
 const redis = require('./config/redis');
 const { globalLimiter, bidLimiter } = require('./middleware/rateLimiter');
