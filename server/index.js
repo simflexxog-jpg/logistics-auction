@@ -11,13 +11,13 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 
 const { syncDB } = require('./models');
+const rateLimit = require('express-rate-limit');
 const logger = require('./config/logger');
 const redis = require('./config/redis');
 const { globalLimiter, bidLimiter } = require('./middleware/rateLimiter');
 const { auctionQueue } = require('./queues/auctionQueue');
 const { startAuctionCron } = require('./cron');
 const { buildHealthPayload, exportBackup } = require('./utils/ops');
-const setupSocket = require('./socket');
 
 const app = express();
 const server = http.createServer(app);
@@ -58,7 +58,6 @@ app.use(requestId);
 // Basic rate limiting
 const isProduction = process.env.NODE_ENV === 'production';
 const rateLimitWindowMs = Number(process.env.RATE_LIMIT_WINDOW_MS || 15 * 60 * 1000);
-const rateLimitMax = Number(process.env.RATE_LIMIT_MAX || 100);
 app.use(globalLimiter);
 const shouldSkipRateLimit = (req) => {
   if (!isProduction) {

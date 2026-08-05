@@ -6,9 +6,6 @@ const Payment = require('./Payment');
 const ChatMessage = require('./ChatMessage');
 const Rating = require('./Rating');
 const AddOn = require('./AddOn');
-const RefreshToken = require('./RefreshToken');
-
-const logger = require('../config/logger');
 
 // Associations
 User.hasMany(Listing, { foreignKey: 'customerId', as: 'listings' });
@@ -26,17 +23,12 @@ Payment.belongsTo(User, { foreignKey: 'partnerId', as: 'partner' });
 
 const syncDB = async () => {
   try {
-    // Only use alter for Postgres to avoid incompatible ALTER statements on SQLite
-    const dialect = sequelize.getDialect && sequelize.getDialect();
-    if (dialect === 'postgres') {
-      await sequelize.sync({ alter: true });
-    } else {
-      await sequelize.sync();
-    }
-    logger.info('Database synced successfully');
+    await sequelize.sync({ alter: true });
+    console.log('Database synced successfully');
   } catch (err) {
-    logger.error({ err }, 'Database sync error');
+    // Log error but don't crash - the server will continue without DB
+    console.error('Database sync error:', err.message);
   }
 };
 
-module.exports = { sequelize, syncDB, User, Listing, Bid, Payment, ChatMessage, Rating, AddOn, RefreshToken };
+module.exports = { sequelize, syncDB, User, Listing, Bid, Payment, ChatMessage, Rating, AddOn };
