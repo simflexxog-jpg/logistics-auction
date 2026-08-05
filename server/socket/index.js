@@ -6,10 +6,14 @@ const { createAdapter } = require('@socket.io/redis-adapter');
 
 module.exports = (io) => {
   try {
-    const pub = redis;
-    const sub = redis.duplicate ? redis.duplicate() : redis;
-    io.adapter(createAdapter(pub, sub));
-    logger.info('Socket.IO Redis adapter initialized');
+    if (redis && redis.status === 'ready') {
+      const pub = redis;
+      const sub = redis.duplicate ? redis.duplicate() : redis;
+      io.adapter(createAdapter(pub, sub));
+      logger.info('Socket.IO Redis adapter initialized');
+    } else {
+      logger.warn('Redis not available; skipping Socket.IO Redis adapter initialization');
+    }
   } catch (e) {
     logger.warn({ err: e }, 'Failed to initialize Socket.IO Redis adapter');
   }

@@ -26,7 +26,13 @@ Payment.belongsTo(User, { foreignKey: 'partnerId', as: 'partner' });
 
 const syncDB = async () => {
   try {
-    await sequelize.sync({ alter: true });
+    // Only use alter for Postgres to avoid incompatible ALTER statements on SQLite
+    const dialect = sequelize.getDialect && sequelize.getDialect();
+    if (dialect === 'postgres') {
+      await sequelize.sync({ alter: true });
+    } else {
+      await sequelize.sync();
+    }
     logger.info('Database synced successfully');
   } catch (err) {
     logger.error({ err }, 'Database sync error');
