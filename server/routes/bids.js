@@ -16,16 +16,11 @@ router.post('/', auth, requireRole('partner'), async (req, res) => {
     if (!amountNumber || amountNumber <= 0) return res.status(400).json({ error: 'Invalid bid amount' });
 
     const existing = await Bid.findOne({ where: { listingId, partnerId: req.user.id } });
-    const lowestOther = await Bid.findOne({
-      where: {
-        listingId,
-        partnerId: { [Op.ne]: req.user.id }
-      },
-      order: [['amount', 'ASC']]
-    });
+    // Enforce reverse-auction: any bid must be lower than the current lowest bid (if any)
+    const currentLowest = await Bid.findOne({ where: { listingId }, order: [['amount', 'ASC']] });
 
-    if (lowestOther && amountNumber >= lowestOther.amount && (!existing || amountNumber !== existing.amount)) {
-      return res.status(400).json({ error: `You must bid lower than the current best competing bid (${lowestOther.amount})` });
+    if (currentLowest && amountNumber >= currentLowest.amount && (!existing || amountNumber !== existing.amount)) {
+      return res.status(400).json({ error: `You must bid lower than the current lowest bid (${currentLowest.amount})` });
     }
 
     if (existing) {

@@ -81,8 +81,8 @@
                   <div class="mb-3">
                     <label class="form-label fw-semibold">Your Bid Amount (₹)</label>
                     <input type="number" class="form-control form-control-lg" [(ngModel)]="bidAmount" placeholder="e.g. 4500" min="1">
-                    <div class="form-text">Place a bid lower than the current lowest competing bid to lead the auction.</div>
-                    <div *ngIf="lowestCompeting(selectedListing())" class="small text-muted">Lowest competing: <strong class="text-primary">₹{{ lowestCompeting(selectedListing()) }}</strong></div>
+                    <div class="form-text">Place a bid lower than the current lowest bid to lead the auction.</div>
+                    <div *ngIf="lowestBid(selectedListing())" class="small text-muted">Current lowest: <strong class="text-primary">₹{{ lowestBid(selectedListing()) }}</strong></div>
                   </div>
                   <div class="mb-3">
                     <label class="form-label fw-semibold">Note (optional)</label>
