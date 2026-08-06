@@ -110,25 +110,22 @@ export class PartnerAuctionComponent implements OnInit, OnDestroy {
     return listing.bids?.find((b: any) => b.partnerId === this.auth.currentUser()?.id);
   }
 
-  lowestBid(listing: any): number | null {
-    if (!listing.bids?.length) return null;
-    return Math.min(...listing.bids.map((b: any) => b.amount));
-  }
-
-  lowestCompeting(listing: any): number | null {
-    if (!listing.bids?.length) return null;
-    const me = this.auth.currentUser()?.id;
-    const others = listing.bids.filter((b: any) => b.partnerId !== me);
-    if (!others.length) return null;
-    return Math.min(...others.map((b: any) => b.amount));
+  latestBid(listing: any): number | null {
+    if (!listing?.bids?.length) return null;
+    const bids = [...listing.bids].sort((a: any, b: any) => {
+      const aTime = new Date(a.createdAt || 0).getTime();
+      const bTime = new Date(b.createdAt || 0).getTime();
+      return bTime - aTime;
+    });
+    return bids[0]?.amount ?? null;
   }
 
   placeBid() {
     if (!this.bidAmount || +this.bidAmount <= 0) { this.bidError.set('Enter a valid bid amount'); return; }
-    const lowestAll = this.lowestBid(this.selectedListing());
-    const myExisting = this.myBid(this.selectedListing());
-    if (lowestAll !== null && +this.bidAmount >= lowestAll && (!myExisting || +this.bidAmount !== myExisting.amount)) {
-      this.bidError.set(`You must bid lower than the current lowest bid (₹${lowestAll})`);
+    const latestAll = this.latestBid(this.selectedListing());
+    const currentAmount = +this.bidAmount;
+    if (latestAll !== null && currentAmount >= latestAll) {
+      this.bidError.set(`You must bid lower than the latest bid (₹${latestAll})`);
       return;
     }
     this.placing.set(true);

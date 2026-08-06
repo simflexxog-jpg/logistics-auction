@@ -2,6 +2,7 @@ const router = require('express').Router();
 const { Op } = require('sequelize');
 const { auth, requireRole } = require('../middleware/auth');
 const { Bid, Listing, User, Payment } = require('../models');
+const { validateReverseAuctionBid } = require('../utils/bidding');
 
 // Place a bid (partner only)
 router.post('/', auth, requireRole('partner'), async (req, res) => {
@@ -13,14 +14,15 @@ router.post('/', auth, requireRole('partner'), async (req, res) => {
     if (new Date(listing.auctionEndsAt) < new Date()) return res.status(400).json({ error: 'Auction has ended' });
 
     const amountNumber = Number(amount);
-    if (!amountNumber || amountNumber <= 0) return res.status(400).json({ error: 'Invalid bid amount' });
+    const latestBid = await Bid.findOne({ where: { listingId }, order: [['createdAt', 'DESC']] });
 
-    const existing = await Bid.findOne({ where: { listingId, partnerId: req.user.id } });
-    // Enforce reverse-auction: any bid must be lower than the current lowest bid (if any)
-    const currentLowest = await Bid.findOne({ where: { listingId }, order: [['amount', 'ASC']] });
+    const validation = validateReverseAuctionBid({
+      amount: amountNumber,
+      latestBidAmount: latestBid?.amount ?? null
+    });
 
-    if (currentLowest && amountNumber >= currentLowest.amount && (!existing || amountNumber !== existing.amount)) {
-      return res.status(400).json({ error: `You must bid lower than the current lowest bid (${currentLowest.amount})` });
+    if (!validation.valid) {
+      return res.status(400).json({ error: validation.error });
     }
 
     if (existing) {
