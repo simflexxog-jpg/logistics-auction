@@ -13,6 +13,7 @@ import { AuthService } from '../../../services/auth.service';
 export class PartnerDashboardComponent implements OnInit {
   stats = signal<any>(null);
   loading = signal(true);
+  reportOpen = signal(false);
 
   constructor(private api: ApiService, public auth: AuthService) {}
 
@@ -21,6 +22,48 @@ export class PartnerDashboardComponent implements OnInit {
       next: d => { this.stats.set(d); this.loading.set(false); },
       error: () => this.loading.set(false)
     });
+  }
+
+  viewReport() {
+    this.reportOpen.set(true);
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  exportReport() {
+    const summary = this.stats();
+    if (!summary) return;
+
+    const rows: string[][] = [
+      ['Metric', 'Value'],
+      ['Partner', summary.partner?.name ?? 'N/A'],
+      ['Total earnings', `₹${Number(summary.partner?.totalEarnings || 0).toFixed(0)}`],
+      ['My bids', String(summary.myBids ?? 0)],
+      ['Won bids', String(summary.wonBids ?? 0)],
+      ['Active shipments', String(summary.activeShipments ?? 0)],
+      ['Completed shipments', String(summary.completedShipments ?? 0)],
+      ['Recent jobs', String((summary.recentJobs ?? []).length)]
+    ];
+
+    (summary.recentJobs ?? []).forEach((job: any) => {
+      rows.push([
+        `Job ${job.id?.slice(0, 8).toUpperCase() || 'N/A'}`,
+        this.shipmentStatusLabel(job.status)
+      ]);
+    });
+
+    const csv = rows
+      .map(row => row.map(value => `"${String(value).replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `partner-report-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
   }
 
   winRate(): string {

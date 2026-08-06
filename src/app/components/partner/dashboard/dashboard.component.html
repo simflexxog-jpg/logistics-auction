@@ -10,8 +10,42 @@
             <p class="text-muted mb-0">Here is the current health of your transport network.</p>
           </div>
           <div class="d-flex gap-2">
-            <button class="btn btn-outline-primary">View report</button>
-            <button class="btn btn-primary">Export</button>
+            <button class="btn btn-outline-primary" (click)="viewReport()" [attr.aria-expanded]="reportOpen()">
+              <i class="bi bi-file-earmark-text me-1"></i>View report
+            </button>
+            <button class="btn btn-primary" (click)="exportReport()">
+              <i class="bi bi-download me-1"></i>Export
+            </button>
+          </div>
+        </div>
+
+        <div class="card dashboard-card border-0 shadow-sm mb-4" *ngIf="reportOpen()">
+          <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <div>
+                <h6 class="mb-1 fw-semibold">Partner performance report</h6>
+                <div class="text-muted small">A quick snapshot of the current dashboard data.</div>
+              </div>
+              <span class="badge bg-primary-subtle text-primary">Live snapshot</span>
+            </div>
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <ul class="list-unstyled mb-0">
+                  <li><strong>Partner:</strong> {{ stats().partner?.name || 'N/A' }}</li>
+                  <li><strong>Total earnings:</strong> ₹{{ stats().partner?.totalEarnings?.toFixed(0) || 0 }}</li>
+                  <li><strong>My bids:</strong> {{ stats().myBids || 0 }}</li>
+                  <li><strong>Won bids:</strong> {{ stats().wonBids || 0 }}</li>
+                </ul>
+              </div>
+              <div class="col-12 col-md-6">
+                <ul class="list-unstyled mb-0">
+                  <li><strong>Active shipments:</strong> {{ stats().activeShipments || 0 }}</li>
+                  <li><strong>Completed shipments:</strong> {{ stats().completedShipments || 0 }}</li>
+                  <li><strong>Recent jobs:</strong> {{ stats().recentJobs?.length || 0 }}</li>
+                  <li><strong>Delivery performance:</strong> {{ deliveryScore() }}%</li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
 
